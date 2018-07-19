@@ -1,0 +1,53 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        },
+        "type": {
+            "type": "string"
+        }
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "sku": {
+                "name": "[parameters('type')]"
+            },
+            "kind": "Storage",
+            "name": "[parameters('name')]",
+            "apiVersion": "2018-02-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "supportsHttpsTrafficOnly": true,
+                "encryption": {
+                    "services": {
+                        "blob": {
+                            "enabled": true
+                        },
+                        "file": {
+                            "enabled": true
+                        }
+                    },
+                    "keySource": "Microsoft.Storage"
+                }
+            },
+            "dependsOn": []
+        }
+    ],
+    "outputs": {
+        "storageName": {
+            "type": "string",
+            "value": "[parameters('name')]"
+        },
+        "storageEndPoints": {
+            "type": "object",
+            "value": "[reference(parameters('name'), '2018-02-01', 'Full').properties.primaryEndpoints]"
+        }
+      }
+    }
+}
