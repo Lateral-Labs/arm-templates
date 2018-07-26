@@ -13,7 +13,18 @@
             }
         },
         "type": {
-            "type": "string"
+            "type": "string",
+            "defaultValue": "Standard_LRS",
+            "allowedValues": [
+              "Standard_LRS",
+              "Standard_GRS",
+              "Standard_ZRS",
+              "Premium_LRS",
+              "Standard_RAGRS"
+            ],
+            "metadata": {
+              "description": "Storage Account type"
+            }
         }
     },
     "resources": [
@@ -52,6 +63,5 @@
             "type": "object",
             "value": "[reference(parameters('name'), '2018-02-01', 'Full').properties.primaryEndpoints]"
         }
-      }
     }
 }
