@@ -87,8 +87,8 @@
         {
             "type": "Microsoft.Web/serverfarms",
             "sku": {
-                "Tier": "[parameters('sku')]",
-                "Name": "[parameters('skuCode')]"
+                "Tier": "Basic",
+                "Name": "B1"
             },
             "name": "[parameters('name')]",
             "apiVersion": "2016-09-01",
