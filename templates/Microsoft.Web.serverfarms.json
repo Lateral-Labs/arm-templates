@@ -94,7 +94,11 @@
             "apiVersion": "2016-09-01",
             "location": "[parameters('location')]",
             "properties": {
-                "name": "[parameters('name')]"
+                "name": "[parameters('name')]",
+                "workerSizeId": "0",
+                "reserved": false,
+                "numberOfWorkers": "1",
+                "hostingEnvironment": ""
             }
         }
     ],
