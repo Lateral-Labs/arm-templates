@@ -44,20 +44,6 @@
               "description": "Location for the Application Service Plan."
             }
         },
-        "sku": {
-            "type": "string",
-            "defaultValue": "Basic",
-            "allowedValues": [
-                "Free",
-                "Shared",
-                "Basic",
-                "Standard",
-                "Premium",
-                "PremiumV2",
-                "Isolated",
-                "Dynamic"
-            ]
-        },
         "skuCode": {
             "type": "string",
             "defaultValue": "B1",
