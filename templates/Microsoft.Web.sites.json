@@ -3,7 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
-            "type": "string"
+            "type": "string",
+            "metadata": {
+                "description":"Must be a unique website name: *****.azurewebsites.net"
+            }
         },
         "hostingPlanName": {
             "type": "string"
