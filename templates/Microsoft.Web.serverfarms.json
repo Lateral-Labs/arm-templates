@@ -44,6 +44,20 @@
               "description": "Location for the Application Service Plan."
             }
         },
+        "sku": {
+            "type": "string",
+            "defaultValue": "Basic",
+            "allowedValues": [
+                "Free",
+                "Shared",
+                "Basic",
+                "Standard",
+                "Premium",
+                "PremiumV2",
+                "Isolated",
+                "Dynamic"
+            ]
+        },
         "skuCode": {
             "type": "string",
             "defaultValue": "B1",
@@ -73,18 +87,14 @@
         {
             "type": "Microsoft.Web/serverfarms",
             "sku": {
-                "Tier": "Basic",
-                "Name": "B1"
+                "Tier": "[parameters('sku')]",
+                "Name": "[parameters('skuCode')]"
             },
             "name": "[parameters('name')]",
             "apiVersion": "2016-09-01",
             "location": "[parameters('location')]",
             "properties": {
-                "name": "[parameters('name')]",
-                "workerSizeId": "0",
-                "reserved": false,
-                "numberOfWorkers": "1",
-                "hostingEnvironment": ""
+                "name": "[parameters('name')]"
             }
         }
     ],
