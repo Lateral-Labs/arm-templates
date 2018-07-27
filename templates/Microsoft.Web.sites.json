@@ -91,5 +91,11 @@
                 "clientAffinityEnabled": false
             }
         }
-    ]
+    ],
+    "outputs": {
+        "site": {
+            "type": "object",
+            "value": "[reference(parameters('name'), '2016-08-01', 'Full')]"
+        }
+    }
 }
