@@ -9,24 +9,36 @@
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
             "allowedValues": [
-                "eastasia",
-                "southeastasia",
-                "centralus",
-                "eastus",
-                "eastus2",
-                "westus",
-                "northcentralus",
-                "southcentralus",
-                "northeurope",
-                "westeurope",
-                "japanwest",
-                "japaneast",
-                "brazilsouth",
-                "australiaeast",
-                "australiasoutheast",
-                "southindia",
-                "centralindia",
-                "westindia"
+                "Australia Central",
+                "Australia Central 2",
+                "Australia East",
+                "Australia SouthEast",
+                "Brazil South",
+                "Canada Central",
+                "Canada East",
+                "Central India",
+                "Central US",
+                "East Asia",
+                "East US",
+                "East US 2",
+                "France Central",
+                "France South",
+                "Japan East",
+                "Japan West",
+                "Korea Central",
+                "Korea South",
+                "North Central US",
+                "North Europe",
+                "South Central US",
+                "South India",
+                "Southeast Asia",
+                "UK South",
+                "UK West",
+                "West Central US",
+                "West Europe",
+                "West India",
+                "West US",
+                "West US 2"
             ],
             "metadata": {
               "description": "Location for the Application Service Plan."
@@ -85,5 +97,11 @@
                 "name": "[parameters('name')]"
             }
         }
-    ]
+    ],
+    "outputs": {
+        "serverfarm": {
+            "type": "object",
+            "value": "[reference(parameters('name'), '2016-09-01', 'Full')]"
+        }
+    }
 }
