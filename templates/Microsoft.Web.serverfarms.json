@@ -127,7 +127,7 @@
             "sku": {
                 "Tier": "[parameters('sku')]",
                 "Name": "[parameters('skuCode')]",
-                "capacity": 1
+                "capacity": "[parameters('defaultCapacity')]"
             },
             "name": "[parameters('name')]",
             "apiVersion": "2016-09-01",
