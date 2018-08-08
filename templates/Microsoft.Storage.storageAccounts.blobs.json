@@ -57,14 +57,6 @@
             "metadata": {
               "description": "Storage Account type"
             }
-        },
-        "kind": {
-            "type": "string",
-            "defaultValue": "Storage",
-            "allowedValues": [
-                "Storage",
-                "StorageV2"
-            ]
         }
     },
     "resources": [
@@ -73,7 +65,7 @@
             "sku": {
                 "name": "[parameters('type')]"
             },
-            "kind": "[parameters('kind')]",
+            "kind": "BlobStorage",
             "name": "[parameters('name')]",
             "apiVersion": "2018-02-01",
             "location": "[parameters('location')]",
@@ -83,9 +75,6 @@
                 "encryption": {
                     "services": {
                         "blob": {
-                            "enabled": true
-                        },
-                        "file": {
                             "enabled": true
                         }
                     },

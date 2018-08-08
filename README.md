@@ -51,3 +51,16 @@ Create an Azure Storage account optimized for tables.
 </a>
 
 See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts).  
+
+## Azure Storage Account for blobs
+
+Create an Azure Storage account optimized for blobs.  
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Storage.storageAccounts.blobs.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Storage.storageAccounts.blobs.json" target="_blank">
+    <img src="http://armviz.io/visualizebutton.png"/>
+</a>
+
+See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts).  
