@@ -19,27 +19,32 @@
         "sizeExtraSmall": {
             "sku": "Shared",
             "skuCode": "D1",
-            "storageAccountType": "Standard_LRS"
+            "storageAccountType": "Standard_LRS",
+            "tableStorageKind": "Storage"
         },
         "sizeSmall": {
             "sku": "Basic",
             "skuCode": "B1",
-            "storageAccountType": "Standard_LRS"
+            "storageAccountType": "Standard_LRS",
+            "tableStorageKind": "Storage"
         },
         "sizeMedium": {
             "sku": "Basic",
             "skuCode": "B2",
-            "storageAccountType": "Standard_LRS"
+            "storageAccountType": "Standard_LRS",
+            "tableStorageKind": "StorageV2"
         },
         "sizeLarge": {
             "sku": "Standard",
             "skuCode": "S2",
-            "storageAccountType": "Standard_GRS"
+            "storageAccountType": "Standard_GRS",
+            "tableStorageKind": "StorageV2"
         },
         "sizeExtraLarge": {
             "sku": "Standard",
             "skuCode": "S3",
-            "storageAccountType": "Standard_GRS"
+            "storageAccountType": "Standard_GRS",
+            "tableStorageKind": "StorageV2"
         }
     },
     "resources": [],
