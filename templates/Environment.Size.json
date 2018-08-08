@@ -19,9 +19,17 @@
         "sizeExtraSmall": {
             "serverFarm": {
                 "sku": "Shared",
-                "skuCode": "D1"
+                "skuCode": "D1",
+                "autoscale": {
+                    "enabled": false,
+                    "capacity": {
+                        "default": 1,
+                        "minimum": 1,
+                        "maximum": 1
+                    }
+                }
             },
-            "storage":{
+            "storage": {
                 "accountType": "Standard_LRS",
                 "kind": "Storage"
             }
@@ -29,9 +37,17 @@
         "sizeSmall": {
             "serverFarm": {
                 "sku": "Basic",
-                "skuCode": "B1"
+                "skuCode": "B1",
+                "autoscale": {
+                    "enabled": false,
+                    "capacity": {
+                        "default": 1,
+                        "minimum": 1,
+                        "maximum": 1
+                    }
+                }
             },
-            "storage":{
+            "storage": {
                 "accountType": "Standard_LRS",
                 "kind": "Storage"
             }
@@ -39,9 +55,17 @@
         "sizeMedium": {
             "serverFarm": {
                 "sku": "Basic",
-                "skuCode": "B2"
+                "skuCode": "B2",
+                "autoscale": {
+                    "enabled": true,
+                    "capacity": {
+                        "default": 1,
+                        "minimum": 1,
+                        "maximum": 2
+                    }
+                }
             },
-            "storage":{
+            "storage": {
                 "accountType": "Standard_LRS",
                 "kind": "StorageV2"
             }
@@ -49,9 +73,17 @@
         "sizeLarge": {
             "serverFarm": {
                 "sku": "Standard",
-                "skuCode": "S2"
+                "skuCode": "S2",
+                "autoscale": {
+                    "enabled": true,
+                    "capacity": {
+                        "default": 2,
+                        "minimum": 1,
+                        "maximum": 8
+                    }
+                }
             },
-            "storage":{
+            "storage": {
                 "accountType": "Standard_GRS",
                 "kind": "StorageV2"
             }
@@ -59,9 +91,17 @@
         "sizeExtraLarge": {
             "serverFarm": {
                 "sku": "Standard",
-                "skuCode": "S3"
+                "skuCode": "S3",
+                "autoscale": {
+                    "enabled": true,
+                    "capacity": {
+                        "default": 4,
+                        "minimum": 2,
+                        "maximum": 10
+                    }
+                }
             },
-            "storage":{
+            "storage": {
                 "accountType": "Standard_GRS",
                 "kind": "StorageV2"
             }
@@ -69,7 +109,7 @@
     },
     "resources": [],
     "outputs": {
-        "size":{
+        "size": {
             "type": "object",
             "value": "[variables('environmentSize')]"
         }
