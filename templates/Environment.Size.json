@@ -57,10 +57,10 @@
                 "sku": "Basic",
                 "skuCode": "B2",
                 "autoscale": {
-                    "enabled": true,
+                    "enabled": false,
                     "capacity": {
-                        "default": 1,
-                        "minimum": 1,
+                        "default": 2,
+                        "minimum": 2,
                         "maximum": 2
                     }
                 }
@@ -78,7 +78,7 @@
                     "enabled": true,
                     "capacity": {
                         "default": 2,
-                        "minimum": 1,
+                        "minimum": 2,
                         "maximum": 8
                     }
                 }
