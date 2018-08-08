@@ -1,0 +1,52 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "size": {
+            "type": "string",
+            "defaultValue": "Small",
+            "allowedValues": [
+                "ExtraSmall",
+                "Small",
+                "Medium",
+                "Large",
+                "ExtraLarge"
+            ]
+        }
+    },
+    "variables": {
+        "environmentSize": "[variables(concat('size', parameters('size')))]",
+        "sizeExtraSmall": {
+            "sku": "Shared",
+            "skuCode": "D1",
+            "storageAccountType": "Standard_LRS"
+        },
+        "sizeSmall": {
+            "sku": "Basic",
+            "skuCode": "B1",
+            "storageAccountType": "Standard_LRS"
+        },
+        "sizeMedium": {
+            "sku": "Basic",
+            "skuCode": "B2",
+            "storageAccountType": "Standard_LRS"
+        },
+        "sizeLarge": {
+            "sku": "Standard",
+            "skuCode": "S2",
+            "storageAccountType": "Standard_GRS"
+        },
+        "sizeExtraLarge": {
+            "sku": "Standard",
+            "skuCode": "S3",
+            "storageAccountType": "Standard_GRS"
+        }
+    },
+    "resources": [],
+    "outputs": {
+        "size":{
+            "type": "object",
+            "value": "[variables('environmentSize')]"
+        }
+    }
+}
