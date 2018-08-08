@@ -17,34 +17,54 @@
     "variables": {
         "environmentSize": "[variables(concat('size', parameters('size')))]",
         "sizeExtraSmall": {
-            "sku": "Shared",
-            "skuCode": "D1",
-            "storageAccountType": "Standard_LRS",
-            "tableStorageKind": "Storage"
+            "serverFarm": {
+                "sku": "Shared",
+                "skuCode": "D1"
+            },
+            "storage":{
+                "accountType": "Standard_LRS",
+                "kind": "Storage"
+            }
         },
         "sizeSmall": {
-            "sku": "Basic",
-            "skuCode": "B1",
-            "storageAccountType": "Standard_LRS",
-            "tableStorageKind": "Storage"
+            "serverFarm": {
+                "sku": "Basic",
+                "skuCode": "B1"
+            },
+            "storage":{
+                "accountType": "Standard_LRS",
+                "kind": "Storage"
+            }
         },
         "sizeMedium": {
-            "sku": "Basic",
-            "skuCode": "B2",
-            "storageAccountType": "Standard_LRS",
-            "tableStorageKind": "StorageV2"
+            "serverFarm": {
+                "sku": "Basic",
+                "skuCode": "B2"
+            },
+            "storage":{
+                "accountType": "Standard_LRS",
+                "kind": "StorageV2"
+            }
         },
         "sizeLarge": {
-            "sku": "Standard",
-            "skuCode": "S2",
-            "storageAccountType": "Standard_GRS",
-            "tableStorageKind": "StorageV2"
+            "serverFarm": {
+                "sku": "Standard",
+                "skuCode": "S2"
+            },
+            "storage":{
+                "accountType": "Standard_GRS",
+                "kind": "StorageV2"
+            }
         },
         "sizeExtraLarge": {
-            "sku": "Standard",
-            "skuCode": "S3",
-            "storageAccountType": "Standard_GRS",
-            "tableStorageKind": "StorageV2"
+            "serverFarm": {
+                "sku": "Standard",
+                "skuCode": "S3"
+            },
+            "storage":{
+                "accountType": "Standard_GRS",
+                "kind": "StorageV2"
+            }
         }
     },
     "resources": [],
