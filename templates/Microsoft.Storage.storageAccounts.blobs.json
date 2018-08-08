@@ -71,7 +71,6 @@
             "location": "[parameters('location')]",
             "properties": {
                 "supportsHttpsTrafficOnly": true,
-                "accessTier":"Hot",
                 "encryption": {
                     "services": {
                         "blob": {
