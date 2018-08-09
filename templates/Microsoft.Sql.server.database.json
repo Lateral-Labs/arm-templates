@@ -153,7 +153,7 @@
                     "resources": [
                         {
                             "condition": "[not(equals(parameters('tier'), 'Basic'))]",
-                            "name": "DefaultLongTermRetentionPolicy",
+                            "name": "default",
                             "type": "backupLongTermRetentionPolicies",
                             "dependsOn": [
                               "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/', 'databases', '/', parameters('databaseName'))]"
