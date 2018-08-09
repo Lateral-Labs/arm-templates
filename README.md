@@ -79,3 +79,4 @@ Create an Azure SQL Server with a database
 See [template reference, server](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers).  
 See [template reference, database](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/databases).  
 See [template reference, firewall rules](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/firewallrules).  
+See [template reference, ltr policies](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/databases/backuplongtermretentionpolicies).  
