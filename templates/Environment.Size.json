@@ -36,7 +36,7 @@
             "sqlDatabase": {
                 "tier": "Basic",
                 "sku": "Basic",
-                "maxSizeBytes": 2147483648
+                "maxSizeBytes": "2147483648"
             }
         },
         "sizeSmall": {
@@ -59,7 +59,7 @@
             "sqlDatabase": {
                 "tier": "Standard",
                 "sku": "S0",
-                "maxSizeBytes": 268435456000
+                "maxSizeBytes": "268435456000"
             }
         },
         "sizeMedium": {
@@ -77,12 +77,12 @@
             },
             "storage": {
                 "accountType": "Standard_LRS",
-                "kind": "StorageV2"
+                "kind": "Storage"
             },
             "sqlDatabase": {
                 "tier": "Standard",
                 "sku": "S1",
-                "maxSizeBytes": 268435456000
+                "maxSizeBytes": "268435456000"
             }
         },
         "sizeLarge": {
@@ -100,12 +100,12 @@
             },
             "storage": {
                 "accountType": "Standard_GRS",
-                "kind": "StorageV2"
+                "kind": "Storage"
             },
             "sqlDatabase": {
                 "tier": "Standard",
                 "sku": "S3",
-                "maxSizeBytes": 1099511627776
+                "maxSizeBytes": "1099511627776"
             }
         },
         "sizeExtraLarge": {
@@ -123,12 +123,12 @@
             },
             "storage": {
                 "accountType": "Standard_GRS",
-                "kind": "StorageV2"
+                "kind": "Storage"
             },
             "sqlDatabase": {
                 "tier": "Premium",
                 "sku": "P6",
-                "maxSizeBytes": 1099511627776
+                "maxSizeBytes": "1099511627776"
             }
         }
     },
