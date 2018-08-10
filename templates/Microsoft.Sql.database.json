@@ -5,7 +5,13 @@
         "serverName": {
             "type": "string",
             "metadata": {
-                "description": "Must be a unique sql server name: *****.database.windows.net"
+                "description": "Existing Sql server where to create the database."
+            }
+        },
+        "databaseName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the new database to create."
             }
         },
         "location": {
@@ -45,24 +51,6 @@
             ],
             "metadata": {
                 "description": "Location for the SQL Server."
-            }
-        },
-        "administratorLogin": {
-            "type": "string",
-            "metadata": {
-                "description": "The admin user of the SQL Server"
-            }
-        },
-        "administratorPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "The password of the admin user of the SQL Server"
-            }
-        },
-        "databaseName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name of the new database to create."
             }
         },
         "tier": {
@@ -120,75 +108,39 @@
     "variables": {},
     "resources": [
         {
-            "name": "[parameters('serverName')]",
-            "type": "Microsoft.Sql/servers",
-            "apiVersion": "2015-05-01-preview",
-            "location": "[parameters('location')]",
-            "tags": {},
-            "identity": {
-                "type": "SystemAssigned"
+            "type": "Microsoft.Sql/servers/databases",
+            "sku": {
+                "name": "[parameters('sku')]",
+                "tier": "[parameters('tier')]"
             },
+            "name": "[parameters('databaseName')]",
+            "apiVersion": "2017-10-01-preview",
+            "location": "[parameters('location')]",
             "properties": {
-                "administratorLogin": "[parameters('administratorLogin')]",
-                "administratorLoginPassword": "[parameters('administratorPassword')]"
+                "collation": "[parameters('collation')]",
+                "maxSizeBytes": "[parameters('maxSizeBytes')]",
+                "zoneRedundant": false
             },
             "resources": [
                 {
-                    "type": "databases",
-                    "sku": {
-                        "name": "[parameters('sku')]",
-                        "tier": "[parameters('tier')]"
-                    },
-                    "name": "[parameters('databaseName')]",
-                    "apiVersion": "2017-10-01-preview",
-                    "location": "[parameters('location')]",
-                    "properties": {
-                        "collation": "[parameters('collation')]",
-                        "maxSizeBytes": "[parameters('maxSizeBytes')]",
-                        "zoneRedundant": false
-                    },
+                    "condition": "[not(equals(parameters('tier'), 'Basic'))]",
+                    "name": "default",
+                    "type": "backupLongTermRetentionPolicies",
                     "dependsOn": [
-                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+                      "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/', 'databases', '/', parameters('databaseName'))]"
                     ],
-                    "resources": [
-                        {
-                            "condition": "[not(equals(parameters('tier'), 'Basic'))]",
-                            "name": "default",
-                            "type": "backupLongTermRetentionPolicies",
-                            "dependsOn": [
-                              "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/', 'databases', '/', parameters('databaseName'))]"
-                            ],
-                            "apiVersion": "2017-03-01-preview",
-                            "properties": {
-                              "weeklyRetention": "P3W",
-                              "monthlyRetention": "P2M",
-                              "yearlyRetention": "P1Y",
-                              "weekOfYear": 1
-                            }
-                          }
-                    ]
-                },
-                {
-                    "type": "firewallRules",
-                    "apiVersion": "2015-05-01-preview",
-                    "dependsOn": [
-                        "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
-                    ],
-                    "location": "[parameters('location')]",
-                    "name": "AllowAllWindowsAzureIps",
+                    "apiVersion": "2017-03-01-preview",
                     "properties": {
-                        "endIpAddress": "0.0.0.0",
-                        "startIpAddress": "0.0.0.0"
+                      "weeklyRetention": "P3W",
+                      "monthlyRetention": "P2M",
+                      "yearlyRetention": "P1Y",
+                      "weekOfYear": 1
                     }
-                }
+                  }
             ]
         }
     ],
     "outputs": {
-        "server": {
-            "type": "object",
-            "value": "[reference(parameters('serverName'), '2015-05-01-preview', 'Full')]"
-        },
         "database": {
             "type": "object",
             "value": "[reference(parameters('databaseName'), '2017-10-01-preview', 'Full')]"

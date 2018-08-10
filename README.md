@@ -65,18 +65,30 @@ Create an Azure Storage account optimized for blobs.
 
 See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts).  
 
-## Azure SQL Server & Database
+## Azure SQL Server
 
-Create an Azure SQL Server with a database  
+Create an Azure SQL Server  
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.server.database.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.server.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.server.database.json" target="_blank">
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.server.json" target="_blank">
     <img src="http://armviz.io/visualizebutton.png"/>
 </a>
 
-See [template reference, server](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers).  
+See [template reference, server](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers).    
+See [template reference, firewall rules](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/firewallrules).   
+
+## Azure SQL Database
+
+Create an Azure SQL Database  
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.database.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.database.json" target="_blank">
+    <img src="http://armviz.io/visualizebutton.png"/>
+</a>
+
 See [template reference, database](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/databases).  
-See [template reference, firewall rules](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/firewallrules).  
 See [template reference, ltr policies](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/databases/backuplongtermretentionpolicies).  
