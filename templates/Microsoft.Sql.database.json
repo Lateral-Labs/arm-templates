@@ -108,7 +108,7 @@
     "variables": {},
     "resources": [
         {
-            "type": "Microsoft.Sql/servers/databases",
+            "type": "databases",
             "sku": {
                 "name": "[parameters('sku')]",
                 "tier": "[parameters('tier')]"
@@ -120,7 +120,24 @@
                 "collation": "[parameters('collation')]",
                 "maxSizeBytes": "[parameters('maxSizeBytes')]",
                 "zoneRedundant": false
-            }
+            },
+            "resources": [
+                {
+                    "condition": "[not(equals(parameters('tier'), 'Basic'))]",
+                    "name": "default",
+                    "type": "backupLongTermRetentionPolicies",
+                    "dependsOn": [
+                      "[concat('Microsoft.Sql/servers/', parameters('serverName'), '/', 'databases', '/', parameters('databaseName'))]"
+                    ],
+                    "apiVersion": "2017-03-01-preview",
+                    "properties": {
+                      "weeklyRetention": "P3W",
+                      "monthlyRetention": "P2M",
+                      "yearlyRetention": "P1Y",
+                      "weekOfYear": 1
+                    }
+                  }
+            ]
         }
     ],
     "outputs": {
