@@ -108,13 +108,13 @@
     "variables": {},
     "resources": [
         {
-            "type": "databases",
+            "type": "Microsoft.Sql/servers/databases",
             "sku": {
                 "name": "[parameters('sku')]",
                 "tier": "[parameters('tier')]"
             },
             "name": "[concat(parameters('serverName'), '/', parameters('databaseName'))]",
-            "apiVersion": "2017-10-01-preview",
+            "apiVersion": "2017-03-01-preview",
             "location": "[parameters('location')]",
             "properties": {
                 "collation": "[parameters('collation')]",
