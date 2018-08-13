@@ -92,3 +92,10 @@ Create an Azure SQL Database
 
 See [template reference, database](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/databases).  
 See [template reference, ltr policies](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/databases/backuplongtermretentionpolicies).  
+
+## Visual Studio DevOps Project
+
+Create a new VSTS account and a project.
+
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.VisualStudio.account.project.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.VisualStudio.account.project.json)
