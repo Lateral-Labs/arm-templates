@@ -121,9 +121,6 @@
                 "maxSizeBytes": "[parameters('maxSizeBytes')]",
                 "zoneRedundant": false
             },
-            "dependsOn": [
-                "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
-              ],
             "resources": [
                 {
                     "condition": "[not(equals(parameters('tier'), 'Basic'))]",
