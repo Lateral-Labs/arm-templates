@@ -108,7 +108,7 @@
     "variables": {},
     "resources": [
         {
-            "type": "databases",
+            "type": "Microsoft.Sql/servers/databases",
             "sku": {
                 "name": "[parameters('sku')]",
                 "tier": "[parameters('tier')]"
