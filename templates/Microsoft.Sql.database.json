@@ -113,7 +113,7 @@
                 "name": "[parameters('sku')]",
                 "tier": "[parameters('tier')]"
             },
-            "name": "[parameters('databaseName')]",
+            "name": "[concat(parameters('serverName'), '/', parameters('databaseName'))]",
             "apiVersion": "2017-10-01-preview",
             "location": "[parameters('location')]",
             "properties": {
@@ -121,6 +121,9 @@
                 "maxSizeBytes": "[parameters('maxSizeBytes')]",
                 "zoneRedundant": false
             },
+            "dependsOn": [
+                "[concat('Microsoft.Sql/servers/', parameters('serverName'))]"
+              ],
             "resources": [
                 {
                     "condition": "[not(equals(parameters('tier'), 'Basic'))]",
