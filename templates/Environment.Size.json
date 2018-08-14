@@ -37,6 +37,10 @@
                 "tier": "Basic",
                 "sku": "Basic",
                 "maxSizeBytes": "2147483648"
+            },
+            "redis": {
+                "sku":"Basic",
+                "capacity": "0"
             }
         },
         "sizeSmall": {
@@ -60,6 +64,10 @@
                 "tier": "Standard",
                 "sku": "S0",
                 "maxSizeBytes": "268435456000"
+            },
+            "redis": {
+                "sku":"Basic",
+                "capacity": "0"
             }
         },
         "sizeMedium": {
@@ -83,6 +91,10 @@
                 "tier": "Standard",
                 "sku": "S1",
                 "maxSizeBytes": "268435456000"
+            },
+            "redis": {
+                "sku":"Basic",
+                "capacity": "1"
             }
         },
         "sizeLarge": {
@@ -106,6 +118,10 @@
                 "tier": "Standard",
                 "sku": "S3",
                 "maxSizeBytes": "1099511627776"
+            },
+            "redis": {
+                "sku":"Standard",
+                "capacity": "1"
             }
         },
         "sizeExtraLarge": {
@@ -129,6 +145,10 @@
                 "tier": "Premium",
                 "sku": "P6",
                 "maxSizeBytes": "1099511627776"
+            },
+            "redis": {
+                "sku":"Standard",
+                "capacity": "3"
             }
         }
     },
