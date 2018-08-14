@@ -4,12 +4,8 @@
 
 Create an Application Service Plan.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.serverfarms.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.serverfarms.json" target="_blank">
-    <img src="http://armviz.io/visualizebutton.png"/>
-</a>
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.serverfarms.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.serverfarms.json)
 
 See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/serverfarms).
 
@@ -17,12 +13,8 @@ See [template reference](https://docs.microsoft.com/en-us/azure/templates/micros
 
 Create an Application Service.
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.sites.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.sites.json" target="_blank">
-    <img src="http://armviz.io/visualizebutton.png"/>
-</a>
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.sites.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.sites.json)
 
 See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites).
 
@@ -30,12 +22,8 @@ See [template reference](https://docs.microsoft.com/en-us/azure/templates/micros
 
 Create an Application Insights instance.  
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Insights.Components.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Insights.Components.json" target="_blank">
-    <img src="http://armviz.io/visualizebutton.png"/>
-</a>
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Insights.Components.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Insights.Components.json)
 
 See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/components).  
 
@@ -43,12 +31,8 @@ See [template reference](https://docs.microsoft.com/en-us/azure/templates/micros
 
 Create an Azure Storage account optimized for tables.  
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Storage.storageAccounts.tables.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Storage.storageAccounts.tables.json" target="_blank">
-    <img src="http://armviz.io/visualizebutton.png"/>
-</a>
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Storage.storageAccounts.tables.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Storage.storageAccounts.tables.json)
 
 See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts).  
 
@@ -56,12 +40,8 @@ See [template reference](https://docs.microsoft.com/en-us/azure/templates/micros
 
 Create an Azure Storage account optimized for blobs.  
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Storage.storageAccounts.blobs.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Storage.storageAccounts.blobs.json" target="_blank">
-    <img src="http://armviz.io/visualizebutton.png"/>
-</a>
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Storage.storageAccounts.blobs.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Storage.storageAccounts.blobs.json)
 
 See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts).  
 
@@ -69,12 +49,8 @@ See [template reference](https://docs.microsoft.com/en-us/azure/templates/micros
 
 Create an Azure SQL Server  
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.server.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.server.json" target="_blank">
-    <img src="http://armviz.io/visualizebutton.png"/>
-</a>
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.server.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.server.json)
 
 See [template reference, server](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers).    
 See [template reference, firewall rules](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/firewallrules).   
@@ -83,12 +59,8 @@ See [template reference, firewall rules](https://docs.microsoft.com/en-us/azure/
 
 Create an Azure SQL Database  
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.database.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.database.json" target="_blank">
-    <img src="http://armviz.io/visualizebutton.png"/>
-</a>
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.database.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Sql.database.json)
 
 See [template reference, database](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/databases).  
 See [template reference, ltr policies](https://docs.microsoft.com/en-us/azure/templates/microsoft.sql/servers/databases/backuplongtermretentionpolicies).  
@@ -107,3 +79,5 @@ Basic and Standard sku's supported.
 
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Cache.Redis.json)
 [![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Cache.Redis.json)
+
+See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.cache/redis).  
