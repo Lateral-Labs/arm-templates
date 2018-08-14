@@ -41,7 +41,8 @@
             "redis": {
                 "sku":"Basic",
                 "capacity": "0"
-            }
+            },
+            "keyVaultSku" : "Standard"
         },
         "sizeSmall": {
             "serverFarm": {
@@ -68,7 +69,8 @@
             "redis": {
                 "sku":"Basic",
                 "capacity": "0"
-            }
+            },
+            "keyVaultSku" : "Standard"
         },
         "sizeMedium": {
             "serverFarm": {
@@ -95,7 +97,8 @@
             "redis": {
                 "sku":"Basic",
                 "capacity": "1"
-            }
+            },
+            "keyVaultSku" : "Standard"
         },
         "sizeLarge": {
             "serverFarm": {
@@ -122,7 +125,8 @@
             "redis": {
                 "sku":"Standard",
                 "capacity": "1"
-            }
+            },
+            "keyVaultSku" : "Premium"
         },
         "sizeExtraLarge": {
             "serverFarm": {
@@ -149,7 +153,8 @@
             "redis": {
                 "sku":"Standard",
                 "capacity": "3"
-            }
+            },
+            "keyVaultSku" : "Premium"
         }
     },
     "resources": [],
