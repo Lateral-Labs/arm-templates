@@ -151,5 +151,11 @@
                 }
             }
         }
-    ]
+    ],
+    "outputs":{
+        "vault": {
+            "type": "object",
+            "value": "[reference(parameters('name'), '2016-10-01', 'Full')]"
+        }
+    }
 }
