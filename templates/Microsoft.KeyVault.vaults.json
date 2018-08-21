@@ -8,6 +8,12 @@
                 "description": "Name of the Key Vault"
             }
         },
+        "userId": {
+            "type": "string",
+            "metadata": {
+                "description": "Object Id for the AAD User to give permission to."
+            }
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -94,7 +100,51 @@
                 "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
                 "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
                 "tenantId": "[subscription().tenantId]",
-                "accessPolicies":[],
+                "accessPolicies": [
+                    {
+                        "tenantId": "[subscription().tenantId]",
+                        "objectId": "[parameters('userId')]",
+                        "permissions": {
+                            "keys": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "secrets": [
+                                "Get",
+                                "List",
+                                "Set",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore"
+                            ],
+                            "certificates": [
+                                "Get",
+                                "List",
+                                "Update",
+                                "Create",
+                                "Import",
+                                "Delete",
+                                "Recover",
+                                "Backup",
+                                "Restore",
+                                "ManageContacts",
+                                "ManageIssuers",
+                                "GetIssuers",
+                                "ListIssuers",
+                                "SetIssuers",
+                                "DeleteIssuers"
+                            ]
+                        }
+                    }
+                ],
                 "sku": {
                     "name": "[parameters('sku')]",
                     "family": "A"
@@ -102,7 +152,7 @@
             }
         }
     ],
-    "outputs":{
+    "outputs": {
         "vault": {
             "type": "object",
             "value": "[reference(parameters('name'), '2018-02-14', 'Full')]"
