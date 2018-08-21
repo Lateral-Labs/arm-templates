@@ -94,6 +94,7 @@
                 "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
                 "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
                 "tenantId": "[subscription().tenantId]",
+                "accessPolicies":[],
                 "sku": {
                     "name": "[parameters('sku')]",
                     "family": "A"
