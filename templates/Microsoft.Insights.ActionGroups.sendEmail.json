@@ -78,5 +78,11 @@
                 "azureFunctionReceivers": []
             }
         }
-    ]
+    ],
+    "outputs": {
+        "actionGroup": {
+            "type": "object",
+            "value": "[reference(parameters('name'), '2017-04-01', 'Full')]"
+        }
+    }
 }
