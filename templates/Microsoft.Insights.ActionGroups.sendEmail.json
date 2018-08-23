@@ -23,7 +23,7 @@
             "name": "[parameters('name')]",
             "type": "Microsoft.Insights/actionGroups",
             "apiVersion": "2017-04-01",
-            "location": "global",
+            "location": "West Europe",
             "tags": {},
             "properties": {
                 "groupShortName": "[parameters('shortName')]",
