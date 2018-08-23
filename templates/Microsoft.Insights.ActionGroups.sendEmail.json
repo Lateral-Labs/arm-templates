@@ -22,8 +22,8 @@
         {
             "name": "[parameters('name')]",
             "type": "Microsoft.Insights/actionGroups",
-            "apiVersion": "2017-04-01",
-            "location": "West Europe",
+            "apiVersion": "2018-03-01",
+            "location": "Global",
             "tags": {},
             "properties": {
                 "groupShortName": "[parameters('shortName')]",
@@ -43,7 +43,7 @@
     "outputs": {
         "actionGroup": {
             "type": "object",
-            "value": "[reference(parameters('name'), '2017-04-01', 'Full')]"
+            "value": "[reference(parameters('name'), '2018-03-01', 'Full')]"
         }
     }
 }
