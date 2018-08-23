@@ -11,45 +11,6 @@
                 "description": "Max length: 15. The group's Short name is included in Email and SMS notifications to identify which Action group was the source of the notification. If a user unsubscribes they are unsubscribing from the specific Action group identified by the Short name."
             }
         },
-        "location": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "allowedValues": [
-                "Australia Central",
-                "Australia Central 2",
-                "Australia East",
-                "Australia SouthEast",
-                "Brazil South",
-                "Canada Central",
-                "Canada East",
-                "Central India",
-                "Central US",
-                "East Asia",
-                "East US",
-                "East US 2",
-                "France Central",
-                "France South",
-                "Japan East",
-                "Japan West",
-                "Korea Central",
-                "Korea South",
-                "North Central US",
-                "North Europe",
-                "South Central US",
-                "South India",
-                "Southeast Asia",
-                "UK South",
-                "UK West",
-                "West Central US",
-                "West Europe",
-                "West India",
-                "West US",
-                "West US 2"
-            ],
-            "metadata": {
-                "description": "Location for the component."
-            }
-        },
         "emailReceivers": {
             "type": "array",
             "metadata": {
@@ -62,7 +23,7 @@
             "name": "[parameters('name')]",
             "type": "Microsoft.Insights/actionGroups",
             "apiVersion": "2017-04-01",
-            "location": "[parameters('location')]",
+            "location": "global",
             "tags": {},
             "properties": {
                 "groupShortName": "[parameters('shortName')]",
