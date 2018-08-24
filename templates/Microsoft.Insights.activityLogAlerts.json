@@ -37,7 +37,7 @@
             "tags": {},
             "properties": {
                 "scopes": [
-                    "[concat('/subscriptions/', subscription().id)]"
+                    "[subscription().id]"
                 ],
                 "enabled": true,
                 "condition": {
