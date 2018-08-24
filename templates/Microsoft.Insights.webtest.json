@@ -75,11 +75,11 @@
         "testLocationIds": {
             "type": "array",
             "defaultValue": [
-                "us-il-ch1-azr",
-                "us-ca-sjc-azr",
-                "us-fl-mia-edge",
                 "emea-nl-ams-azr",
-                "apac-hk-hkn-azr"
+                "us-ca-sjc-azr",
+                "us-va-ash-azr",
+                "apac-hk-hkn-azr",
+                "latam-br-gru-edge"
             ],
             "minLength": 1,
             "metadata": {

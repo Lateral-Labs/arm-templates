@@ -53,6 +53,15 @@ Create a Web test with an alert rule.
 See [template reference, web test](https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/webtests).  
 See [template reference, alert rules](https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/alertrules).  
 
+## Activity Log Alert
+
+Create an Activity Log Alert.  
+
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Insights.activityLogAlerts.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Insights.activityLogAlerts.json)
+
+See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.insights/activitylogalerts).  
+
 ## Azure Storage Account for tables
 
 Create an Azure Storage account optimized for tables.  
