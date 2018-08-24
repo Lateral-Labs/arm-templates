@@ -13,12 +13,18 @@
             "type": "string",
             "defaultValue": ""
         },
+        "insightsName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Application Insights instance to link this test to."
+            }
+        },
         "testUrl": {
             "type": "string",
             "metadata": {
                 "description": "The Url to ping"
             }
-        },        
+        },
         "location": {
             "type": "string",
             "defaultValue": "[resourceGroup().location]",
@@ -90,6 +96,9 @@
             "type": "microsoft.insights/webtests",
             "apiVersion": "2015-05-01",
             "location": "[parameters('location')]",
+            "tags": {
+                "[concat('hidden-link:', resourceId('Microsoft.Insights/components', parameters('insightsName')))]": "Resource"
+            },
             "properties": {
                 "SyntheticMonitorId": "[parameters('name')]",
                 "Name": "[parameters('name')]",
@@ -122,6 +131,7 @@
                 "[resourceId('Microsoft.Insights/webtests', parameters('name'))]"
             ],
             "tags": {
+                "[concat('hidden-link:', resourceId('Microsoft.Insights/components', parameters('insightsName')))]": "Resource",
                 "[concat('hidden-link:', resourceId('Microsoft.Insights/webtests', parameters('name')))]": "Resource"
             },
             "properties": {
@@ -156,7 +166,7 @@
             "type": "object",
             "value": "[reference(parameters('name'), '2015-05-01', 'Full')]"
         },
-        "webTestAlertRule" :{
+        "webTestAlertRule": {
             "type": "object",
             "value": "[reference(variables('alertName'), '2016-03-01', 'Full')]"
         }
