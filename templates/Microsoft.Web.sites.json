@@ -152,10 +152,6 @@
         "certificate": {
             "type": "object",
             "value": "[reference(parameters('sslCertificate').secretName, '2016-03-01', 'Full')]"
-        },
-        "binding": {
-            "type": "object",
-            "value": "[reference(variables('bindingName'), '2016-03-01', 'Full')]"
         }
     }
 }
