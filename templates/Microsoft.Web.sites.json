@@ -69,9 +69,6 @@
             }
         }
     },
-    "variables": {
-        "bindingName": "[concat(parameters('name'), '-binding')]"
-    },
     "resources": [
         {
             "type": "Microsoft.Web/sites",
@@ -131,8 +128,8 @@
         },
         {
             "condition": "[not(empty(parameters('sslCertificate')))]",
-            "type":"hostnameBindings",
-            "name":"[variables('bindingName')]",
+            "type":"sites/hostNameBindings",
+            "name":"[concat(parameters('name'), '-binding')]",
             "apiVersion":"2016-03-01",
             "location":"[parameters('location')]",
             "properties":{
