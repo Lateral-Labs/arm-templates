@@ -69,6 +69,9 @@
             }
         }
     },
+    "variables": {
+        "bindingName": "[concat(parameters('name'), '/', parameters('sslCertificate').hostName)]"
+    },
     "resources": [
         {
             "type": "Microsoft.Web/sites",
@@ -129,7 +132,7 @@
         {
             "condition": "[not(empty(parameters('sslCertificate')))]",
             "type":"Microsoft.Web/sites/hostnameBindings",
-            "name":"[concat(parameters('name'), '/', parameters('sslCertificate').hostName)]",
+            "name":"[variables('bindingName')]",
             "apiVersion":"2016-03-01",
             "location":"[parameters('location')]",
             "properties":{
@@ -152,7 +155,7 @@
         },
         "binding": {
             "type": "object",
-            "value": "[reference(concat(parameters('name'), '/', parameters('sslCertificate').hostName), '2016-03-01', 'Full')]"
+            "value": "[reference(variables('bindingName'), '2016-03-01', 'Full')]"
         }
     }
 }
