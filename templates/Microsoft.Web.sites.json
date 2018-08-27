@@ -70,7 +70,7 @@
         }
     },
     "variables": {
-        "bindingName": "[concat(parameters('name'), '/', parameters('sslCertificate').hostName)]"
+        "bindingName": "[concat(parameters('name'), '-binding')]"
     },
     "resources": [
         {
