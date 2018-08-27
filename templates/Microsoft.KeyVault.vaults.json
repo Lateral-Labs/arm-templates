@@ -2,7 +2,7 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "name": {
+        "vaultName": {
             "type": "string",
             "metadata": {
                 "description": "Name of the Key Vault"
@@ -89,7 +89,7 @@
     "resources": [
         {
             "type": "Microsoft.KeyVault/vaults",
-            "name": "[parameters('name')]",
+            "name": "[parameters('vaultName')]",
             "apiVersion": "2018-02-14",
             "location": "[parameters('location')]",
             "tags": {
@@ -155,7 +155,7 @@
     "outputs": {
         "vault": {
             "type": "object",
-            "value": "[reference(parameters('name'), '2018-02-14', 'Full')]"
+            "value": "[reference(parameters('vaultName'), '2018-02-14', 'Full')]"
         }
     }
 }
