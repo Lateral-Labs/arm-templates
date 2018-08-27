@@ -61,6 +61,12 @@
         "instrumentationKey": {
             "type": "string",
             "defaultValue": ""
+        },
+        "sslCertificate": {
+            "type": "object",
+            "metadata": {
+                "description": "{ vaultId, secretName, hostName }"
+            }
         }
     },
     "resources": [
@@ -104,12 +110,49 @@
                     ]
                 }
             ]
+        },
+        {
+            "condition": "[not(empty(parameters('sslCertificate')))]",
+            "type":"Microsoft.Web/certificates",
+            "name":"[parameters('sslCertificate').secretName]",
+            "apiVersion":"2016-03-01",
+            "location":"[parameters('location')]",
+            "properties":{
+                "keyVaultId":"[parameters('sslCertificate').vaultId]",
+                "keyVaultSecretName":"[parameters('sslCertificate').secretName]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverFarms',parameters('hostingPlanName'))]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/sites/',parameters('name'))]"
+            ]
+        },
+        {
+            "condition": "[not(empty(parameters('sslCertificate')))]",
+            "type":"Microsoft.Web/sites/hostnameBindings",
+            "name":"[concat(parameters('name'), '/', parameters('sslCertificate').hostName)]",
+            "apiVersion":"2016-03-01",
+            "location":"[parameters('location')]",
+            "properties":{
+                "sslState":"SniEnabled",
+                "thumbprint":"[reference(resourceId('Microsoft.Web/certificates', parameters('sslCertificate').secretName)).Thumbprint]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/certificates/',parameters('sslCertificate').secretName)]"
+            ]
         }
     ],
     "outputs": {
         "site": {
             "type": "object",
             "value": "[reference(parameters('name'), '2016-08-01', 'Full')]"
+        },
+        "certificate": {
+            "type": "object",
+            "value": "[reference(parameters('sslCertificate').secretName, '2016-03-01', 'Full')]"
+        },
+        "binding": {
+            "type": "object",
+            "value": "[reference(concat(parameters('name'), '/', parameters('sslCertificate').hostName), '2016-03-01', 'Full')]"
         }
     }
 }
