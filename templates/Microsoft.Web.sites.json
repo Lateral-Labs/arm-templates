@@ -128,9 +128,9 @@
         },
         {
             "condition": "[not(empty(parameters('sslCertificate')))]",
-            "type":"sites/hostNameBindings",
+            "type":"Microsoft.Web/sites/hostNameBindings",
             "name":"[concat(parameters('name'), '-binding')]",
-            "apiVersion":"2016-03-01",
+            "apiVersion":"2018-02-01",
             "location":"[parameters('location')]",
             "properties":{
                 "sslState":"SniEnabled",
