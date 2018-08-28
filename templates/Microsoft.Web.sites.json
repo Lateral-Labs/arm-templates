@@ -5,7 +5,7 @@
         "name": {
             "type": "string",
             "metadata": {
-                "description":"Must be a unique website name: *****.azurewebsites.net"
+                "description": "Must be a unique website name: *****.azurewebsites.net"
             }
         },
         "hostingPlanName": {
@@ -99,27 +99,17 @@
                 "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
                 "httpsOnly": true,
                 "clientAffinityEnabled": false
-            },
-            "resources": [   
-                {
-                    "apiVersion": "2016-08-01",
-                    "name": "brotli",
-                    "type": "siteextensions",
-                    "dependsOn": [
-                        "[concat('Microsoft.Web/sites/', parameters('name'))]"
-                    ]
-                }
-            ]
+            }
         },
         {
             "condition": "[not(empty(parameters('sslCertificate')))]",
-            "type":"Microsoft.Web/certificates",
-            "name":"[parameters('sslCertificate').secretName]",
-            "apiVersion":"2016-03-01",
-            "location":"[parameters('location')]",
-            "properties":{
-                "keyVaultId":"[parameters('sslCertificate').vaultId]",
-                "keyVaultSecretName":"[parameters('sslCertificate').secretName]",
+            "type": "Microsoft.Web/certificates",
+            "name": "[parameters('sslCertificate').secretName]",
+            "apiVersion": "2016-03-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "keyVaultId": "[parameters('sslCertificate').vaultId]",
+                "keyVaultSecretName": "[parameters('sslCertificate').secretName]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverFarms',parameters('hostingPlanName'))]"
             },
             "dependsOn": [
@@ -128,13 +118,13 @@
         },
         {
             "condition": "[not(empty(parameters('sslCertificate')))]",
-            "type":"Microsoft.Web/sites/hostNameBindings",
-            "name":"[concat(parameters('name'), '/', parameters('sslCertificate').hostName)]",
-            "apiVersion":"2018-02-01",
-            "location":"[parameters('location')]",
-            "properties":{
-                "sslState":"SniEnabled",
-                "thumbprint":"[reference(resourceId('Microsoft.Web/certificates', parameters('sslCertificate').secretName)).Thumbprint]"
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "name": "[concat(parameters('name'), '/', parameters('sslCertificate').hostName)]",
+            "apiVersion": "2018-02-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "sslState": "SniEnabled",
+                "thumbprint": "[reference(resourceId('Microsoft.Web/certificates', parameters('sslCertificate').secretName)).Thumbprint]"
             },
             "dependsOn": [
                 "[concat('Microsoft.Web/certificates/',parameters('sslCertificate').secretName)]"
