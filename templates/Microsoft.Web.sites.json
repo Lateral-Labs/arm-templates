@@ -99,7 +99,17 @@
                 "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
                 "httpsOnly": true,
                 "clientAffinityEnabled": false
-            }
+            },
+            "resources": [   
+                {
+                    "apiVersion": "2016-08-01",
+                    "name": "brotli",
+                    "type": "siteextensions",
+                    "dependsOn": [
+                        "[concat('Microsoft.Web/sites/', parameters('name'))]"
+                    ]
+                }
+            ]
         },
         {
             "condition": "[not(empty(parameters('sslCertificate')))]",
