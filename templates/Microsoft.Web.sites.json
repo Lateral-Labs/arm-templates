@@ -64,8 +64,16 @@
         },
         "sslCertificate": {
             "type": "object",
+            "defaultValue": {},
             "metadata": {
                 "description": "{ vaultId, secretName, hostName }"
+            }
+        },
+        "applyCustomDomain": {
+            "type": "bool",
+            "defaultValue": true,
+            "metadata": {
+                "description": "Only apply SSL certificate and custom domain if this is true."
             }
         }
     },
@@ -102,7 +110,7 @@
             }
         },
         {
-            "condition": "[not(empty(parameters('sslCertificate')))]",
+            "condition": "[parameters('applyCustomDomain')]",
             "type": "Microsoft.Web/certificates",
             "name": "[parameters('sslCertificate').secretName]",
             "apiVersion": "2016-03-01",
@@ -117,7 +125,7 @@
             ]
         },
         {
-            "condition": "[not(empty(parameters('sslCertificate')))]",
+            "condition": "[parameters('applyCustomDomain')]",
             "type": "Microsoft.Web/sites/hostNameBindings",
             "name": "[concat(parameters('name'), '/', parameters('sslCertificate').hostName)]",
             "apiVersion": "2018-02-01",
