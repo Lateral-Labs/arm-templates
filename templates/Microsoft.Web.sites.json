@@ -58,18 +58,25 @@
             "type": "string",
             "defaultValue": ""
         },
-        "sslCertificate": {
-            "type": "object",
-            "defaultValue": {},
+        "vaultId": {
+            "type": "string",
+            "defaultValue": "",
             "metadata": {
-                "description": "{ vaultId, secretName, hostName }"
+                "description": "Key Vault where the SSL certificate is uploaded."
             }
         },
-        "applyCustomDomain": {
-            "type": "bool",
-            "defaultValue": true,
+        "secretName": {
+            "type": "string",
+            "defaultValue": "",
             "metadata": {
-                "description": "Only apply SSL certificate and custom domain if this is true."
+                "description": "The secret name in the Key Vault with the SSL certificate."
+            }
+        },
+        "hostName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Custom host name for the Website."
             }
         }
     },
@@ -106,14 +113,14 @@
             }
         },
         {
-            "condition": "[parameters('applyCustomDomain')]",
+            "condition": "[not(equals(parameters('hostName'), ''))]",
             "type": "Microsoft.Web/certificates",
-            "name": "[parameters('sslCertificate').secretName]",
+            "name": "[parameters('secretName')]",
             "apiVersion": "2016-03-01",
             "location": "[parameters('location')]",
             "properties": {
-                "keyVaultId": "[parameters('sslCertificate').vaultId]",
-                "keyVaultSecretName": "[parameters('sslCertificate').secretName]",
+                "keyVaultId": "[parameters('vaultId')]",
+                "keyVaultSecretName": "[parameters('secretName')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverFarms',parameters('hostingPlanName'))]"
             },
             "dependsOn": [
@@ -121,17 +128,17 @@
             ]
         },
         {
-            "condition": "[parameters('applyCustomDomain')]",
+            "condition": "[not(equals(parameters('hostName'), ''))]",
             "type": "Microsoft.Web/sites/hostNameBindings",
-            "name": "[concat(parameters('name'), '/', parameters('sslCertificate').hostName)]",
+            "name": "[concat(parameters('name'), '/', parameters('hostName'))]",
             "apiVersion": "2018-02-01",
             "location": "[parameters('location')]",
             "properties": {
                 "sslState": "SniEnabled",
-                "thumbprint": "[reference(resourceId('Microsoft.Web/certificates', parameters('sslCertificate').secretName)).Thumbprint]"
+                "thumbprint": "[reference(resourceId('Microsoft.Web/certificates', parameters('secretName'))).Thumbprint]"
             },
             "dependsOn": [
-                "[concat('Microsoft.Web/certificates/',parameters('sslCertificate').secretName)]"
+                "[concat('Microsoft.Web/certificates/',parameters('secretName'))]"
             ]
         }
     ],
@@ -142,7 +149,7 @@
         },
         "certificate": {
             "type": "object",
-            "value": "[reference(parameters('sslCertificate').secretName, '2016-03-01', 'Full')]"
+            "value": "[reference(parameters('secretName'), '2016-03-01', 'Full')]"
         }
     }
 }
