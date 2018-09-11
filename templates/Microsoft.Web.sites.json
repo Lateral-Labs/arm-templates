@@ -54,29 +54,11 @@
             "type": "string",
             "defaultValue": "[resourceGroup().name]"
         },
-        "instrumentationKey": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "vaultId": {
-            "type": "string",
-            "defaultValue": "",
+        "appSettings": {
+            "type": "array",
+            "defaultValue": [{"name":"dummy","value":""}],
             "metadata": {
-                "description": "Key Vault where the SSL certificate is uploaded."
-            }
-        },
-        "secretName": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "The secret name in the Key Vault with the SSL certificate."
-            }
-        },
-        "hostName": {
-            "type": "string",
-            "defaultValue": "",
-            "metadata": {
-                "description": "Custom host name for the Website."
+                "description": "name/value pairs to apply as app settings. Leave the default value if don't want to add anything. Needs at least 1 item."
             }
         }
     },
@@ -91,10 +73,14 @@
             },
             "properties": {
                 "siteConfig": {
-                    "appSettings": [
+                    "copy": [
                         {
-                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[parameters('instrumentationKey')]"
+                            "name": "appSettings",
+                            "count": "[length(parameters('appSettings'))]",
+                            "input": {
+                                "name": "[parameters('appSettings')[copyIndex('appSettings')].name]",
+                                "value": "[parameters('appSettings')[copyIndex('appSettings')].value]"
+                            }
                         }
                     ],
                     "phpVersion": "",
@@ -110,35 +96,26 @@
                 "serverFarmId": "[concat(subscription().id, '/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
                 "httpsOnly": true,
                 "clientAffinityEnabled": false
-            }
-        },
-        {
-            "condition": "[not(equals(parameters('hostName'), ''))]",
-            "type": "Microsoft.Web/certificates",
-            "name": "[parameters('secretName')]",
-            "apiVersion": "2016-03-01",
-            "location": "[parameters('location')]",
-            "properties": {
-                "keyVaultId": "[parameters('vaultId')]",
-                "keyVaultSecretName": "[parameters('secretName')]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverFarms',parameters('hostingPlanName'))]"
             },
-            "dependsOn": [
-                "[concat('Microsoft.Web/sites/',parameters('name'))]"
-            ]
-        },
-        {
-            "condition": "[not(equals(parameters('hostName'), ''))]",
-            "type": "Microsoft.Web/sites/hostNameBindings",
-            "name": "[concat(parameters('name'), '/', parameters('hostName'))]",
-            "apiVersion": "2018-02-01",
-            "location": "[parameters('location')]",
-            "properties": {
-                "sslState": "SniEnabled",
-                "thumbprint": "[reference(resourceId('Microsoft.Web/certificates', parameters('secretName'))).Thumbprint]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Web/certificates/',parameters('secretName'))]"
+            "resources": [
+                {
+                    "apiVersion": "2016-08-01",
+                    "type": "config",
+                    "name": "connectionstrings",
+                    "dependsOn": [ "[concat('Microsoft.Web/Sites/', parameters('name'))]" ],
+                    "copy": [
+                        {
+                            "name": "properties",
+                            "count": "[length(parameters('connectionStrings'))]",
+                            "input": {
+                                "[parameters('connectionStrings')[copyIndex('properties')].name]" :{
+                                    "value": "[parameters('connectionStrings')[copyIndex('properties')].value]",
+                                    "type": "[parameters('connectionStrings')[copyIndex('properties')].type]"
+                                }
+                            }
+                        }
+                    ]
+                  }
             ]
         }
     ],
@@ -146,10 +123,6 @@
         "site": {
             "type": "object",
             "value": "[reference(parameters('name'), '2016-08-01', 'Full')]"
-        },
-        "certificate": {
-            "type": "object",
-            "value": "[reference(parameters('secretName'), '2016-03-01', 'Full')]"
         }
     }
 }

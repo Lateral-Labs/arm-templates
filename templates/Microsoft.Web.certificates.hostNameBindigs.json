@@ -1,0 +1,106 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "website": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the website to create ssl certificate and binding for."
+            }
+        },
+        "hostingPlanName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues": [
+                "Australia Central",
+                "Australia Central 2",
+                "Australia East",
+                "Australia SouthEast",
+                "Brazil South",
+                "Canada Central",
+                "Canada East",
+                "Central India",
+                "Central US",
+                "East Asia",
+                "East US",
+                "East US 2",
+                "France Central",
+                "France South",
+                "Japan East",
+                "Japan West",
+                "Korea Central",
+                "Korea South",
+                "North Central US",
+                "North Europe",
+                "South Central US",
+                "South India",
+                "Southeast Asia",
+                "UK South",
+                "UK West",
+                "West Central US",
+                "West Europe",
+                "West India",
+                "West US",
+                "West US 2"
+            ],
+            "metadata": {
+                "description": "Location for the Application Service. Must be the same as the Service Plan location."
+            }
+        },
+        "vaultId": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Key Vault where the SSL certificate is uploaded."
+            }
+        },
+        "secretName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "The secret name in the Key Vault with the SSL certificate."
+            }
+        },
+        "hostName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Custom host name for the Website."
+            }
+        }
+    },
+    "resources": [
+        {
+            "condition": "[not(equals(parameters('hostName'), ''))]",
+            "type": "Microsoft.Web/certificates",
+            "name": "[parameters('secretName')]",
+            "apiVersion": "2016-03-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "keyVaultId": "[parameters('vaultId')]",
+                "keyVaultSecretName": "[parameters('secretName')]",
+                "serverFarmId": "[resourceId('Microsoft.Web/serverFarms',parameters('hostingPlanName'))]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/sites/',parameters('website'))]"
+            ]
+        },
+        {
+            "condition": "[not(equals(parameters('hostName'), ''))]",
+            "type": "Microsoft.Web/sites/hostNameBindings",
+            "name": "[concat(parameters('website'), '/', parameters('hostName'))]",
+            "apiVersion": "2018-02-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "sslState": "SniEnabled",
+                "thumbprint": "[reference(resourceId('Microsoft.Web/certificates', parameters('secretName'))).Thumbprint]"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/certificates/',parameters('secretName'))]"
+            ]
+        }
+    ]
+}
