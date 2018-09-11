@@ -54,10 +54,6 @@
             "type": "string",
             "defaultValue": "[resourceGroup().name]"
         },
-        "subscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().id]"
-        },
         "instrumentationKey": {
             "type": "string",
             "defaultValue": ""
@@ -84,7 +80,7 @@
             "apiVersion": "2016-08-01",
             "location": "[parameters('location')]",
             "tags": {
-                "[concat('hidden-related:', '/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
+                "[concat('hidden-related:', subscription().id, '/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
             },
             "properties": {
                 "siteConfig": {
@@ -104,7 +100,7 @@
                     "minTlsVersion": "1.2"
                 },
                 "name": "[parameters('name')]",
-                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+                "serverFarmId": "[concat(subscription().id, '/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
                 "httpsOnly": true,
                 "clientAffinityEnabled": false
             }
