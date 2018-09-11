@@ -96,27 +96,7 @@
                 "serverFarmId": "[concat(subscription().id, '/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
                 "httpsOnly": true,
                 "clientAffinityEnabled": false
-            },
-            "resources": [
-                {
-                    "apiVersion": "2016-08-01",
-                    "type": "config",
-                    "name": "connectionstrings",
-                    "dependsOn": [ "[concat('Microsoft.Web/Sites/', parameters('name'))]" ],
-                    "copy": [
-                        {
-                            "name": "properties",
-                            "count": "[length(parameters('connectionStrings'))]",
-                            "input": {
-                                "[parameters('connectionStrings')[copyIndex('properties')].name]" :{
-                                    "value": "[parameters('connectionStrings')[copyIndex('properties')].value]",
-                                    "type": "[parameters('connectionStrings')[copyIndex('properties')].type]"
-                                }
-                            }
-                        }
-                    ]
-                  }
-            ]
+            }
         }
     ],
     "outputs": {
