@@ -54,26 +54,11 @@
             "type": "string",
             "defaultValue": "[resourceGroup().name]"
         },
-        "subscriptionId": {
-            "type": "string",
-            "defaultValue": "[subscription().id]"
-        },
-        "instrumentationKey": {
-            "type": "string",
-            "defaultValue": ""
-        },
-        "sslCertificate": {
-            "type": "object",
-            "defaultValue": {},
+        "appSettings": {
+            "type": "array",
+            "defaultValue": [{"name":"dummy","value":""}],
             "metadata": {
-                "description": "{ vaultId, secretName, hostName }"
-            }
-        },
-        "applyCustomDomain": {
-            "type": "bool",
-            "defaultValue": true,
-            "metadata": {
-                "description": "Only apply SSL certificate and custom domain if this is true."
+                "description": "name/value pairs to apply as app settings. Leave the default value if don't want to add anything. Needs at least 1 item."
             }
         }
     },
@@ -84,14 +69,18 @@
             "apiVersion": "2016-08-01",
             "location": "[parameters('location')]",
             "tags": {
-                "[concat('hidden-related:', '/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
+                "[concat('hidden-related:', subscription().id, '/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
             },
             "properties": {
                 "siteConfig": {
-                    "appSettings": [
+                    "copy": [
                         {
-                            "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                            "value": "[parameters('instrumentationKey')]"
+                            "name": "appSettings",
+                            "count": "[length(parameters('appSettings'))]",
+                            "input": {
+                                "name": "[parameters('appSettings')[copyIndex('appSettings')].name]",
+                                "value": "[parameters('appSettings')[copyIndex('appSettings')].value]"
+                            }
                         }
                     ],
                     "phpVersion": "",
@@ -104,49 +93,16 @@
                     "minTlsVersion": "1.2"
                 },
                 "name": "[parameters('name')]",
-                "serverFarmId": "[concat('/subscriptions/', parameters('subscriptionId'),'/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+                "serverFarmId": "[concat(subscription().id, '/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
                 "httpsOnly": true,
                 "clientAffinityEnabled": false
             }
-        },
-        {
-            "condition": "[parameters('applyCustomDomain')]",
-            "type": "Microsoft.Web/certificates",
-            "name": "[parameters('sslCertificate').secretName]",
-            "apiVersion": "2016-03-01",
-            "location": "[parameters('location')]",
-            "properties": {
-                "keyVaultId": "[parameters('sslCertificate').vaultId]",
-                "keyVaultSecretName": "[parameters('sslCertificate').secretName]",
-                "serverFarmId": "[resourceId('Microsoft.Web/serverFarms',parameters('hostingPlanName'))]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Web/sites/',parameters('name'))]"
-            ]
-        },
-        {
-            "condition": "[parameters('applyCustomDomain')]",
-            "type": "Microsoft.Web/sites/hostNameBindings",
-            "name": "[concat(parameters('name'), '/', parameters('sslCertificate').hostName)]",
-            "apiVersion": "2018-02-01",
-            "location": "[parameters('location')]",
-            "properties": {
-                "sslState": "SniEnabled",
-                "thumbprint": "[reference(resourceId('Microsoft.Web/certificates', parameters('sslCertificate').secretName)).Thumbprint]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Web/certificates/',parameters('sslCertificate').secretName)]"
-            ]
         }
     ],
     "outputs": {
         "site": {
             "type": "object",
             "value": "[reference(parameters('name'), '2016-08-01', 'Full')]"
-        },
-        "certificate": {
-            "type": "object",
-            "value": "[reference(parameters('sslCertificate').secretName, '2016-03-01', 'Full')]"
         }
     }
 }
