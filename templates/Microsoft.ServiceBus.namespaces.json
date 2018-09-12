@@ -1,0 +1,102 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Service Bus Namespace"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "allowedValues": [
+                "Australia Central",
+                "Australia Central 2",
+                "Australia East",
+                "Australia SouthEast",
+                "Brazil South",
+                "Canada Central",
+                "Canada East",
+                "Central India",
+                "Central US",
+                "East Asia",
+                "East US",
+                "East US 2",
+                "France Central",
+                "France South",
+                "Japan East",
+                "Japan West",
+                "Korea Central",
+                "Korea South",
+                "North Central US",
+                "North Europe",
+                "South Central US",
+                "South India",
+                "Southeast Asia",
+                "UK South",
+                "UK West",
+                "West Central US",
+                "West Europe",
+                "West India",
+                "West US",
+                "West US 2"
+            ],
+            "metadata": {
+                "description": "Location for the Service Bus."
+            }
+        },
+        "sku": {
+            "type": "string",
+            "allowedValues": [
+                "Basic",
+                "Standard",
+                "Premium"
+            ]
+        },
+        "skuCapacity": {
+            "type": "int",
+            "defaultValue": 1,
+            "allowedValues": [
+                1,
+                2,
+                4
+            ],
+            "metadata": {
+                "description": "Applies only for Premium. Leave default otherwise."
+            }
+        },
+        "zoneRedundant": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Applies only for Premium. Leave default otherwise."
+            }
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "apiVersion": "2018-01-01-preview",
+            "name": "[parameters('name')]",
+            "type": "Microsoft.ServiceBus/namespaces",
+            "location": "[parameters('location')]",
+            "sku": {
+                "name": "[parameters('sku')]",
+                "tier": "[parameters('sku')]",
+                "capacity": "[parameters('skuCapacity')]"
+            },
+            "properties": {
+                "zoneRedundant": "[parameters('zoneRedundant')]"
+            },
+            "resources": []
+        }
+    ],
+    "outputs": {
+        "sbEndPoint": {
+            "type": "string",
+            "value": "[reference(parameters('name'), '2018-01-01-preview', 'Full').properties.serviceBusEndpoint]"
+        }
+    }
+}

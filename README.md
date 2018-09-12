@@ -18,6 +18,14 @@ Create an Application Service.
 
 See [template reference, sites](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites).  
 See [template reference, siteextensions](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites/siteextensions).  
+
+## Appliation Service Certificate & Hostname Binding
+
+Add an SSL certificate from a KeyVault and create a binding for a custom domain.
+
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.certificates.hostNameBindigs.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.certificates.hostNameBindigs.json)
+  
 See [template reference, certificates](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/certificates).  
 See [template reference, hostnameBindings](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites/hostnamebindings).  
 
@@ -128,3 +136,12 @@ Create a new Azure Key Vault
 [![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.KeyVault.vaults.json)
 
 See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.keyvault/vaults).
+
+## Service Bus
+
+Create a new Service Bus Namespace
+
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.ServiceBus.namespaces.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.ServiceBus.namespaces.json)
+
+See [template reference](https://docs.microsoft.com/en-us/azure/templates/microsoft.servicebus/namespaces).
