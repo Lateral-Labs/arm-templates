@@ -62,11 +62,17 @@
                 1,
                 2,
                 4
-            ]
+            ],
+            "metadata": {
+                "description": "Applies only for Premium. Leave default otherwise."
+            }
         },
         "zoneRedundant": {
             "type": "bool",
-            "defaultValue": false
+            "defaultValue": false,
+            "metadata": {
+                "description": "Applies only for Premium. Leave default otherwise."
+            }
         }
     },
     "variables": {},
