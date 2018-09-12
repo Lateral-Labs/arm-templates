@@ -42,7 +42,12 @@
                 "sku":"Basic",
                 "capacity": "0"
             },
-            "keyVaultSku" : "Standard"
+            "keyVaultSku" : "Standard",
+            "serviceBus": {
+                "sku": "Basic",
+                "capacity": 1,
+                "zoneRedundant": false
+            }
         },
         "sizeSmall": {
             "serverFarm": {
@@ -70,7 +75,12 @@
                 "sku":"Basic",
                 "capacity": "0"
             },
-            "keyVaultSku" : "Standard"
+            "keyVaultSku" : "Standard",
+            "serviceBus": {
+                "sku": "Standard",
+                "capacity": 1,
+                "zoneRedundant": false
+            }
         },
         "sizeMedium": {
             "serverFarm": {
@@ -98,7 +108,12 @@
                 "sku":"Basic",
                 "capacity": "1"
             },
-            "keyVaultSku" : "Standard"
+            "keyVaultSku" : "Standard",
+            "serviceBus": {
+                "sku": "Standard",
+                "capacity": 1,
+                "zoneRedundant": false
+            }
         },
         "sizeLarge": {
             "serverFarm": {
@@ -126,7 +141,12 @@
                 "sku":"Standard",
                 "capacity": "1"
             },
-            "keyVaultSku" : "Premium"
+            "keyVaultSku" : "Premium",
+            "serviceBus": {
+                "sku": "Standard",
+                "capacity": 1,
+                "zoneRedundant": false
+            }
         },
         "sizeExtraLarge": {
             "serverFarm": {
@@ -154,7 +174,12 @@
                 "sku":"Standard",
                 "capacity": "3"
             },
-            "keyVaultSku" : "Premium"
+            "keyVaultSku" : "Premium",
+            "serviceBus": {
+                "sku": "Premium",
+                "capacity": 1,
+                "zoneRedundant": true
+            }
         }
     },
     "resources": [],

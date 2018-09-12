@@ -18,6 +18,14 @@ Create an Application Service.
 
 See [template reference, sites](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites).  
 See [template reference, siteextensions](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites/siteextensions).  
+
+## Appliation Service Certificate & Hostname Binding
+
+Create an Application Service.
+
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.certificates.hostNameBindigs.json)
+[![Visualize](http://armviz.io/visualizebutton.png)](http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2FLateral-Pathfinder%2Farm-templates%2Fmaster%2Ftemplates%2FMicrosoft.Web.certificates.hostNameBindigs.json)
+  
 See [template reference, certificates](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/certificates).  
 See [template reference, hostnameBindings](https://docs.microsoft.com/en-us/azure/templates/microsoft.web/sites/hostnamebindings).  
 
