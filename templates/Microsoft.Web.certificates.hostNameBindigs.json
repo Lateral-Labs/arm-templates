@@ -83,10 +83,7 @@
                 "keyVaultId": "[parameters('vaultId')]",
                 "keyVaultSecretName": "[parameters('secretName')]",
                 "serverFarmId": "[resourceId('Microsoft.Web/serverFarms',parameters('hostingPlanName'))]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Web/sites/',parameters('website'))]"
-            ]
+            }
         },
         {
             "condition": "[not(equals(parameters('hostName'), ''))]",
