@@ -8,10 +8,13 @@
                 "description": "Name of the Key Vault"
             }
         },
-        "userId": {
-            "type": "string",
+        "users": {
+            "type": "array",
+            "defaultValue": [
+                "abfa0a7c-a6b6-4736-8310-5855508787cd"
+            ],
             "metadata": {
-                "description": "Object Id for the AAD User to give permission to."
+                "description": "Object Ids for the AAD Users to give permission to. The default is the Azure App Service. Suggested to leave that in."
             }
         },
         "location": {
@@ -100,48 +103,52 @@
                 "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
                 "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
                 "tenantId": "[subscription().tenantId]",
-                "accessPolicies": [
+                "copy": [
                     {
-                        "tenantId": "[subscription().tenantId]",
-                        "objectId": "[parameters('userId')]",
-                        "permissions": {
-                            "keys": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore"
-                            ],
-                            "secrets": [
-                                "Get",
-                                "List",
-                                "Set",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore"
-                            ],
-                            "certificates": [
-                                "Get",
-                                "List",
-                                "Update",
-                                "Create",
-                                "Import",
-                                "Delete",
-                                "Recover",
-                                "Backup",
-                                "Restore",
-                                "ManageContacts",
-                                "ManageIssuers",
-                                "GetIssuers",
-                                "ListIssuers",
-                                "SetIssuers",
-                                "DeleteIssuers"
-                            ]
+                        "name": "accessPolicies",
+                        "count": "[length(parameters('users'))]",
+                        "input": {
+                            "tenantId": "[subscription().tenantId]",
+                            "objectId": "[parameters('users')[copyIndex('accessPolicies')]]",
+                            "permissions": {
+                                "keys": [
+                                    "Get",
+                                    "List",
+                                    "Update",
+                                    "Create",
+                                    "Import",
+                                    "Delete",
+                                    "Recover",
+                                    "Backup",
+                                    "Restore"
+                                ],
+                                "secrets": [
+                                    "Get",
+                                    "List",
+                                    "Set",
+                                    "Delete",
+                                    "Recover",
+                                    "Backup",
+                                    "Restore"
+                                ],
+                                "certificates": [
+                                    "Get",
+                                    "List",
+                                    "Update",
+                                    "Create",
+                                    "Import",
+                                    "Delete",
+                                    "Recover",
+                                    "Backup",
+                                    "Restore",
+                                    "ManageContacts",
+                                    "ManageIssuers",
+                                    "GetIssuers",
+                                    "ListIssuers",
+                                    "SetIssuers",
+                                    "DeleteIssuers"
+                                ]
+                            }
                         }
                     }
                 ],
