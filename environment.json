@@ -1,0 +1,293 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "projectName": {
+            "type": "string"
+        },
+        "environmentName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the environment.",
+                "restrictions": "projectName+environmentName length should be max 20. Required by Azure storage naming conventions."
+            },
+            "allowedValues": [
+                "prod",
+                "dev",
+                "release",
+                "uat",
+                "staging",
+                "test",
+                "local"
+            ]
+        },
+        "size": {
+            "type": "string",
+            "defaultValue": "Small",
+            "allowedValues": [
+                "ExtraSmall",
+                "Small",
+                "Medium",
+                "Large",
+                "ExtraLarge"
+            ]
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "East US",
+            "allowedValues": [
+                "Australia Central",
+                "Australia Central 2",
+                "Australia East",
+                "Australia SouthEast",
+                "Brazil South",
+                "Canada Central",
+                "Canada East",
+                "Central India",
+                "Central US",
+                "East Asia",
+                "East US",
+                "East US 2",
+                "France Central",
+                "France South",
+                "Japan East",
+                "Japan West",
+                "Korea Central",
+                "Korea South",
+                "North Central US",
+                "North Europe",
+                "South Central US",
+                "South India",
+                "Southeast Asia",
+                "UK South",
+                "UK West",
+                "West Central US",
+                "West Europe",
+                "West India",
+                "West US",
+                "West US 2"
+            ],
+            "metadata": {
+                "description": "Location for the environment."
+            }
+        },
+        "sqlAdminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "The password of the admin user of the SQL Server. Project name will be used for username."
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "metadata": {
+                "description": "Location for the individual deployment templates. If it's a blob storage account, the templateSasToken must have a value."
+            }
+        },
+        "templateSasToken": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Sas Token for Azure storage account. Used when the individual templates are linked from blob storage"
+            }
+        },
+        "consolidateServerFarms": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No",
+            "metadata": {
+                "description": "If Yes, multiple environments will have one single serverfarm and resource group. Cuts down costs."
+            }
+        },
+        "emailReceivers": {
+            "type": "array",
+            "metadata": {
+                "description": "These addresses will receive monitoring alerts."
+            }
+        },
+        "vault": {
+            "type": "string",
+            "metadata": {
+                "description": "Key Vault with the ssl certificate"
+            }
+        },
+        "customDomain": {
+            "type": "string",
+            "metadata": {
+                "description": "Custom domain for the project."
+            }
+        }
+    },
+    "variables": {
+        "deploymentMode": "Incremental",
+        "sslSecretName": "certificate",
+        "serverFarmName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('projectName'), '-webserver'), concat(parameters('environmentName') ,'-', parameters('projectName'), '-webserver'))]",
+        "serverFarmResourceGroupName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('projectName')), concat(parameters('environmentName') ,'-', parameters('projectName')))]",
+        "apiName": "[concat(parameters('environmentName'), '-api-', parameters('projectName'))]",
+        "insightsApiName": "[variables('apiName')]"
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-05-10",
+            "name": "environmentSize",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Environment.Size.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "size": {
+                        "value": "[parameters('size')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environmentName'), 'prod'))]",
+            "apiVersion": "2017-05-10",
+            "name": "serverFarm",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.serverfarms.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('serverFarmName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "sku": {
+                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.sku]"
+                    },
+                    "skuCode": {
+                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.skuCode]"
+                    },
+                    "autoscaleEnabled": {
+                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.enabled]"
+                    },
+                    "defaultCapacity": {
+                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.default]"
+                    },
+                    "minimumCapacity": {
+                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.minimum]"
+                    },
+                    "maximumCapacity": {
+                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.maximum]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "insightsApi",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('insightsApiName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "api",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.sites.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('apiName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "hostingPlanName": {
+                        "value": "[variables('serverFarmName')]"
+                    },
+                    "serverFarmResourceGroup": {
+                        "value": "[variables('serverFarmResourceGroupName')]"
+                    },
+                    "appSettings": {
+                        "value": [
+                            {
+                                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                                "value": "[reference('insightsApi').outputs.InstrumentationKey.value]",
+                                "slotSetting": true
+                            },
+                            {
+                                "name": "KeyVault--BaseUrl",
+                                "value": "[concat('https://', parameters('vault'), '.vault.azure.net/')]",
+                                "slotSetting": false
+                            },
+                            {
+                                "name": "APPINSIGHTS_PROFILERFEATURE_VERSION",
+                                "value": "1.0.0",
+                                "slotSetting": true
+                            },
+                            {
+                                "name": "APPINSIGHTS_SNAPSHOTFEATURE_VERSION",
+                                "value": "1.0.0",
+                                "slotSetting": true
+                            },
+                            {
+                                "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+                                "value": "~2",
+                                "slotSetting": true
+                            },
+                            {
+                                "name": "DiagnosticServices_EXTENSION_VERSION",
+                                "value": "~3",
+                                "slotSetting": true
+                            },
+                            {
+                                "name": "InstrumentationEngine_EXTENSION_VERSION",
+                                "value": "disabled",
+                                "slotSetting": true
+                            },
+                            {
+                                "name": "SnapshotDebugger_EXTENSION_VERSION",
+                                "value": "disabled",
+                                "slotSetting": true
+                            },
+                            {
+                                "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
+                                "value": "disabled",
+                                "slotSetting": true
+                            },
+                            {
+                                "name": "XDT_MicrosoftApplicationInsights_Mode",
+                                "value": "recommended",
+                                "slotSetting": true
+                            }
+                        ]
+                    }
+                }
+            },
+            "dependsOn": [
+                "serverFarm",
+                "insightsApi"
+            ]
+        }
+    ],
+    "outputs": {
+    },
+    "functions": [
+    ]
+}

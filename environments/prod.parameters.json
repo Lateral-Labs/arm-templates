@@ -1,0 +1,54 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "projectName": {
+      "value": "pathfinder",
+      "metadata": {
+        "description": "Use only lowercase letters or numbers"
+      }
+    },
+    "templateBaseUrl": {
+      "value": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
+      "metadata": {
+        "description": "Location for the individual deployment templates. Must be a blob storage account."
+      }
+    },
+    "emailReceivers": {
+      "value": [
+        {
+          "name": "Your Email Here",
+          "emailAddress": "youremail@mailinator.com"
+        }
+      ],
+      "metadata": {
+        "descripton": "These addresses will receive monitoring alerts."
+      }
+    },
+    "environmentName": {
+      "value": "prod",
+      "metadata": {
+        "description": "Name of the environment.",
+        "restrictions": "projectName+environmentName length should be max 20. Required by Azure storage naming conventions."
+      }
+    },
+    "size": {
+      "value": "Small",
+      "metadata": {
+        "description": "See [templateBaseUrl] + Environment.Size.json for reference."
+      }
+    },
+    "location": {
+      "value": "East US"
+    },
+    "consolidateServerFarms": {
+      "value": "Yes"
+    },
+    "vault": {
+      "value": "yourvault"
+    },
+    "customDomain": {
+      "value": "yourdomain.com"
+    }
+  }
+}
