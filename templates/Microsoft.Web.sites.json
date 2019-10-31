@@ -89,6 +89,12 @@
                             }
                         }
                     ],
+                    "metadata": [
+                        {
+                            "name": "CURRENT_STACK",
+                            "value": "dotnetcore"
+                        }
+                    ],
                     "phpVersion": "",
                     "pythonVersion": "",
                     "use32BitWorkerProcess": true,
