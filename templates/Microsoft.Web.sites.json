@@ -56,7 +56,12 @@
         },
         "appSettings": {
             "type": "array",
-            "defaultValue": [{"name":"dummy","value":""}],
+            "defaultValue": [
+                {
+                    "name": "dummy",
+                    "value": ""
+                }
+            ],
             "metadata": {
                 "description": "name/value pairs to apply as app settings. Leave the default value if don't want to add anything. Needs at least 1 item."
             }
@@ -79,7 +84,8 @@
                             "count": "[length(parameters('appSettings'))]",
                             "input": {
                                 "name": "[parameters('appSettings')[copyIndex('appSettings')].name]",
-                                "value": "[parameters('appSettings')[copyIndex('appSettings')].value]"
+                                "value": "[parameters('appSettings')[copyIndex('appSettings')].value]",
+                                "slotSetting": "[parameters('appSettings')[copyIndex('appSettings')].slotSetting]"
                             }
                         }
                     ],
@@ -90,7 +96,9 @@
                     "alwaysOn": true,
                     "javaVersion": "",
                     "http20Enabled": true,
-                    "minTlsVersion": "1.2"
+                    "minTlsVersion": "1.2",
+                    "ftpsState": "FtpsOnly",
+                    "remoteDebuggingVersion": "VS2019"
                 },
                 "name": "[parameters('name')]",
                 "serverFarmId": "[concat(subscription().id, '/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
