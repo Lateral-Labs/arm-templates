@@ -104,7 +104,25 @@
                 "serverFarmId": "[concat(subscription().id, '/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
                 "httpsOnly": true,
                 "clientAffinityEnabled": false
-            }
+            },
+            "resources": [
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "ASP.NET Core 3.0 (x86) Runtime",
+                    "type": "siteextensions",
+                    "dependsOn": [
+                        "[variables(parameters('name'))]"
+                    ]
+                },
+                {
+                    "apiVersion": "2015-08-01",
+                    "name": "IIS.Compression Site Extension",
+                    "type": "siteextensions",
+                    "dependsOn": [
+                        "[variables(parameters('name'))]"
+                    ]
+                }
+            ]
         }
     ],
     "outputs": {

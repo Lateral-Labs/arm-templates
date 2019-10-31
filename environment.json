@@ -229,7 +229,7 @@
                             {
                                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                                 "value": "[reference('insightsApi').outputs.InstrumentationKey.value]",
-                                "slotSetting": true
+                                "slotSetting": false
                             },
                             {
                                 "name": "KeyVault--BaseUrl",
@@ -239,42 +239,42 @@
                             {
                                 "name": "APPINSIGHTS_PROFILERFEATURE_VERSION",
                                 "value": "1.0.0",
-                                "slotSetting": true
+                                "slotSetting": false
                             },
                             {
                                 "name": "APPINSIGHTS_SNAPSHOTFEATURE_VERSION",
                                 "value": "1.0.0",
-                                "slotSetting": true
+                                "slotSetting": false
                             },
                             {
                                 "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
                                 "value": "~2",
-                                "slotSetting": true
+                                "slotSetting": false
                             },
                             {
                                 "name": "DiagnosticServices_EXTENSION_VERSION",
                                 "value": "~3",
-                                "slotSetting": true
+                                "slotSetting": false
                             },
                             {
                                 "name": "InstrumentationEngine_EXTENSION_VERSION",
                                 "value": "disabled",
-                                "slotSetting": true
+                                "slotSetting": false
                             },
                             {
                                 "name": "SnapshotDebugger_EXTENSION_VERSION",
                                 "value": "disabled",
-                                "slotSetting": true
+                                "slotSetting": false
                             },
                             {
                                 "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
                                 "value": "disabled",
-                                "slotSetting": true
+                                "slotSetting": false
                             },
                             {
                                 "name": "XDT_MicrosoftApplicationInsights_Mode",
                                 "value": "recommended",
-                                "slotSetting": true
+                                "slotSetting": false
                             }
                         ]
                     }
