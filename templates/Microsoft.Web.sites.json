@@ -114,7 +114,7 @@
             "resources": [
                 {
                     "apiVersion": "2015-08-01",
-                    "name": "ASP.NET Core 3.0 (x86) Runtime",
+                    "name": "AspNetCoreRuntime.3.0.x86",
                     "type": "siteextensions",
                     "dependsOn": [
                         "[parameters('name')]"
@@ -122,7 +122,7 @@
                 },
                 {
                     "apiVersion": "2015-08-01",
-                    "name": "IIS.Compression Site Extension",
+                    "name": "IIS.Compression.SiteExtension",
                     "type": "siteextensions",
                     "dependsOn": [
                         "[parameters('name')]"
