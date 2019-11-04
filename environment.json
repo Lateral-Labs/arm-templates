@@ -318,7 +318,7 @@
             "properties": {
                 "mode": "[variables('deploymentMode')]",
                 "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.vaults.json', parameters('templateSasToken'))]"
                 },
                 "parameters": {
                     "vaultName": {
@@ -329,7 +329,8 @@
                     },
                     "users": {
                         "value": [
-                            "abfa0a7c-a6b6-4736-8310-5855508787cd"
+                            "abfa0a7c-a6b6-4736-8310-5855508787cd",
+                            "[reference('api').outputs.site.identity.principalId.value]"
                         ]
                     },
                     "sku": {
@@ -337,6 +338,20 @@
                     },
                     "enabledForTemplateDeployment": {
                         "value": true
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "Environment",
+                                    "secretValue": "[parameters('environmentName')]"
+                                },
+                                {
+                                    "secretName": "ConnectionString--Data",
+                                    "secretValue": "[concat('Data Source=attila-dev.database.windows.net;Initial Catalog=attila;persist security info=True;user id=attila;password=', parameters('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
+                                }
+                            ]
+                        }
                     }
                 }
             },
