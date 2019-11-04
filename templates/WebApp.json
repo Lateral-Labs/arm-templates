@@ -313,8 +313,7 @@
         }
       },
       "dependsOn": [
-        "serverFarm",
-        "actionGroup"
+        "serverFarm"
       ]
     },
     {
@@ -352,8 +351,7 @@
         }
       },
       "dependsOn": [
-        "serverFarm",
-        "actionGroup"
+        "serverFarm"
       ]
     },
     {
