@@ -469,7 +469,7 @@
   "outputs": {
     "site": {
       "type": "object",
-      "value": "[reference(parameters('app').outputs.site.value)]"
+      "value": "[reference(parameters('app')).outputs.site.value]"
     }
   },
   "functions": [

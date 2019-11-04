@@ -553,13 +553,13 @@
                     "uri": "[concat(parameters('templateBaseUrl'), 'WebApp.json', parameters('templateSasToken'))]"
                 },
                 "parameters": {
-                    "projectName": {
+                    "project": {
                         "value": "[parameters('projectName')]"
                     },
                     "app": {
                         "value": "admin"
                     },
-                    "environmentName": {
+                    "environment": {
                         "value": "[parameters('environmentName')]"
                     },
                     "size": {
