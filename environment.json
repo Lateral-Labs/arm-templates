@@ -125,10 +125,12 @@
     "variables": {
         "deploymentMode": "Incremental",
         "sslSecretName": "certificate",
+        "keyVaultName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
         "serverFarmName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('projectName'), '-webserver'), concat(parameters('environmentName') ,'-', parameters('projectName'), '-webserver'))]",
         "serverFarmResourceGroupName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('projectName')), concat(parameters('environmentName') ,'-', parameters('projectName')))]",
         "apiName": "[concat(parameters('environmentName'), '-api-', parameters('projectName'))]",
-        "insightsApiName": "[variables('apiName')]"
+        "insightsApiName": "[variables('apiName')]",
+        "actionGroupName": "[concat(parameters('environmentName'), ' ', parameters('projectName'), ' action group')]"
     },
     "resources": [
         {
@@ -235,7 +237,7 @@
                             },
                             {
                                 "name": "KeyVault--BaseUrl",
-                                "value": "[concat('https://', parameters('vault'), '.vault.azure.net/')]",
+                                "value": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
                                 "slotSetting": false
                             },
                             {
@@ -285,6 +287,61 @@
             "dependsOn": [
                 "serverFarm",
                 "insightsApi"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "actionGroup",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.ActionGroups.sendEmail.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('actionGroupName')]"
+                    },
+                    "shortName": {
+                        "value": "[parameters('environmentName')]"
+                    },
+                    "emailReceivers": {
+                        "value": "[parameters('emailReceivers')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVault",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "users": {
+                        "value": [
+                            "abfa0a7c-a6b6-4736-8310-5855508787cd"
+                        ]
+                    },
+                    "sku": {
+                        "value": "[reference('environmentSize').outputs.size.value.keyVaultSku]"
+                    },
+                    "enabledForTemplateDeployment": {
+                        "value": true
+                    }
+                }
+            },
+            "dependsOn": [
+                "api"
             ]
         }
     ],
