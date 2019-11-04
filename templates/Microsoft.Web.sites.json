@@ -111,6 +111,9 @@
                 "httpsOnly": true,
                 "clientAffinityEnabled": false
             },
+            "identity": {
+                "type": "SystemAssigned"
+            },
             "resources": [
                 {
                     "apiVersion": "2015-08-01",
