@@ -141,7 +141,7 @@
     {
       "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environment'), 'prod'))]",
       "apiVersion": "2017-05-10",
-      "name": "serverFarm",
+      "name": "[concat('serverFarm', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
@@ -178,7 +178,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "insights",
+      "name": "[concat('insights', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
@@ -274,14 +274,14 @@
         }
       },
       "dependsOn": [
-        "serverFarm",
-        "insights"
+        "[concat('serverFarm', parameters('app'))]",
+        "[concat('insights', parameters('app'))]"
       ]
     },
     {
       "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environment'), 'prod'))]",
       "apiVersion": "2017-05-10",
-      "name": "WebServerHighCPUAlert",
+      "name": "[concat('WebServerHighCPUAlert', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
@@ -313,13 +313,13 @@
         }
       },
       "dependsOn": [
-        "serverFarm"
+        "[concat('serverFarm', parameters('app'))]"
       ]
     },
     {
       "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environment'), 'prod'))]",
       "apiVersion": "2017-05-10",
-      "name": "WebServerMemoryPercentageAlert",
+      "name": "[concat('WebServerMemoryPercentageAlert', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
@@ -351,12 +351,12 @@
         }
       },
       "dependsOn": [
-        "serverFarm"
+        "[concat('serverFarm', parameters('app'))]"
       ]
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "HttpServerErrorsAlert",
+      "name": "[concat('HttpServerErrorsAlert', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
@@ -396,7 +396,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "ResponseTimeAlert",
+      "name": "[concat('ResponseTimeAlert', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
@@ -433,7 +433,7 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "Ping",
+      "name": "[concat('Ping', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
@@ -459,7 +459,7 @@
         }
       },
       "dependsOn": [
-        "insights",
+        "[concat('insights', parameters('app'))]",
         "[parameters('app')]"
       ]
     }
