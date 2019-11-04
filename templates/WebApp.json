@@ -1,0 +1,477 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "project": {
+      "type": "string"
+    },
+    "app": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "string",
+      "metadata": {
+        "description": "Name of the environment.",
+        "restrictions": "project+environment length should be max 20. Required by Azure storage naming conventions."
+      },
+      "allowedValues": [
+        "prod",
+        "dev",
+        "release",
+        "uat",
+        "staging",
+        "test",
+        "qa",
+        "local"
+      ]
+    },
+    "size": {
+      "type": "string",
+      "defaultValue": "Small",
+      "allowedValues": [
+        "ExtraSmall",
+        "Small",
+        "Medium",
+        "Large",
+        "ExtraLarge"
+      ]
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "East US",
+      "allowedValues": [
+        "Australia Central",
+        "Australia Central 2",
+        "Australia East",
+        "Australia SouthEast",
+        "Brazil South",
+        "Canada Central",
+        "Canada East",
+        "Central India",
+        "Central US",
+        "East Asia",
+        "East US",
+        "East US 2",
+        "France Central",
+        "France South",
+        "Japan East",
+        "Japan West",
+        "Korea Central",
+        "Korea South",
+        "North Central US",
+        "North Europe",
+        "South Central US",
+        "South India",
+        "Southeast Asia",
+        "UK South",
+        "UK West",
+        "West Central US",
+        "West Europe",
+        "West India",
+        "West US",
+        "West US 2"
+      ],
+      "metadata": {
+        "description": "Location for the environment."
+      }
+    },
+    "templateBaseUrl": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
+      "metadata": {
+        "description": "Location for the individual deployment templates. If it's a blob storage account, the templateSasToken must have a value."
+      }
+    },
+    "templateSasToken": {
+      "type": "string",
+      "defaultValue": " ",
+      "metadata": {
+        "description": "Sas Token for Azure storage account. Used when the individual templates are linked from blob storage"
+      }
+    },
+    "consolidateServerFarms": {
+      "type": "string",
+      "allowedValues": [
+        "Yes",
+        "No"
+      ],
+      "defaultValue": "No",
+      "metadata": {
+        "description": "If Yes, multiple environments will have one single serverfarm and resource group. Cuts down costs."
+      }
+    },
+    "actionGroupId": {
+      "type": "string",
+      "metadata": {
+        "description": "Actiongroup Id to set up alerts."
+      }
+    },
+    "customDomain": {
+      "type": "string",
+      "metadata": {
+        "description": "Custom domain for the project."
+      }
+    }
+  },
+  "variables": {
+    "deploymentMode": "Incremental",
+    "serverFarmName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('project'), '-webserver'), concat(parameters('environment') ,'-', parameters('project'), '-webserver'))]",
+    "serverFarmResourceGroupName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('project')), concat(parameters('environment') ,'-', parameters('project')))]",
+    "appName": "[concat(parameters('environment'), '-', parameters('app'), '-', parameters('project'))]",
+    "insightsName": "[variables('appName')]",
+    "hostName": "[if(equals(parameters('environment'),'prod'), concat(parameters('app'), '.', parameters('customDomain')), concat(parameters('environment'), '-', parameters('app'), '.', parameters('customDomain')))]"
+  },
+  "resources": [
+    {
+      "apiVersion": "2017-05-10",
+      "name": "environmentSize",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Environment.Size.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "size": {
+            "value": "[parameters('size')]"
+          }
+        }
+      }
+    },
+    {
+      "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environment'), 'prod'))]",
+      "apiVersion": "2017-05-10",
+      "name": "serverFarm",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.serverfarms.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "name": {
+            "value": "[variables('serverFarmName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "sku": {
+            "value": "[reference('environmentSize').outputs.size.value.serverFarm.sku]"
+          },
+          "skuCode": {
+            "value": "[reference('environmentSize').outputs.size.value.serverFarm.skuCode]"
+          },
+          "autoscaleEnabled": {
+            "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.enabled]"
+          },
+          "defaultCapacity": {
+            "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.default]"
+          },
+          "minimumCapacity": {
+            "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.minimum]"
+          },
+          "maximumCapacity": {
+            "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.maximum]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "insights",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "name": {
+            "value": "[variables('insightsName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[parameters('app')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.sites.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "name": {
+            "value": "[variables('appName')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          },
+          "hostingPlanName": {
+            "value": "[variables('serverFarmName')]"
+          },
+          "serverFarmResourceGroup": {
+            "value": "[variables('serverFarmResourceGroupName')]"
+          },
+          "appSettings": {
+            "value": [
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[reference('insights').outputs.InstrumentationKey.value]",
+                "slotSetting": false
+              },
+              {
+                "name": "KeyVault--BaseUrl",
+                "value": "[concat('https://', parameters('environment'), '-', parameters('project'), '.vault.azure.net/')]",
+                "slotSetting": false
+              },
+              {
+                "name": "APPINSIGHTS_PROFILERFEATURE_VERSION",
+                "value": "1.0.0",
+                "slotSetting": false
+              },
+              {
+                "name": "APPINSIGHTS_SNAPSHOTFEATURE_VERSION",
+                "value": "1.0.0",
+                "slotSetting": false
+              },
+              {
+                "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+                "value": "~2",
+                "slotSetting": false
+              },
+              {
+                "name": "DiagnosticServices_EXTENSION_VERSION",
+                "value": "~3",
+                "slotSetting": false
+              },
+              {
+                "name": "InstrumentationEngine_EXTENSION_VERSION",
+                "value": "disabled",
+                "slotSetting": false
+              },
+              {
+                "name": "SnapshotDebugger_EXTENSION_VERSION",
+                "value": "disabled",
+                "slotSetting": false
+              },
+              {
+                "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
+                "value": "disabled",
+                "slotSetting": false
+              },
+              {
+                "name": "XDT_MicrosoftApplicationInsights_Mode",
+                "value": "recommended",
+                "slotSetting": false
+              }
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "serverFarm",
+        "insights"
+      ]
+    },
+    {
+      "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environment'), 'prod'))]",
+      "apiVersion": "2017-05-10",
+      "name": "WebServerHighCPUAlert",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "alertName": {
+            "value": "HighCPU"
+          },
+          "alertDescription": {
+            "value": "Web Server CPU usage over 80% for the last 5 minutes."
+          },
+          "resourceId": {
+            "value": "[concat(subscription().id,'/resourcegroups/', variables('serverFarmResourceGroupName'), '/providers/Microsoft.Web/serverfarms/', variables('serverFarmName'))]"
+          },
+          "metricName": {
+            "value": "CpuPercentage"
+          },
+          "threshold": {
+            "value": "80"
+          },
+          "windowSize": {
+            "value": "PT5M"
+          },
+          "actionGroupId": {
+            "value": "[parameters('actionGroupId')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "serverFarm",
+        "actionGroup"
+      ]
+    },
+    {
+      "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environment'), 'prod'))]",
+      "apiVersion": "2017-05-10",
+      "name": "WebServerMemoryPercentageAlert",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "alertName": {
+            "value": "MemoryPercentage"
+          },
+          "alertDescription": {
+            "value": "Web Server memory percentage over 80% for the last 5 minutes."
+          },
+          "resourceId": {
+            "value": "[concat(subscription().id,'/resourcegroups/', variables('serverFarmResourceGroupName'), '/providers/Microsoft.Web/serverfarms/', variables('serverFarmName'))]"
+          },
+          "metricName": {
+            "value": "MemoryPercentage"
+          },
+          "threshold": {
+            "value": "80"
+          },
+          "windowSize": {
+            "value": "PT5M"
+          },
+          "actionGroupId": {
+            "value": "[parameters('actionGroupId')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "serverFarm",
+        "actionGroup"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "HttpServerErrorsAlert",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "alertName": {
+            "value": "[concat('HttpServerErrors', parameters('app'))]"
+          },
+          "alertDescription": {
+            "value": "More than 10 server errors in the last 5 minutes."
+          },
+          "resourceId": {
+            "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/sites/', variables('appName'))]"
+          },
+          "metricName": {
+            "value": "Http5xx"
+          },
+          "threshold": {
+            "value": "10"
+          },
+          "timeAggregation": {
+            "value": "Total"
+          },
+          "windowSize": {
+            "value": "PT5M"
+          },
+          "actionGroupId": {
+            "value": "[parameters('actionGroupId')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[parameters('app')]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "ResponseTimeAlert",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "alertName": {
+            "value": "[concat('AverageResponseTime', parameters('app'))]"
+          },
+          "alertDescription": {
+            "value": "Average response time over 5 seconds in the last 5 minutes."
+          },
+          "resourceId": {
+            "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/sites/', variables('appName'))]"
+          },
+          "metricName": {
+            "value": "AverageResponseTime"
+          },
+          "threshold": {
+            "value": "5"
+          },
+          "windowSize": {
+            "value": "PT5M"
+          },
+          "actionGroupId": {
+            "value": "[parameters('actionGroupId')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[parameters('app')]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "Ping",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.webtest.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "name": {
+            "value": "[concat(variables('appName'), 'ping')]"
+          },
+          "description": {
+            "value": "Ping app to ensure it's alive."
+          },
+          "insightsName": {
+            "value": "[variables('insightsName')]"
+          },
+          "testUrl": {
+            "value": "[concat('https://', variables('hostName'))]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "insights",
+        "[parameters('app')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "site": {
+      "type": "object",
+      "value": "[reference(parameters('app').outputs.site.value)]"
+    }
+  },
+  "functions": [
+  ]
+}
