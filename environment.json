@@ -72,12 +72,6 @@
                 "description": "Location for the environment."
             }
         },
-        "sqlAdminPassword": {
-            "type": "securestring",
-            "metadata": {
-                "description": "The password of the admin user of the SQL Server. Project name will be used for username."
-            }
-        },
         "templateBaseUrl": {
             "type": "string",
             "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
@@ -124,12 +118,13 @@
     },
     "variables": {
         "deploymentMode": "Incremental",
-        "sslSecretName": "certificate",
+        "sqlAdminPassword": "[concat(toUpper(first(parameters('environmentName'))), uniqueString(resourceGroup().id, '095339f8-e07a-4758-a5ce-d99fbdc01309'), toLower(last(parameters('environmentName'))), '!')]",
         "keyVaultName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
         "serverFarmName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('projectName'), '-webserver'), concat(parameters('environmentName') ,'-', parameters('projectName'), '-webserver'))]",
         "serverFarmResourceGroupName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('projectName')), concat(parameters('environmentName') ,'-', parameters('projectName')))]",
         "apiName": "[concat(parameters('environmentName'), '-api-', parameters('projectName'))]",
         "insightsApiName": "[variables('apiName')]",
+        "apiHostName": "[if(equals(parameters('environmentName'),'prod'), concat('api.', parameters('customDomain')), concat(parameters('environmentName'), '-api.', parameters('customDomain')))]",
         "actionGroupName": "[concat(parameters('environmentName'), ' ', parameters('projectName'), ' action group')]"
     },
     "resources": [
@@ -312,6 +307,195 @@
             }
         },
         {
+            "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environmentName'), 'prod'))]",
+            "apiVersion": "2017-05-10",
+            "name": "WebServerHighCPUAlert",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "alertName": {
+                        "value": "HighCPU"
+                    },
+                    "alertDescription": {
+                        "value": "Web Server CPU usage over 80% for the last 5 minutes."
+                    },
+                    "resourceId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', variables('serverFarmResourceGroupName'), '/providers/Microsoft.Web/serverfarms/', variables('serverFarmName'))]"
+                    },
+                    "metricName": {
+                        "value": "CpuPercentage"
+                    },
+                    "threshold": {
+                        "value": "80"
+                    },
+                    "windowSize": {
+                        "value": "PT5M"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "serverFarm",
+                "actionGroup"
+            ]
+        },
+        {
+            "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environmentName'), 'prod'))]",
+            "apiVersion": "2017-05-10",
+            "name": "WebServerMemoryPercentageAlert",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "alertName": {
+                        "value": "MemoryPercentage"
+                    },
+                    "alertDescription": {
+                        "value": "Web Server memory percentage over 80% for the last 5 minutes."
+                    },
+                    "resourceId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', variables('serverFarmResourceGroupName'), '/providers/Microsoft.Web/serverfarms/', variables('serverFarmName'))]"
+                    },
+                    "metricName": {
+                        "value": "MemoryPercentage"
+                    },
+                    "threshold": {
+                        "value": "80"
+                    },
+                    "windowSize": {
+                        "value": "PT5M"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "serverFarm",
+                "actionGroup"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "HttpServerErrorsAlertApi",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "alertName": {
+                        "value": "HttpServerErrorsApi"
+                    },
+                    "alertDescription": {
+                        "value": "Api more than 10 server errors in the last 5 minutes."
+                    },
+                    "resourceId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/sites/', variables('apiName'))]"
+                    },
+                    "metricName": {
+                        "value": "Http5xx"
+                    },
+                    "threshold": {
+                        "value": "10"
+                    },
+                    "timeAggregation": {
+                        "value": "Total"
+                    },
+                    "windowSize": {
+                        "value": "PT5M"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "api",
+                "actionGroup"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "ResponseTimeAlertApi",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "alertName": {
+                        "value": "AverageResponseTimeApi"
+                    },
+                    "alertDescription": {
+                        "value": "Api average response time over 5 second in the last 5 minutes."
+                    },
+                    "resourceId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/sites/', variables('apiName'))]"
+                    },
+                    "metricName": {
+                        "value": "AverageResponseTime"
+                    },
+                    "threshold": {
+                        "value": "5"
+                    },
+                    "windowSize": {
+                        "value": "PT5M"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "api",
+                "actionGroup"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "PingApi",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.webtest.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[concat(variables('apiName'), 'ping')]"
+                    },
+                    "description": {
+                        "value": "Ping api to ensure it's alive."
+                    },
+                    "insightsName": {
+                        "value": "[variables('insightsApiName')]"
+                    },
+                    "testUrl": {
+                        "value": "[concat('https://', variables('apiHostName'))]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "insightsApi",
+                "api"
+            ]
+        },
+        {
             "apiVersion": "2017-05-10",
             "name": "keyVault",
             "type": "Microsoft.Resources/deployments",
@@ -330,7 +514,7 @@
                     "users": {
                         "value": [
                             "abfa0a7c-a6b6-4736-8310-5855508787cd",
-                            "[reference('api').outputs.site.identity.principalId.value]"
+                            "[reference('api').outputs.site.value.identity.principalId]"
                         ]
                     },
                     "sku": {
@@ -348,7 +532,7 @@
                                 },
                                 {
                                     "secretName": "ConnectionString--Data",
-                                    "secretValue": "[concat('Data Source=attila-dev.database.windows.net;Initial Catalog=attila;persist security info=True;user id=attila;password=', parameters('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
+                                    "secretValue": "[concat('Data Source=attila-dev.database.windows.net;Initial Catalog=attila;persist security info=True;user id=attila;password=', variables('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
                                 }
                             ]
                         }
@@ -357,6 +541,105 @@
             },
             "dependsOn": [
                 "api"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "admin",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'WebApp.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "projectName": {
+                        "value": "[parameters('projectName')]"
+                    },
+                    "app": {
+                        "value": "admin"
+                    },
+                    "environmentName": {
+                        "value": "[parameters('environmentName')]"
+                    },
+                    "size": {
+                        "value": "[parameters('size')]"
+                    },
+                    "location": {
+                        "value": "[parameters('location')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    },
+                    "templateSasToken": {
+                        "value": "[parameters('templateSasToken')]"
+                    },
+                    "consolidateServerFarms": {
+                        "value": "[parameters('consolidateServerFarms')]"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    },
+                    "customDomain": {
+                        "value": "[parameters('customDomain')]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "actionGroup"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat('AzureServicesHealthAlert', parameters('environmentName'))]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.activityLogAlerts.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[concat('AzureServicesHealthAlert', parameters('environmentName'))]"
+                    },
+                    "description": {
+                        "value": "Alert when azure services used by the environment are down."
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    },
+                    "conditions": {
+                        "value": [
+                            {
+                                "field": "category",
+                                "equals": "ServiceHealth",
+                                "containsAny": null
+                            },
+                            {
+                                "field": "properties.impactedServices[*].ServiceName",
+                                "equals": null,
+                                "containsAny": [
+                                    "App Service",
+                                    "App Service \\ Web Apps",
+                                    "Application Insights",
+                                    "Key Vault",
+                                    "SQL Database",
+                                    "Storage"
+                                ]
+                            },
+                            {
+                                "field": "properties.impactedServices[*].ImpactedRegions[*].RegionName",
+                                "equals": null,
+                                "containsAny": [
+                                    "[parameters('location')]"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "dependsOn": [
+                "actionGroup"
             ]
         }
     ],
