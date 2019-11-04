@@ -221,7 +221,7 @@
             "value": [
               {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                "value": "[reference('insights').outputs.InstrumentationKey.value]",
+                "value": "[reference(concat('insights', parameters('app'))).outputs.InstrumentationKey.value]",
                 "slotSetting": false
               },
               {
