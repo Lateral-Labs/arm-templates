@@ -162,6 +162,14 @@
                 "sku": {
                     "name": "[parameters('sku')]",
                     "family": "A"
+                },
+                "networkAcls": {
+                    "defaultAction": "Deny",
+                    "bypass": "AzureServices",
+                    "ipRules": [
+                    ],
+                    "virtualNetworkRules": [
+                    ]
                 }
             }
         },

@@ -582,11 +582,15 @@
                     },
                     "customDomain": {
                         "value": "[parameters('customDomain')]"
+                    },
+                    "keyVaultId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
                     }
                 }
             },
             "dependsOn": [
-                "actionGroup"
+                "actionGroup",
+                "keyVault"
             ]
         },
         {
