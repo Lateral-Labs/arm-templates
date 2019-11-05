@@ -36,45 +36,6 @@
         "ExtraLarge"
       ]
     },
-    "location": {
-      "type": "string",
-      "defaultValue": "East US",
-      "allowedValues": [
-        "Australia Central",
-        "Australia Central 2",
-        "Australia East",
-        "Australia SouthEast",
-        "Brazil South",
-        "Canada Central",
-        "Canada East",
-        "Central India",
-        "Central US",
-        "East Asia",
-        "East US",
-        "East US 2",
-        "France Central",
-        "France South",
-        "Japan East",
-        "Japan West",
-        "Korea Central",
-        "Korea South",
-        "North Central US",
-        "North Europe",
-        "South Central US",
-        "South India",
-        "Southeast Asia",
-        "UK South",
-        "UK West",
-        "West Central US",
-        "West Europe",
-        "West India",
-        "West US",
-        "West US 2"
-      ],
-      "metadata": {
-        "description": "Location for the environment."
-      }
-    },
     "templateBaseUrl": {
       "type": "string",
       "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
@@ -158,9 +119,6 @@
           "name": {
             "value": "[variables('serverFarmName')]"
           },
-          "location": {
-            "value": "[parameters('location')]"
-          },
           "sku": {
             "value": "[reference('environmentSize').outputs.size.value.serverFarm.sku]"
           },
@@ -194,9 +152,6 @@
         "parameters": {
           "name": {
             "value": "[variables('insightsName')]"
-          },
-          "location": {
-            "value": "[parameters('location')]"
           }
         }
       }
@@ -213,9 +168,6 @@
         "parameters": {
           "name": {
             "value": "[variables('appName')]"
-          },
-          "location": {
-            "value": "[parameters('location')]"
           },
           "hostingPlanName": {
             "value": "[variables('serverFarmName')]"
@@ -487,9 +439,6 @@
           },
           "testUrl": {
             "value": "[concat('https://', variables('hostName'))]"
-          },
-          "location": {
-            "value": "[parameters('location')]"
           }
         }
       },

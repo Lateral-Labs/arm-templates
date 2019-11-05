@@ -25,25 +25,6 @@
                 "description": "The Url to ping"
             }
         },
-        "location": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().location]",
-            "allowedValues": [
-                "East US",
-                "South Central US",
-                "North Europe",
-                "West Europe",
-                "Southeast Asia",
-                "West US 2",
-                "West Central US",
-                "UK South",
-                "Canada Central",
-                "Central India"
-            ],
-            "metadata": {
-                "description": "Location for the component."
-            }
-        },
         "frequency": {
             "type": "int",
             "defaultValue": 300,
@@ -95,7 +76,7 @@
             "name": "[parameters('name')]",
             "type": "microsoft.insights/webtests",
             "apiVersion": "2015-05-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "tags": {
                 "[concat('hidden-link:', resourceId('Microsoft.Insights/components', parameters('insightsName')))]": "Resource"
             },
@@ -126,7 +107,7 @@
             "name": "[variables('alertName')]",
             "type": "Microsoft.Insights/alertrules",
             "apiVersion": "2016-03-01",
-            "location": "[parameters('location')]",
+            "location": "[resourceGroup().location]",
             "dependsOn": [
                 "[resourceId('Microsoft.Insights/webtests', parameters('name'))]"
             ],
@@ -155,7 +136,8 @@
                         "$type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.RuleEmailAction, Microsoft.WindowsAzure.Management.Mon.Client",
                         "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
                         "sendToServiceOwners": true,
-                        "customEmails": []
+                        "customEmails": [
+                        ]
                     }
                 ]
             }

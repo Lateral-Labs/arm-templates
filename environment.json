@@ -33,45 +33,6 @@
                 "ExtraLarge"
             ]
         },
-        "location": {
-            "type": "string",
-            "defaultValue": "East US",
-            "allowedValues": [
-                "Australia Central",
-                "Australia Central 2",
-                "Australia East",
-                "Australia SouthEast",
-                "Brazil South",
-                "Canada Central",
-                "Canada East",
-                "Central India",
-                "Central US",
-                "East Asia",
-                "East US",
-                "East US 2",
-                "France Central",
-                "France South",
-                "Japan East",
-                "Japan West",
-                "Korea Central",
-                "Korea South",
-                "North Central US",
-                "North Europe",
-                "South Central US",
-                "South India",
-                "Southeast Asia",
-                "UK South",
-                "UK West",
-                "West Central US",
-                "West Europe",
-                "West India",
-                "West US",
-                "West US 2"
-            ],
-            "metadata": {
-                "description": "Location for the environment."
-            }
-        },
         "templateBaseUrl": {
             "type": "string",
             "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
@@ -103,12 +64,6 @@
                 "description": "These addresses will receive monitoring alerts."
             }
         },
-        "vault": {
-            "type": "string",
-            "metadata": {
-                "description": "Key Vault with the ssl certificate"
-            }
-        },
         "customDomain": {
             "type": "string",
             "metadata": {
@@ -120,11 +75,6 @@
         "deploymentMode": "Incremental",
         "sqlAdminPassword": "[concat(toUpper(first(parameters('environmentName'))), uniqueString(resourceGroup().id, '095339f8-e07a-4758-a5ce-d99fbdc01309'), toLower(last(parameters('environmentName'))), '!')]",
         "keyVaultName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
-        "serverFarmName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('projectName'), '-webserver'), concat(parameters('environmentName') ,'-', parameters('projectName'), '-webserver'))]",
-        "serverFarmResourceGroupName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('projectName')), concat(parameters('environmentName') ,'-', parameters('projectName')))]",
-        "apiName": "[concat(parameters('environmentName'), '-api-', parameters('projectName'))]",
-        "insightsApiName": "[variables('apiName')]",
-        "apiHostName": "[if(equals(parameters('environmentName'),'prod'), concat('api.', parameters('customDomain')), concat(parameters('environmentName'), '-api.', parameters('customDomain')))]",
         "actionGroupName": "[concat(parameters('environmentName'), ' ', parameters('projectName'), ' action group')]"
     },
     "resources": [
@@ -143,146 +93,6 @@
                     }
                 }
             }
-        },
-        {
-            "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environmentName'), 'prod'))]",
-            "apiVersion": "2017-05-10",
-            "name": "serverFarm",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.serverfarms.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "name": {
-                        "value": "[variables('serverFarmName')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    },
-                    "sku": {
-                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.sku]"
-                    },
-                    "skuCode": {
-                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.skuCode]"
-                    },
-                    "autoscaleEnabled": {
-                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.enabled]"
-                    },
-                    "defaultCapacity": {
-                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.default]"
-                    },
-                    "minimumCapacity": {
-                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.minimum]"
-                    },
-                    "maximumCapacity": {
-                        "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.maximum]"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "insightsApi",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "name": {
-                        "value": "[variables('insightsApiName')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "api",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.sites.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "name": {
-                        "value": "[variables('apiName')]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    },
-                    "hostingPlanName": {
-                        "value": "[variables('serverFarmName')]"
-                    },
-                    "serverFarmResourceGroup": {
-                        "value": "[variables('serverFarmResourceGroupName')]"
-                    },
-                    "appSettings": {
-                        "value": [
-                            {
-                                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                                "value": "[reference('insightsApi').outputs.InstrumentationKey.value]",
-                                "slotSetting": false
-                            },
-                            {
-                                "name": "KeyVault--BaseUrl",
-                                "value": "[concat('https://', variables('keyVaultName'), '.vault.azure.net/')]",
-                                "slotSetting": false
-                            },
-                            {
-                                "name": "APPINSIGHTS_PROFILERFEATURE_VERSION",
-                                "value": "1.0.0",
-                                "slotSetting": false
-                            },
-                            {
-                                "name": "APPINSIGHTS_SNAPSHOTFEATURE_VERSION",
-                                "value": "1.0.0",
-                                "slotSetting": false
-                            },
-                            {
-                                "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
-                                "value": "~2",
-                                "slotSetting": false
-                            },
-                            {
-                                "name": "DiagnosticServices_EXTENSION_VERSION",
-                                "value": "~3",
-                                "slotSetting": false
-                            },
-                            {
-                                "name": "InstrumentationEngine_EXTENSION_VERSION",
-                                "value": "disabled",
-                                "slotSetting": false
-                            },
-                            {
-                                "name": "SnapshotDebugger_EXTENSION_VERSION",
-                                "value": "disabled",
-                                "slotSetting": false
-                            },
-                            {
-                                "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
-                                "value": "disabled",
-                                "slotSetting": false
-                            },
-                            {
-                                "name": "XDT_MicrosoftApplicationInsights_Mode",
-                                "value": "recommended",
-                                "slotSetting": false
-                            }
-                        ]
-                    }
-                }
-            },
-            "dependsOn": [
-                "serverFarm",
-                "insightsApi"
-            ]
         },
         {
             "apiVersion": "2017-05-10",
@@ -307,195 +117,6 @@
             }
         },
         {
-            "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environmentName'), 'prod'))]",
-            "apiVersion": "2017-05-10",
-            "name": "WebServerHighCPUAlert",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "alertName": {
-                        "value": "HighCPU"
-                    },
-                    "alertDescription": {
-                        "value": "Web Server CPU usage over 80% for the last 5 minutes."
-                    },
-                    "resourceId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', variables('serverFarmResourceGroupName'), '/providers/Microsoft.Web/serverfarms/', variables('serverFarmName'))]"
-                    },
-                    "metricName": {
-                        "value": "CpuPercentage"
-                    },
-                    "threshold": {
-                        "value": "80"
-                    },
-                    "windowSize": {
-                        "value": "PT5M"
-                    },
-                    "actionGroupId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "serverFarm",
-                "actionGroup"
-            ]
-        },
-        {
-            "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environmentName'), 'prod'))]",
-            "apiVersion": "2017-05-10",
-            "name": "WebServerMemoryPercentageAlert",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "alertName": {
-                        "value": "MemoryPercentage"
-                    },
-                    "alertDescription": {
-                        "value": "Web Server memory percentage over 80% for the last 5 minutes."
-                    },
-                    "resourceId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', variables('serverFarmResourceGroupName'), '/providers/Microsoft.Web/serverfarms/', variables('serverFarmName'))]"
-                    },
-                    "metricName": {
-                        "value": "MemoryPercentage"
-                    },
-                    "threshold": {
-                        "value": "80"
-                    },
-                    "windowSize": {
-                        "value": "PT5M"
-                    },
-                    "actionGroupId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "serverFarm",
-                "actionGroup"
-            ]
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "HttpServerErrorsAlertApi",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "alertName": {
-                        "value": "HttpServerErrorsApi"
-                    },
-                    "alertDescription": {
-                        "value": "Api more than 10 server errors in the last 5 minutes."
-                    },
-                    "resourceId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/sites/', variables('apiName'))]"
-                    },
-                    "metricName": {
-                        "value": "Http5xx"
-                    },
-                    "threshold": {
-                        "value": "10"
-                    },
-                    "timeAggregation": {
-                        "value": "Total"
-                    },
-                    "windowSize": {
-                        "value": "PT5M"
-                    },
-                    "actionGroupId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "api",
-                "actionGroup"
-            ]
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "ResponseTimeAlertApi",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "alertName": {
-                        "value": "AverageResponseTimeApi"
-                    },
-                    "alertDescription": {
-                        "value": "Api average response time over 5 second in the last 5 minutes."
-                    },
-                    "resourceId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/sites/', variables('apiName'))]"
-                    },
-                    "metricName": {
-                        "value": "AverageResponseTime"
-                    },
-                    "threshold": {
-                        "value": "5"
-                    },
-                    "windowSize": {
-                        "value": "PT5M"
-                    },
-                    "actionGroupId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "api",
-                "actionGroup"
-            ]
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "PingApi",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.webtest.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "name": {
-                        "value": "[concat(variables('apiName'), 'ping')]"
-                    },
-                    "description": {
-                        "value": "Ping api to ensure it's alive."
-                    },
-                    "insightsName": {
-                        "value": "[variables('insightsApiName')]"
-                    },
-                    "testUrl": {
-                        "value": "[concat('https://', variables('apiHostName'))]"
-                    },
-                    "location": {
-                        "value": "[parameters('location')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "insightsApi",
-                "api"
-            ]
-        },
-        {
             "apiVersion": "2017-05-10",
             "name": "keyVault",
             "type": "Microsoft.Resources/deployments",
@@ -509,7 +130,7 @@
                         "value": "[variables('keyVaultName')]"
                     },
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[resourceGroup().location]"
                     },
                     "users": {
                         "value": [
@@ -538,9 +159,56 @@
                         }
                     }
                 }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "api-deploy",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'WebApp.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "project": {
+                        "value": "[parameters('projectName')]"
+                    },
+                    "app": {
+                        "value": "api"
+                    },
+                    "environment": {
+                        "value": "[parameters('environmentName')]"
+                    },
+                    "size": {
+                        "value": "[parameters('size')]"
+                    },
+                    "location": {
+                        "value": "[resourceGroup().location]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    },
+                    "templateSasToken": {
+                        "value": "[parameters('templateSasToken')]"
+                    },
+                    "consolidateServerFarms": {
+                        "value": "[parameters('consolidateServerFarms')]"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    },
+                    "customDomain": {
+                        "value": "[parameters('customDomain')]"
+                    },
+                    "keyVaultId": {
+                        "value": "[variables('keyVaultName')]"
+                    }
+                }
             },
             "dependsOn": [
-                "api"
+                "actionGroup",
+                "keyVault"
             ]
         },
         {
@@ -566,7 +234,7 @@
                         "value": "[parameters('size')]"
                     },
                     "location": {
-                        "value": "[parameters('location')]"
+                        "value": "[resourceGroup().location]"
                     },
                     "templateBaseUrl": {
                         "value": "[parameters('templateBaseUrl')]"
@@ -584,7 +252,7 @@
                         "value": "[parameters('customDomain')]"
                     },
                     "keyVaultId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.KeyVault/vaults/', variables('keyVaultName'))]"
+                        "value": "[variables('keyVaultName')]"
                     }
                 }
             },
@@ -635,7 +303,7 @@
                                 "field": "properties.impactedServices[*].ImpactedRegions[*].RegionName",
                                 "equals": null,
                                 "containsAny": [
-                                    "[parameters('location')]"
+                                    "[resourceGroup().location]"
                                 ]
                             }
                         ]
