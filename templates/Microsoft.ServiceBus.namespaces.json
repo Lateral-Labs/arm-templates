@@ -40,7 +40,7 @@
     },
     "resources": [
         {
-            "apiVersion": "2018-01-01-preview",
+            "apiVersion": "2017-04-01",
             "name": "[parameters('name')]",
             "type": "Microsoft.ServiceBus/namespaces",
             "location": "[resourceGroup().location]",
@@ -56,7 +56,7 @@
             ]
         },
         {
-            "apiVersion": "2018-01-01-preview",
+            "apiVersion": "2017-04-01",
             "name": "[concat(parameters('name'), '/SendOnlyKey')]",
             "type": "Microsoft.ServiceBus/namespaces/authorizationRules",
             "dependsOn": [
@@ -73,7 +73,7 @@
             }
         },
         {
-            "apiVersion": "2018-01-01-preview",
+            "apiVersion": "2017-04-01",
             "name": "[concat(parameters('name'), '/ListenOnlyKey')]",
             "type": "Microsoft.ServiceBus/namespaces/authorizationRules",
             "dependsOn": [
@@ -93,15 +93,15 @@
     "outputs": {
         "sbEndPoint": {
             "type": "string",
-            "value": "[reference(parameters('name'), '2018-01-01-preview', 'Full').properties.serviceBusEndpoint]"
+            "value": "[reference(parameters('name'), '2017-04-01', 'Full').properties.serviceBusEndpoint]"
         },
         "SendOnlyConnectionString": {
             "type": "string",
-            "value": "[listkeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('name'), 'SendOnlyKey'), '2018-01-01-preview').primaryConnectionString]"
+            "value": "[listkeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('name'), 'SendOnlyKey'), '2017-04-01').primaryConnectionString]"
         },
         "ListenOnlyConnectionString": {
             "type": "string",
-            "value": "[listkeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('name'), 'ListenOnlyKey'), '2018-01-01-preview').primaryConnectionString]"
+            "value": "[listkeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('name'), 'ListenOnlyKey'), '2017-04-01').primaryConnectionString]"
         }
     }
 }
