@@ -73,10 +73,10 @@
         "description": "Custom domain for the project."
       }
     },
-    "keyVaultId": {
+    "keyVaultName": {
       "type": "string",
       "metadata": {
-        "description": "KeyVault Id to link this application to."
+        "description": "KeyVault to link this application to."
       }
     }
   },
@@ -85,7 +85,6 @@
     "serverFarmName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('project'), '-webserver'), concat(parameters('environment') ,'-', parameters('project'), '-webserver'))]",
     "serverFarmResourceGroupName": "[if(equals(parameters('consolidateServerFarms'), 'Yes'), concat('prod-', parameters('project')), concat(parameters('environment') ,'-', parameters('project')))]",
     "appName": "[concat(parameters('environment'), '-', parameters('app'), '-', parameters('project'))]",
-    "insightsName": "[variables('appName')]",
     "hostName": "[if(equals(parameters('environment'),'prod'), concat(parameters('app'), '.', parameters('customDomain')), concat(parameters('environment'), '-', parameters('app'), '.', parameters('customDomain')))]"
   },
   "resources": [
@@ -151,7 +150,7 @@
         },
         "parameters": {
           "name": {
-            "value": "[variables('insightsName')]"
+            "value": "[variables('appName')]"
           }
         }
       }
@@ -184,7 +183,7 @@
               },
               {
                 "name": "KeyVault--BaseUrl",
-                "value": "[concat('https://', parameters('environment'), '-', parameters('project'), '.vault.azure.net/')]",
+                "value": "[concat('https://', parameters('keyVaultName'), '.vault.azure.net/')]",
                 "slotSetting": false
               },
               {
@@ -247,7 +246,7 @@
         },
         "parameters": {
           "keyVaultName": {
-            "value": "[parameters('keyVaultId')]"
+            "value": "[parameters('keyVaultName')]"
           },
           "objectId": {
             "value": "[reference(parameters('app')).outputs.site.value.identity.principalId]"
@@ -435,7 +434,7 @@
             "value": "Ping app to ensure it's alive."
           },
           "insightsName": {
-            "value": "[variables('insightsName')]"
+            "value": "[variables('appName')]"
           },
           "testUrl": {
             "value": "[concat('https://', variables('hostName'))]"

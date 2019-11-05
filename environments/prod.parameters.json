@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "projectName": {
-      "value": "pathfinder",
+      "value": "impulse",
       "metadata": {
         "description": "Use only lowercase letters or numbers"
       }
@@ -38,9 +38,6 @@
         "description": "See [templateBaseUrl] + Environment.Size.json for reference."
       }
     },
-    "location": {
-      "value": "East US"
-    },
     "consolidateServerFarms": {
       "value": "Yes"
     },
@@ -48,7 +45,7 @@
       "value": "yourvault"
     },
     "customDomain": {
-      "value": "yourdomain.com"
+      "value": "impulse-drive.com"
     }
   }
 }

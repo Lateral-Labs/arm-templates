@@ -47,7 +47,7 @@
                 "description": "Sas Token for Azure storage account. Used when the individual templates are linked from blob storage"
             }
         },
-        "consolidateServerFarms": {
+        "consolidate": {
             "type": "string",
             "allowedValues": [
                 "Yes",
@@ -55,7 +55,7 @@
             ],
             "defaultValue": "No",
             "metadata": {
-                "description": "If Yes, multiple environments will have one single serverfarm and resource group. Cuts down costs."
+                "description": "If Yes, multiple environments will have one single serverfarm and Redis cache. Cuts down costs."
             }
         },
         "emailReceivers": {
@@ -75,7 +75,9 @@
         "deploymentMode": "Incremental",
         "sqlAdminPassword": "[concat(toUpper(first(parameters('environmentName'))), uniqueString(resourceGroup().id, '095339f8-e07a-4758-a5ce-d99fbdc01309'), toLower(last(parameters('environmentName'))), '!')]",
         "keyVaultName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
-        "actionGroupName": "[concat(parameters('environmentName'), ' ', parameters('projectName'), ' action group')]"
+        "actionGroupName": "[concat(parameters('environmentName'), ' ', parameters('projectName'), ' action group')]",
+        "tableStorageName": "[concat(parameters('environmentName'), 'tables', parameters('projectName'))]",
+        "blobStorageName": "[concat(parameters('environmentName'), 'blobs', parameters('projectName'))]"
     },
     "resources": [
         {
@@ -118,6 +120,47 @@
         },
         {
             "apiVersion": "2017-05-10",
+            "name": "tablestorage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Storage.storageAccounts.tables.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('tableStorageName')]"
+                    },
+                    "type": {
+                        "value": "[reference('environmentSize').outputs.size.value.storage.accountType]"
+                    },
+                    "kind": {
+                        "value": "[reference('environmentSize').outputs.size.value.storage.kind]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "blobstorage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Storage.storageAccounts.blobs.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('blobStorageName')]"
+                    },
+                    "type": {
+                        "value": "[reference('environmentSize').outputs.size.value.storage.accountType]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
             "name": "keyVault",
             "type": "Microsoft.Resources/deployments",
             "properties": {
@@ -129,13 +172,9 @@
                     "vaultName": {
                         "value": "[variables('keyVaultName')]"
                     },
-                    "location": {
-                        "value": "[resourceGroup().location]"
-                    },
                     "users": {
                         "value": [
-                            "abfa0a7c-a6b6-4736-8310-5855508787cd",
-                            "[reference('api').outputs.site.value.identity.principalId]"
+                            "abfa0a7c-a6b6-4736-8310-5855508787cd"
                         ]
                     },
                     "sku": {
@@ -183,9 +222,6 @@
                     "size": {
                         "value": "[parameters('size')]"
                     },
-                    "location": {
-                        "value": "[resourceGroup().location]"
-                    },
                     "templateBaseUrl": {
                         "value": "[parameters('templateBaseUrl')]"
                     },
@@ -193,7 +229,7 @@
                         "value": "[parameters('templateSasToken')]"
                     },
                     "consolidateServerFarms": {
-                        "value": "[parameters('consolidateServerFarms')]"
+                        "value": "[parameters('consolidate')]"
                     },
                     "actionGroupId": {
                         "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
@@ -201,7 +237,7 @@
                     "customDomain": {
                         "value": "[parameters('customDomain')]"
                     },
-                    "keyVaultId": {
+                    "keyVaultName": {
                         "value": "[variables('keyVaultName')]"
                     }
                 }
@@ -233,9 +269,6 @@
                     "size": {
                         "value": "[parameters('size')]"
                     },
-                    "location": {
-                        "value": "[resourceGroup().location]"
-                    },
                     "templateBaseUrl": {
                         "value": "[parameters('templateBaseUrl')]"
                     },
@@ -243,7 +276,7 @@
                         "value": "[parameters('templateSasToken')]"
                     },
                     "consolidateServerFarms": {
-                        "value": "[parameters('consolidateServerFarms')]"
+                        "value": "[parameters('consolidate')]"
                     },
                     "actionGroupId": {
                         "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
@@ -251,7 +284,7 @@
                     "customDomain": {
                         "value": "[parameters('customDomain')]"
                     },
-                    "keyVaultId": {
+                    "keyVaultName": {
                         "value": "[variables('keyVaultName')]"
                     }
                 }
