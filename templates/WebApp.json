@@ -90,7 +90,7 @@
   "resources": [
     {
       "apiVersion": "2017-05-10",
-      "name": "environmentSize",
+      "name": "[concat(parameters('app'), 'environmentSize')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
@@ -119,22 +119,22 @@
             "value": "[variables('serverFarmName')]"
           },
           "sku": {
-            "value": "[reference('environmentSize').outputs.size.value.serverFarm.sku]"
+            "value": "[reference(concat(parameters('app'), 'environmentSize')).outputs.size.value.serverFarm.sku]"
           },
           "skuCode": {
-            "value": "[reference('environmentSize').outputs.size.value.serverFarm.skuCode]"
+            "value": "[reference(concat(parameters('app'), 'environmentSize')).outputs.size.value.serverFarm.skuCode]"
           },
           "autoscaleEnabled": {
-            "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.enabled]"
+            "value": "[reference(concat(parameters('app'), 'environmentSize')).outputs.size.value.serverFarm.autoscale.enabled]"
           },
           "defaultCapacity": {
-            "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.default]"
+            "value": "[reference(concat(parameters('app'), 'environmentSize')).outputs.size.value.serverFarm.autoscale.capacity.default]"
           },
           "minimumCapacity": {
-            "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.minimum]"
+            "value": "[reference(concat(parameters('app'), 'environmentSize')).outputs.size.value.serverFarm.autoscale.capacity.minimum]"
           },
           "maximumCapacity": {
-            "value": "[reference('environmentSize').outputs.size.value.serverFarm.autoscale.capacity.maximum]"
+            "value": "[reference(concat(parameters('app'), 'environmentSize')).outputs.size.value.serverFarm.autoscale.capacity.maximum]"
           }
         }
       }

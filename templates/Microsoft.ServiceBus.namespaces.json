@@ -54,12 +54,30 @@
             },
             "resources": [
             ]
+        },
+        {
+            "apiVersion": "2018-01-01-preview",
+            "name": "[concat(parameters('name'), 'SharedAccessKey')]",
+            "type": "Microsoft.ServiceBus/namespaces/authorizationRules",
+            "dependsOn": [
+                "[parameters('name')]"
+            ],
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "Rights": [
+                    "Send"
+                ]
+            }
         }
     ],
     "outputs": {
         "sbEndPoint": {
             "type": "string",
             "value": "[reference(parameters('name'), '2018-01-01-preview', 'Full').properties.serviceBusEndpoint]"
+        },
+        "SharedAccessKey": {
+            "type": "object",
+            "value": "[reference(concat(parameters('name'), 'SharedAccessKey'), '2018-01-01-preview', 'Full')]"
         }
     }
 }

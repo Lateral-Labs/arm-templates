@@ -38,7 +38,7 @@
         "description": "See [templateBaseUrl] + Environment.Size.json for reference."
       }
     },
-    "consolidateServerFarms": {
+    "consolidate": {
       "value": "Yes"
     },
     "vault": {
