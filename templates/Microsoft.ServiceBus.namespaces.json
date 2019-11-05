@@ -57,15 +57,35 @@
         },
         {
             "apiVersion": "2018-01-01-preview",
-            "name": "[concat(parameters('name'), 'SharedAccessKey')]",
+            "name": "[concat(parameters('name'), '/SendOnlyKey')]",
             "type": "Microsoft.ServiceBus/namespaces/authorizationRules",
             "dependsOn": [
-                "[parameters('name')]"
+                "[concat('Microsoft.ServiceBus/namespaces/', parameters('name'))]"
             ],
             "location": "[resourceGroup().location]",
             "properties": {
+                "KeyName": "SendOnlyKey",
+                "ClaimType": "SendSharedAccessKey",
+                "ClaimValue": "None",
                 "Rights": [
                     "Send"
+                ]
+            }
+        },
+        {
+            "apiVersion": "2018-01-01-preview",
+            "name": "[concat(parameters('name'), '/ListenOnlyKey')]",
+            "type": "Microsoft.ServiceBus/namespaces/authorizationRules",
+            "dependsOn": [
+                "[concat('Microsoft.ServiceBus/namespaces/', parameters('name'))]"
+            ],
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "KeyName": "ListenOnlyKey",
+                "ClaimType": "SharedAccessKey",
+                "ClaimValue": "None",
+                "Rights": [
+                    "Listen"
                 ]
             }
         }
@@ -75,9 +95,13 @@
             "type": "string",
             "value": "[reference(parameters('name'), '2018-01-01-preview', 'Full').properties.serviceBusEndpoint]"
         },
-        "SharedAccessKey": {
-            "type": "object",
-            "value": "[reference(concat(parameters('name'), 'SharedAccessKey'), '2018-01-01-preview', 'Full')]"
+        "SendOnlyConnectionString": {
+            "type": "string",
+            "value": "[listkeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('name'), 'SendOnlyKey'), '2018-01-01-preview').primaryConnectionString]"
+        },
+        "ListenOnlyConnectionString": {
+            "type": "string",
+            "value": "[listkeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('name'), 'ListenOnlyKey'), '2018-01-01-preview').primaryConnectionString]"
         }
     }
 }
