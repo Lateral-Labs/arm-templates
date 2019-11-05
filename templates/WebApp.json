@@ -111,6 +111,12 @@
       "metadata": {
         "description": "Custom domain for the project."
       }
+    },
+    "keyVaultId": {
+      "type": "string",
+      "metadata": {
+        "description": "KeyVault Id to link this application to."
+      }
     }
   },
   "variables": {
@@ -279,6 +285,35 @@
       ]
     },
     {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('KVAccess', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.accessPolicies.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('keyVaultId')]"
+          },
+          "objectId": {
+            "value": "[reference(parameters('app')).outputs.site.value.identity.principalId]"
+          },
+          "secretsPermissions": {
+            "value": [
+              "list",
+              "get"
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('insights', parameters('app'))]",
+        "[parameters('app')]"
+      ]
+    },
+    {
       "condition": "[or(equals(parameters('consolidateServerFarms'), 'No'), equals(parameters('environment'), 'prod'))]",
       "apiVersion": "2017-05-10",
       "name": "[concat('WebServerHighCPUAlert', parameters('app'))]",
@@ -442,7 +477,7 @@
         },
         "parameters": {
           "name": {
-            "value": "[concat(variables('appName'), 'ping')]"
+            "value": "[concat(variables('appName'), '-ping')]"
           },
           "description": {
             "value": "Ping app to ensure it's alive."
