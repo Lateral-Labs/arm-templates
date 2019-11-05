@@ -73,11 +73,16 @@
     },
     "variables": {
         "deploymentMode": "Incremental",
+        "resourceName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
+        "sqlServerName": "[variables('resourceName')]",
+        "sqlDbName": "[variables('resourceName')]",
+        "sqlAdminUser": "[concat(parameters('environmentName'), parameters('projectName'), uniqueString(resourceGroup().id, 'a82b2d74-d900-45e3-b4c9-02f0b4695f67'))]",
         "sqlAdminPassword": "[concat(toUpper(first(parameters('environmentName'))), uniqueString(resourceGroup().id, '095339f8-e07a-4758-a5ce-d99fbdc01309'), toLower(last(parameters('environmentName'))), '!')]",
-        "keyVaultName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
-        "actionGroupName": "[concat(parameters('environmentName'), ' ', parameters('projectName'), ' action group')]",
+        "keyVaultName": "[variables('resourceName')]",
+        "actionGroupName": "[variables('resourceName')]",
         "tableStorageName": "[concat(parameters('environmentName'), 'tables', parameters('projectName'))]",
-        "blobStorageName": "[concat(parameters('environmentName'), 'blobs', parameters('projectName'))]"
+        "blobStorageName": "[concat(parameters('environmentName'), 'blobs', parameters('projectName'))]",
+        "serviceBusNamespace": "[variables('resourceName')]"
     },
     "resources": [
         {
@@ -117,6 +122,87 @@
                     }
                 }
             }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "servicebus",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.ServiceBus.namespaces.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('serviceBusNamespace')]"
+                    },
+                    "sku": {
+                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.sku]"
+                    },
+                    "skuCapacity": {
+                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.capacity]"
+                    },
+                    "zoneRedundant": {
+                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.zoneRedundant]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "sqlserver",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Sql.server.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('sqlServerName')]"
+                    },
+                    "administratorLogin": {
+                        "value": "[variables('sqlAdminUser')]"
+                    },
+                    "administratorPassword": {
+                        "value": "[variables('sqlAdminPassword')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "sqldatabase",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Sql.database.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "serverName": {
+                        "value": "[variables('sqlServerName')]"
+                    },
+                    "databaseName": {
+                        "value": "[variables('sqlDbName')]"
+                    },
+                    "tier": {
+                        "value": "[reference('environmentSize').outputs.size.value.sqlDatabase.tier]"
+                    },
+                    "sku": {
+                        "value": "[reference('environmentSize').outputs.size.value.sqlDatabase.sku]"
+                    },
+                    "maxSizeBytes": {
+                        "value": "[reference('environmentSize').outputs.size.value.sqlDatabase.maxSizeBytes]"
+                    },
+                    "collation": {
+                        "value": "SQL_Latin1_General_CP1_CI_AS"
+                    }
+                }
+            },
+            "dependsOn": [
+                "sqlserver"
+            ]
         },
         {
             "apiVersion": "2017-05-10",
@@ -192,17 +278,30 @@
                                 },
                                 {
                                     "secretName": "ConnectionString--Data",
-                                    "secretValue": "[concat('Data Source=attila-dev.database.windows.net;Initial Catalog=attila;persist security info=True;user id=attila;password=', variables('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
+                                    "secretValue": "[concat('Data Source=', variables('sqlServerName'), '.database.windows.net;Initial Catalog=', variables('sqlDbName'), ';persist security info=True;user id=', variables('sqlAdminUser'), ';password=', variables('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
+                                },
+                                {
+                                    "secretName": "AzureStorageTablesEndpoint",
+                                    "secretValue": "[reference('tablestorage').outputs.storageEndPoints.value.table]"
+                                },
+                                {
+                                    "secretName": "AzureStorageBlobsEndpoint",
+                                    "secretValue": "[reference('blobstorage').outputs.storageEndPoints.value.blob]"
                                 }
                             ]
                         }
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "tablestorage",
+                "blobstorage",
+                "servicebus"
+            ]
         },
         {
             "apiVersion": "2017-05-10",
-            "name": "api-deploy",
+            "name": "api-app",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "[variables('deploymentMode')]",
@@ -249,7 +348,7 @@
         },
         {
             "apiVersion": "2017-05-10",
-            "name": "admin-deploy",
+            "name": "admin-app",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "[variables('deploymentMode')]",
