@@ -18,7 +18,24 @@
             "metadata": {
                 "description": "Storage Account type"
             }
+        },
+        "sasTokenExpiry": {
+            "type": "string",
+            "defaultValue": "2022-12-31T23:59:00Z"
+        },
+        "accountSasProperties": {
+            "type": "object",
+            "defaultValue": {
+                "signedServices": "b",
+                "signedPermission": "rl",
+                "signedResourceTypes": "sco",
+                "keyToSign": "key2",
+                "signedExpiry": "[parameters('sasTokenExpiry')]"
+            }
         }
+    },
+    "variables": {
+        "storageAccountNameTidy": "[toLower(trim(parameters('name')))]"
     },
     "resources": [
         {
@@ -42,7 +59,15 @@
                     "keySource": "Microsoft.Storage"
                 }
             },
-            "dependsOn": [
+            "resources": [
+                {
+                    "name": "default/devopstemplates",
+                    "type": "blobServices/containers",
+                    "apiVersion": "2018-02-01",
+                    "dependsOn": [
+                        "[parameters('name')]"
+                    ]
+                }
             ]
         }
     ],
@@ -54,6 +79,14 @@
         "storageEndPoints": {
             "type": "object",
             "value": "[reference(parameters('name'), '2018-02-01', 'Full').properties.primaryEndpoints]"
+        },
+        "storageAccountConnectionString": {
+            "type": "string",
+            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountNameTidy'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountNameTidy')), '2018-02-01').keys[0].value)]"
+        },
+        "accountSasToken": {
+            "type": "string",
+            "value": "[listAccountSas(variables('storageAccountNameTidy'), '2018-02-01', parameters('accountSasProperties')).accountSasToken]"
         }
     }
 }
