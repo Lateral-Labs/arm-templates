@@ -83,7 +83,8 @@
         "actionGroupName": "[variables('resourceName')]",
         "tableStorageName": "[concat(parameters('environmentName'), 'tables', parameters('projectName'))]",
         "blobStorageName": "[concat(parameters('environmentName'), 'blobs', parameters('projectName'))]",
-        "serviceBusNamespace": "[variables('resourceName')]"
+        "serviceBusNamespace": "[variables('resourceName')]",
+        "redisCacheName": "[if(equals(parameters('consolidate'), 'Yes'), concat('prod-', parameters('projectName')), variables('resourceName'))]"
     },
     "resources": [
         {
@@ -120,6 +121,28 @@
                     },
                     "emailReceivers": {
                         "value": "[parameters('emailReceivers')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "redis",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Cache.Redis.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('redisCacheName')]"
+                    },
+                    "cacheSKUName": {
+                        "value": "[reference('environmentSize').outputs.size.value.redis.sku]"
+                    },
+                    "cacheSKUCapacity": {
+                        "value": "[reference('environmentSize').outputs.size.value.redis.capacity]"
                     }
                 }
             }
@@ -268,41 +291,12 @@
                                 {
                                     "secretName": "[concat('ConnectionString--', variables('sqlConnectionStringName'))]",
                                     "secretValue": "[concat('Data Source=', variables('sqlServerName'), '.database.windows.net;Initial Catalog=', variables('sqlDbName'), ';persist security info=True;user id=', variables('sqlAdminUser'), ';password=', variables('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
-                                },
-                                {
-                                    "secretName": "AzureStorageTablesEndpoint",
-                                    "secretValue": "[reference('tablestorage').outputs.storageAccountConnectionString.value]"
-                                },
-                                {
-                                    "secretName": "AzureStorageBlobsEndpoint",
-                                    "secretValue": "[reference('blobstorage').outputs.storageAccountConnectionString.value]"
-                                },
-                                {
-                                    "secretName": "AzureStorageBlobsAccountSasToken",
-                                    "secretValue": "[reference('blobstorage').outputs.storageAccountConnectionString.value]"
-                                },
-                                {
-                                    "secretName": "AzureServiceBusListenOnlyConnectionString",
-                                    "secretValue": "[reference('servicebus').outputs.listenOnlyConnectionString.value]"
-                                },
-                                {
-                                    "secretName": "AzureServiceBusSendOnlyConnectionString",
-                                    "secretValue": "[reference('servicebus').outputs.sendOnlyConnectionString.value]"
-                                },
-                                {
-                                    "secretName": "AzureServiceBusRootConnectionString",
-                                    "secretValue": "[reference('servicebus').outputs.RootConnectionString.value]"
                                 }
                             ]
                         }
                     }
                 }
-            },
-            "dependsOn": [
-                "tablestorage",
-                "blobstorage",
-                "servicebus"
-            ]
+            }
         },
         {
             "apiVersion": "2017-05-10",
@@ -449,6 +443,68 @@
             },
             "dependsOn": [
                 "actionGroup"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVaultSecrets",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.vaults.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "users": {
+                        "value": [
+                        ]
+                    },
+                    "sku": {
+                        "value": "[reference('environmentSize').outputs.size.value.keyVaultSku]"
+                    },
+                    "enabledForTemplateDeployment": {
+                        "value": true
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "AzureStorageTablesEndpoint",
+                                    "secretValue": "[reference('tablestorage').outputs.storageAccountConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "AzureStorageBlobsEndpoint",
+                                    "secretValue": "[reference('blobstorage').outputs.storageAccountConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "AzureStorageBlobsAccountSasToken",
+                                    "secretValue": "[reference('blobstorage').outputs.storageAccountConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "AzureServiceBusListenOnlyConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.listenOnlyConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "AzureServiceBusSendOnlyConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.sendOnlyConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "AzureServiceBusRootConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.RootConnectionString.value]"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "tablestorage",
+                "blobstorage",
+                "servicebus",
+                "redis"
             ]
         }
     ],

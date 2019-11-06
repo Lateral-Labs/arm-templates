@@ -39,10 +39,10 @@
                 "maxSizeBytes": "2147483648"
             },
             "redis": {
-                "sku":"Basic",
-                "capacity": "0"
+                "sku": "Basic",
+                "capacity": 0
             },
-            "keyVaultSku" : "Standard",
+            "keyVaultSku": "Standard",
             "serviceBus": {
                 "sku": "Basic",
                 "capacity": 1,
@@ -72,10 +72,10 @@
                 "maxSizeBytes": "268435456000"
             },
             "redis": {
-                "sku":"Basic",
-                "capacity": "0"
+                "sku": "Basic",
+                "capacity": 0
             },
-            "keyVaultSku" : "Standard",
+            "keyVaultSku": "Standard",
             "serviceBus": {
                 "sku": "Standard",
                 "capacity": 1,
@@ -105,10 +105,10 @@
                 "maxSizeBytes": "268435456000"
             },
             "redis": {
-                "sku":"Basic",
-                "capacity": "1"
+                "sku": "Basic",
+                "capacity": 1
             },
-            "keyVaultSku" : "Standard",
+            "keyVaultSku": "Standard",
             "serviceBus": {
                 "sku": "Standard",
                 "capacity": 1,
@@ -138,10 +138,10 @@
                 "maxSizeBytes": "1099511627776"
             },
             "redis": {
-                "sku":"Standard",
-                "capacity": "1"
+                "sku": "Standard",
+                "capacity": 1
             },
-            "keyVaultSku" : "Premium",
+            "keyVaultSku": "Premium",
             "serviceBus": {
                 "sku": "Standard",
                 "capacity": 1,
@@ -171,10 +171,10 @@
                 "maxSizeBytes": "1099511627776"
             },
             "redis": {
-                "sku":"Standard",
-                "capacity": "3"
+                "sku": "Standard",
+                "capacity": 3
             },
-            "keyVaultSku" : "Premium",
+            "keyVaultSku": "Premium",
             "serviceBus": {
                 "sku": "Premium",
                 "capacity": 1,
@@ -182,7 +182,8 @@
             }
         }
     },
-    "resources": [],
+    "resources": [
+    ],
     "outputs": {
         "size": {
             "type": "object",
