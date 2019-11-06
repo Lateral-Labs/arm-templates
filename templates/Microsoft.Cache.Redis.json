@@ -44,6 +44,10 @@
     "cache": {
       "type": "object",
       "value": "[reference(parameters('name'), '2017-10-01', 'Full')]"
+    },
+    "primaryKey": {
+      "type": "string",
+      "value": "[listKeys(resourceId('Microsoft.Cache/Redis', variables('name')), '2017-10-01').primaryKey]"
     }
   }
 }
