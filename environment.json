@@ -74,6 +74,7 @@
     "variables": {
         "deploymentMode": "Incremental",
         "resourceName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
+        "sqlConnectionStringName": "Data",
         "sqlServerName": "[variables('resourceName')]",
         "sqlDbName": "[variables('resourceName')]",
         "sqlAdminUser": "[concat(parameters('environmentName'), parameters('projectName'), uniqueString(resourceGroup().id, 'a82b2d74-d900-45e3-b4c9-02f0b4695f67'))]",
@@ -150,58 +151,42 @@
         },
         {
             "apiVersion": "2017-05-10",
-            "name": "sqlserver",
+            "name": "azuresql",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "[variables('deploymentMode')]",
                 "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Sql.server.json', parameters('templateSasToken'))]"
+                    "uri": "[concat(parameters('templateBaseUrl'), 'AzureSqlDatabase.json', parameters('templateSasToken'))]"
                 },
                 "parameters": {
-                    "name": {
+                    "sqlServerName": {
                         "value": "[variables('sqlServerName')]"
                     },
-                    "administratorLogin": {
-                        "value": "[variables('sqlAdminUser')]"
-                    },
-                    "administratorPassword": {
-                        "value": "[variables('sqlAdminPassword')]"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "sqldatabase",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Sql.database.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "serverName": {
-                        "value": "[variables('sqlServerName')]"
-                    },
-                    "databaseName": {
+                    "sqlDbName": {
                         "value": "[variables('sqlDbName')]"
                     },
-                    "tier": {
-                        "value": "[reference('environmentSize').outputs.size.value.sqlDatabase.tier]"
+                    "sqlAdminUser": {
+                        "value": "[variables('sqlAdminUser')]"
                     },
-                    "sku": {
-                        "value": "[reference('environmentSize').outputs.size.value.sqlDatabase.sku]"
+                    "sqlAdminPassword": {
+                        "value": "[variables('sqlAdminPassword')]"
                     },
-                    "maxSizeBytes": {
-                        "value": "[reference('environmentSize').outputs.size.value.sqlDatabase.maxSizeBytes]"
+                    "size": {
+                        "value": "[parameters('size')]"
                     },
-                    "collation": {
-                        "value": "SQL_Latin1_General_CP1_CI_AS"
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    },
+                    "templateSasToken": {
+                        "value": "[parameters('templateSasToken')]"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
                     }
                 }
             },
             "dependsOn": [
-                "sqlserver"
+                "actionGroup"
             ]
         },
         {
@@ -277,7 +262,7 @@
                                     "secretValue": "[parameters('environmentName')]"
                                 },
                                 {
-                                    "secretName": "ConnectionString--Data",
+                                    "secretName": "[concat('ConnectionString--', variables('sqlConnectionStringName'))]",
                                     "secretValue": "[concat('Data Source=', variables('sqlServerName'), '.database.windows.net;Initial Catalog=', variables('sqlDbName'), ';persist security info=True;user id=', variables('sqlAdminUser'), ';password=', variables('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
                                 },
                                 {
@@ -287,6 +272,18 @@
                                 {
                                     "secretName": "AzureStorageBlobsEndpoint",
                                     "secretValue": "[reference('blobstorage').outputs.storageEndPoints.value.blob]"
+                                },
+                                {
+                                    "secretName": "AzureServiceBusListenOnlyConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.listenOnlyConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "AzureServiceBusSendOnlyConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.sendOnlyConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "AzureServiceBusRootConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.RootConnectionString.value]"
                                 }
                             ]
                         }
