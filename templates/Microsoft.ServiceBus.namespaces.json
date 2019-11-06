@@ -102,6 +102,10 @@
         "ListenOnlyConnectionString": {
             "type": "string",
             "value": "[listkeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('name'), 'ListenOnlyKey'), '2017-04-01').primaryConnectionString]"
+        },
+        "RootConnectionString": {
+            "type": "string",
+            "value": "[listkeys(resourceId('Microsoft.ServiceBus/namespaces/authorizationRules', parameters('name'), 'RootManageSharedAccessKey'), '2017-04-01').primaryConnectionString]"
         }
     }
 }
