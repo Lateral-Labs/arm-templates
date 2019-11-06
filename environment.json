@@ -460,6 +460,7 @@
                     },
                     "users": {
                         "value": [
+                            "abfa0a7c-a6b6-4736-8310-5855508787cd"
                         ]
                     },
                     "sku": {
@@ -494,6 +495,18 @@
                                 {
                                     "secretName": "AzureServiceBusRootConnectionString",
                                     "secretValue": "[reference('servicebus').outputs.RootConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "RedisEndpoint",
+                                    "secretValue": "[reference('redis').outputs.cache.value.properties.hostName]"
+                                },
+                                {
+                                    "secretName": "RedisPrimaryKey",
+                                    "secretValue": "[reference('redis').outputs.primaryKey.value]"
+                                },
+                                {
+                                    "secretName": "RedisConnectionTimeout",
+                                    "secretValue": "2000"
                                 }
                             ]
                         }
