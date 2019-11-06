@@ -28,6 +28,9 @@
             ]
         }
     },
+    "variables": {
+        "storageAccountNameTidy": "[toLower(trim(parameters('name')))]"
+    },
     "resources": [
         {
             "type": "Microsoft.Storage/storageAccounts",
@@ -64,6 +67,10 @@
         "storageEndPoints": {
             "type": "object",
             "value": "[reference(parameters('name'), '2018-02-01', 'Full').properties.primaryEndpoints]"
+        },
+        "storageAccountConnectionString": {
+            "type": "string",
+            "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountNameTidy'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountNameTidy')), '2018-02-01').keys[0].value)]"
         }
     }
 }
