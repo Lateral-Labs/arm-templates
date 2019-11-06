@@ -151,7 +151,7 @@
         },
         {
             "apiVersion": "2017-05-10",
-            "name": "azuresql",
+            "name": "[concat('azuresql', variables('sqlConnectionStringName'))]",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "[variables('deploymentMode')]",
@@ -271,7 +271,11 @@
                                 },
                                 {
                                     "secretName": "AzureStorageBlobsEndpoint",
-                                    "secretValue": "[reference('blobstorage').outputs.storageEndPoints.value.blob]"
+                                    "secretValue": "[reference('blobstorage').outputs.storageAccountConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "AzureStorageBlobsAccountSasToken",
+                                    "secretValue": "[reference('blobstorage').outputs.storageAccountConnectionString.value]"
                                 },
                                 {
                                     "secretName": "AzureServiceBusListenOnlyConnectionString",
