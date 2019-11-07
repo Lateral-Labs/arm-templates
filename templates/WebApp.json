@@ -237,6 +237,36 @@
     },
     {
       "apiVersion": "2017-05-10",
+      "name": "[concat('KVAccess', parameters('app'), 'AzureAppService')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.accessPolicies.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('keyVaultName')]"
+          },
+          "objectId": {
+            "value": "abfa0a7c-a6b6-4736-8310-5855508787cd"
+          },
+          "secretsPermissions": {
+            "value": [
+              "Get",
+              "List",
+              "Set",
+              "Delete",
+              "Recover",
+              "Backup",
+              "Restore"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2017-05-10",
       "name": "[concat('KVAccess', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
@@ -260,7 +290,6 @@
         }
       },
       "dependsOn": [
-        "[concat('insights', parameters('app'))]",
         "[parameters('app')]"
       ]
     },

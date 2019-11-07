@@ -8,15 +8,6 @@
                 "description": "Name of the Key Vault"
             }
         },
-        "users": {
-            "type": "array",
-            "defaultValue": [
-                "abfa0a7c-a6b6-4736-8310-5855508787cd"
-            ],
-            "metadata": {
-                "description": "Object Ids for the AAD Users to give permission to. The default is the Azure App Service. Suggested to leave that in."
-            }
-        },
         "sku": {
             "type": "string",
             "defaultValue": "Standard",
@@ -71,55 +62,6 @@
                 "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",
                 "enabledForDiskEncryption": "[parameters('enabledForDiskEncryption')]",
                 "tenantId": "[subscription().tenantId]",
-                "copy": [
-                    {
-                        "name": "accessPolicies",
-                        "count": "[length(parameters('users'))]",
-                        "input": {
-                            "tenantId": "[subscription().tenantId]",
-                            "objectId": "[parameters('users')[copyIndex('accessPolicies')]]",
-                            "permissions": {
-                                "keys": [
-                                    "Get",
-                                    "List",
-                                    "Update",
-                                    "Create",
-                                    "Import",
-                                    "Delete",
-                                    "Recover",
-                                    "Backup",
-                                    "Restore"
-                                ],
-                                "secrets": [
-                                    "Get",
-                                    "List",
-                                    "Set",
-                                    "Delete",
-                                    "Recover",
-                                    "Backup",
-                                    "Restore"
-                                ],
-                                "certificates": [
-                                    "Get",
-                                    "List",
-                                    "Update",
-                                    "Create",
-                                    "Import",
-                                    "Delete",
-                                    "Recover",
-                                    "Backup",
-                                    "Restore",
-                                    "ManageContacts",
-                                    "ManageIssuers",
-                                    "GetIssuers",
-                                    "ListIssuers",
-                                    "SetIssuers",
-                                    "DeleteIssuers"
-                                ]
-                            }
-                        }
-                    }
-                ],
                 "sku": {
                     "name": "[parameters('sku')]",
                     "family": "A"

@@ -266,11 +266,6 @@
                     "vaultName": {
                         "value": "[variables('keyVaultName')]"
                     },
-                    "users": {
-                        "value": [
-                            "abfa0a7c-a6b6-4736-8310-5855508787cd"
-                        ]
-                    },
                     "sku": {
                         "value": "[reference('environmentSize').outputs.size.value.keyVaultSku]"
                     },
@@ -389,7 +384,8 @@
             },
             "dependsOn": [
                 "actionGroup",
-                "keyVault"
+                "keyVault",
+                "api-app"
             ]
         },
         {
@@ -458,11 +454,6 @@
                     "vaultName": {
                         "value": "[variables('keyVaultName')]"
                     },
-                    "users": {
-                        "value": [
-                            "abfa0a7c-a6b6-4736-8310-5855508787cd"
-                        ]
-                    },
                     "sku": {
                         "value": "[reference('environmentSize').outputs.size.value.keyVaultSku]"
                     },
@@ -482,7 +473,7 @@
                                 },
                                 {
                                     "secretName": "AzureStorageBlobsAccountSasToken",
-                                    "secretValue": "[reference('blobstorage').outputs.storageAccountConnectionString.value]"
+                                    "secretValue": "[reference('blobstorage').outputs.accountSasToken.value]"
                                 },
                                 {
                                     "secretName": "AzureServiceBusListenOnlyConnectionString",
