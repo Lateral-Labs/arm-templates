@@ -271,24 +271,6 @@
                     },
                     "enabledForTemplateDeployment": {
                         "value": true
-                    },
-                    "secrets": {
-                        "value": {
-                            "secrets": [
-                                {
-                                    "secretName": "Environment",
-                                    "secretValue": "[parameters('environmentName')]"
-                                },
-                                {
-                                    "secretName": "ActiveDirectoryTenantId",
-                                    "secretValue": "[subscription().tenantId]"
-                                },
-                                {
-                                    "secretName": "[concat('ConnectionString--', variables('sqlConnectionStringName'))]",
-                                    "secretValue": "[concat('Data Source=', variables('sqlServerName'), '.database.windows.net;Initial Catalog=', variables('sqlDbName'), ';persist security info=True;user id=', variables('sqlAdminUser'), ';password=', variables('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
-                                }
-                            ]
-                        }
                     }
                 }
             }
@@ -454,15 +436,21 @@
                     "vaultName": {
                         "value": "[variables('keyVaultName')]"
                     },
-                    "sku": {
-                        "value": "[reference('environmentSize').outputs.size.value.keyVaultSku]"
-                    },
-                    "enabledForTemplateDeployment": {
-                        "value": true
-                    },
                     "secrets": {
                         "value": {
                             "secrets": [
+                                {
+                                    "secretName": "Environment",
+                                    "secretValue": "[parameters('environmentName')]"
+                                },
+                                {
+                                    "secretName": "ActiveDirectoryTenantId",
+                                    "secretValue": "[subscription().tenantId]"
+                                },
+                                {
+                                    "secretName": "[concat('ConnectionString--', variables('sqlConnectionStringName'))]",
+                                    "secretValue": "[concat('Data Source=', variables('sqlServerName'), '.database.windows.net;Initial Catalog=', variables('sqlDbName'), ';persist security info=True;user id=', variables('sqlAdminUser'), ';password=', variables('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
+                                },
                                 {
                                     "secretName": "AzureStorageTablesEndpoint",
                                     "secretValue": "[reference('tablestorage').outputs.storageAccountConnectionString.value]"
