@@ -39,20 +39,6 @@
                 "description": "Seconds until this WebTest will timeout and fail."
             }
         },
-        "windowSize": {
-            "type": "string",
-            "defaultValue": "PT5M",
-            "metadata": {
-                "description": "Take action if changed state for 15 minutes."
-            }
-        },
-        "failedLocationCount": {
-            "type": "int",
-            "defaultValue": 2,
-            "metadata": {
-                "description": "Fail ping from this many locations to consider the test failed."
-            }
-        },
         "testLocationIds": {
             "type": "array",
             "defaultValue": [
@@ -67,9 +53,6 @@
                 "descripton": ""
             }
         }
-    },
-    "variables": {
-        "alertName": "[concat(parameters('name'), '-', uniqueString(resourceGroup().id, parameters('name')))]"
     },
     "resources": [
         {
@@ -108,10 +91,6 @@
         "webTest": {
             "type": "object",
             "value": "[reference(parameters('name'), '2015-05-01', 'Full')]"
-        },
-        "webTestAlertRule": {
-            "type": "object",
-            "value": "[reference(variables('alertName'), '2016-03-01', 'Full')]"
         }
     }
 }
