@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "sqlServerName": {
@@ -117,6 +117,42 @@
             "value": "SQL_Latin1_General_CP1_CI_AS"
           }
         }
+      },
+      "dependsOn": [
+        "[concat('sqlserver', parameters('sqlDbName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases/advisors",
+      "name": "[concat(parameters('sqlServerName'), '/', parameters('sqlDbName'), '/', 'ForceLastGoodPlan')]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Enabled"
+      },
+      "dependsOn": [
+        "[concat('sqlserver', parameters('sqlDbName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases/advisors",
+      "name": "[concat(parameters('sqlServerName'), '/', parameters('sqlDbName'), '/', 'CreateIndex')]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Enabled"
+      },
+      "dependsOn": [
+        "[concat('sqlserver', parameters('sqlDbName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Sql/servers/databases/advisors",
+      "name": "[concat(parameters('sqlServerName'), '/', parameters('sqlDbName'), '/', 'DropIndex')]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Enabled"
       },
       "dependsOn": [
         "[concat('sqlserver', parameters('sqlDbName'))]"

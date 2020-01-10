@@ -177,8 +177,18 @@
           "appSettings": {
             "value": [
               {
+                "name": "ASPNETCORE_ENVIRONMENT",
+                "value": "[parameters('environment')]",
+                "slotSetting": false
+              },
+              {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
                 "value": "[reference(concat('insights', parameters('app'))).outputs.InstrumentationKey.value]",
+                "slotSetting": false
+              },
+              {
+                "name": "LOG_EVENTLEVEL",
+                "value": "Information",
                 "slotSetting": false
               },
               {
