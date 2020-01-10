@@ -102,45 +102,6 @@
                     "WebTest": "[concat('<WebTest   Name=\"', parameters('name'), '\"   Enabled=\"True\"         CssProjectStructure=\"\"    CssIteration=\"\"  Timeout=\"', parameters('timeout'),'\"  WorkItemIds=\"\"         xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\"         Description=\"\"  CredentialUserName=\"\"  CredentialPassword=\"\"         PreAuthenticate=\"True\"  Proxy=\"default\"  StopOnError=\"False\"         RecordedResultFile=\"\"  ResultsLocale=\"\">  <Items>  <Request Method=\"GET\"    Version=\"1.1\"  Url=\"', parameters('testUrl'),   '\" ThinkTime=\"0\"  Timeout=\"', parameters('timeout') ,'\" ParseDependentRequests=\"True\"         FollowRedirects=\"True\" RecordResult=\"True\" Cache=\"False\"         ResponseTimeGoal=\"0\"  Encoding=\"utf-8\"  ExpectedHttpStatusCode=\"200\"         ExpectedResponseUrl=\"\" ReportingName=\"\" IgnoreHttpStatusCode=\"False\" />        </Items>  <ValidationRules> <ValidationRule  Classname=\"Microsoft.VisualStudio.TestTools.WebTesting.Rules.ValidationRuleFindText, Microsoft.VisualStudio.QualityTools.WebTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a\" DisplayName=\"Find Text\"         Description=\"Verifies the existence of the specified text in the response.\"         Level=\"High\"  ExectuionOrder=\"BeforeDependents\">  <RuleParameters>        <RuleParameter Name=\"FindText\" Value=\"',   '', '\" />  <RuleParameter Name=\"IgnoreCase\" Value=\"False\" />  <RuleParameter Name=\"UseRegularExpression\" Value=\"False\" />  <RuleParameter Name=\"PassIfTextFound\" Value=\"True\" />  </RuleParameters> </ValidationRule>  </ValidationRules>  </WebTest>')]"
                 }
             }
-        },
-        {
-            "name": "[variables('alertName')]",
-            "type": "Microsoft.Insights/alertrules",
-            "apiVersion": "2016-03-01",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[resourceId('Microsoft.Insights/webtests', parameters('name'))]"
-            ],
-            "tags": {
-                "[concat('hidden-link:', resourceId('Microsoft.Insights/components', parameters('insightsName')))]": "Resource",
-                "[concat('hidden-link:', resourceId('Microsoft.Insights/webtests', parameters('name')))]": "Resource"
-            },
-            "properties": {
-                "name": "[variables('alertName')]",
-                "description": "[concat('Alert for ', parameters('name'))]",
-                "isEnabled": true,
-                "condition": {
-                    "$type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.LocationThresholdRuleCondition, Microsoft.WindowsAzure.Management.Mon.Client",
-                    "odata.type": "Microsoft.Azure.Management.Insights.Models.LocationThresholdRuleCondition",
-                    "dataSource": {
-                        "$type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.RuleMetricDataSource, Microsoft.WindowsAzure.Management.Mon.Client",
-                        "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleMetricDataSource",
-                        "resourceUri": "[resourceId('microsoft.insights/webtests', parameters('name'))]",
-                        "metricName": "GSMT_AvRaW"
-                    },
-                    "windowSize": "[parameters('windowSize')]",
-                    "failedLocationCount": "[parameters('failedLocationCount')]"
-                },
-                "actions": [
-                    {
-                        "$type": "Microsoft.WindowsAzure.Management.Monitoring.Alerts.Models.RuleEmailAction, Microsoft.WindowsAzure.Management.Mon.Client",
-                        "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
-                        "sendToServiceOwners": true,
-                        "customEmails": [
-                        ]
-                    }
-                ]
-            }
         }
     ],
     "outputs": {
