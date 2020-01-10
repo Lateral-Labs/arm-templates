@@ -131,7 +131,7 @@
         "autoExecuteValue": "Enabled"
       },
       "dependsOn": [
-        "[concat('sqlserver', parameters('sqlDbName'))]"
+        "[concat('sqldatabase', parameters('sqlDbName'))]"
       ]
     },
     {
@@ -143,7 +143,7 @@
         "autoExecuteValue": "Enabled"
       },
       "dependsOn": [
-        "[concat('sqlserver', parameters('sqlDbName'))]"
+        "[concat('sqldatabase', parameters('sqlDbName'))]"
       ]
     },
     {
@@ -155,7 +155,7 @@
         "autoExecuteValue": "Enabled"
       },
       "dependsOn": [
-        "[concat('sqlserver', parameters('sqlDbName'))]"
+        "[concat('sqldatabase', parameters('sqlDbName'))]"
       ]
     },
     {
