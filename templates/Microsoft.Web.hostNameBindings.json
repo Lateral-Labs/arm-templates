@@ -1,0 +1,72 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "app": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the website to create ssl certificate and binding for."
+            }
+        },
+        "hostingPlanName": {
+            "type": "string"
+        },
+        "hostName": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Custom host name for the Website."
+            }
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
+            "metadata": {
+                "description": "Location for the individual deployment templates. If it's a blob storage account, the templateSasToken must have a value."
+            }
+        },
+        "templateSasToken": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Sas Token for Azure storage account. Used when the individual templates are linked from blob storage"
+            }
+        }
+    },
+    "variables": {
+        "deploymentMode": "Incremental",
+        "bindingName": "[concat(parameters('app'), '/', parameters('hostName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/sites/hostnameBindings",
+            "apiVersion": "2019-08-01",
+            "name": "[variables('bindingName')]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat(parameters('app'), '-certificate')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.certificates.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "app": {
+                        "value": "[parameters('app')]"
+                    },
+                    "hostingPlanName": {
+                        "value": "[parameters('hostingPlanName')]"
+                    },
+                    "hostName": {
+                        "value": "[parameters('hostName')]"
+                    }
+                }
+            }
+        },
+    ]
+}
