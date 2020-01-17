@@ -247,6 +247,62 @@
     },
     {
       "apiVersion": "2017-05-10",
+      "name": "[concat('binding-', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.hostNameBindings.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "app": {
+            "value": "[variables('appName')]"
+          },
+          "hostingPlanName": {
+            "value": "[variables('serverFarmName')]"
+          },
+          "hostName": {
+            "value": "[parameters('customDomain')]"
+          },
+          "templateBaseUrl": {
+            "value": "[parameters('templateBaseUrl')]"
+          },
+          "templateSasToken": {
+            "value": "[parameters('templateSasToken')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[parameters('app')]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('certificate-', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.certificates.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "app": {
+            "value": "[variables('appName')]"
+          },
+          "hostingPlanName": {
+            "value": "[variables('serverFarmName')]"
+          },
+          "hostName": {
+            "value": "[parameters('customDomain')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('binding-', parameters('app'))]"
+      ]
+    },
+    {
+      "apiVersion": "2017-05-10",
       "name": "[concat('KVAccess', parameters('app'), 'AzureAppService')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
