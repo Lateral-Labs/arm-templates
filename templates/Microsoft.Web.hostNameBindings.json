@@ -35,7 +35,8 @@
     },
     "variables": {
         "deploymentMode": "Incremental",
-        "bindingName": "[concat(parameters('app'), '/', parameters('hostName'))]"
+        "bindingName": "[concat(parameters('app'), '/', parameters('hostName'))]",
+        "certificateName": "[concat(parameters('app'), '-certificate')]"
     },
     "resources": [
         {
@@ -50,6 +51,19 @@
             ]
         },
         {
+            "type": "Microsoft.Web/certificates",
+            "apiVersion": "2019-08-01",
+            "name": "[variables('certificateName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[concat('Microsoft.Web/sites/',parameters('app'),'/hostnameBindings/',parameters('hostName'))]"
+            ],
+            "properties": {
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
+                "canonicalName": "[parameters('hostName')]"
+            }
+        },
+        {
             "apiVersion": "2017-05-10",
             "name": "[concat(parameters('app'), '-certificate')]",
             "type": "Microsoft.Resources/deployments",
@@ -61,9 +75,6 @@
                 "parameters": {
                     "app": {
                         "value": "[parameters('app')]"
-                    },
-                    "hostingPlanName": {
-                        "value": "[parameters('hostingPlanName')]"
                     },
                     "hostName": {
                         "value": "[parameters('hostName')]"
