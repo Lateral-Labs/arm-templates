@@ -256,7 +256,7 @@
       "apiVersion": "2017-05-10",
       "name": "[concat('binding-', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
-      "condition": "[equals(parameters('createDomains'), 'true')]",
+      "condition": "[parameters('createDomains')]",
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
