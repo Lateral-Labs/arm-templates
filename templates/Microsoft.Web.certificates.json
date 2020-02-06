@@ -31,20 +31,20 @@
             "properties": {
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
                 "canonicalName": "[parameters('hostName')]"
+            }
+        },
+        {
+            "type": "Microsoft.Web/sites/hostnameBindings",
+            "apiVersion": "2016-03-01",
+            "name": "[concat(parameters('app'), '/', parameters('hostName'))]",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "sslState": "SniEnabled",
+                "thumbprint": "[reference(resourceId('Microsoft.Web/certificates', variables('certificateName'))).Thumbprint]"
             },
-            "resources": [
-                {
-                    "type": "Microsoft.Web/sites/hostnameBindings",
-                    "apiVersion": "2016-03-01",
-                    "name": "[concat(parameters('app'), '/', parameters('hostName'))]",
-                    "location": "[resourceGroup().location]",
-                    "properties": {
-                        "sslState": "SniEnabled",
-                        "thumbprint": "[reference(resourceId('Microsoft.Web/certificates', variables('certificateName'))).Thumbprint]"
-                    }
-                }
+            "dependsOn": [
+                "[variables('certificateName')]"
             ]
-
         }
     ]
 }
