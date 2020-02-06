@@ -44,7 +44,10 @@
             "name": "[variables('bindingName')]",
             "location": "[resourceGroup().location]",
             "properties": {
-            }
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Web/sites/', parameters('app'))]"
+            ]
         },
         {
             "apiVersion": "2017-05-10",
