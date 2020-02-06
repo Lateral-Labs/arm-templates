@@ -20,7 +20,8 @@
         }
     },
     "variables": {
-        "certificateName": "[concat(parameters('app'), '-certificate')]"
+        "certificateName": "[concat(parameters('app'), '-certificate')]",
+        "bindingName": "[concat(parameters('app'), '/', parameters('hostName'))]"
     },
     "resources": [
         {
@@ -35,8 +36,8 @@
         },
         {
             "type": "Microsoft.Web/sites/hostnameBindings",
-            "apiVersion": "2016-03-01",
-            "name": "[concat(parameters('app'), '/', parameters('hostName'))]",
+            "apiVersion": "2019-08-01",
+            "name": "[variables('bindingName')]",
             "location": "[resourceGroup().location]",
             "properties": {
                 "sslState": "SniEnabled",
