@@ -65,7 +65,7 @@
         },
         {
             "apiVersion": "2017-05-10",
-            "name": "[concat(parameters('app'), '-certificate')]",
+            "name": "[concat(parameters('app'), '-certificate-deployment')]",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "[variables('deploymentMode')]",
