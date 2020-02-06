@@ -82,8 +82,8 @@
                 }
             },
             "dependsOn": [
-                "[variables('bindingName')]",
-                "[variables('certificateName')]"
+                "[concat('Microsoft.Web/sites/',parameters('app'),'/hostnameBindings/', parameters('hostName'))]",
+                "[concat('Microsoft.Web/certificates/', variables('certificateName'))]"
             ]
         }
     ]
