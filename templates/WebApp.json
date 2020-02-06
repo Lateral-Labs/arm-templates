@@ -276,31 +276,7 @@
         "[parameters('app')]"
       ]
     },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "[concat('certificate-', parameters('app'))]",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "[variables('deploymentMode')]",
-        "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.certificates.json', parameters('templateSasToken'))]"
-        },
-        "parameters": {
-          "app": {
-            "value": "[variables('appName')]"
-          },
-          "hostingPlanName": {
-            "value": "[variables('serverFarmName')]"
-          },
-          "hostName": {
-            "value": "[variables('hostName')]"
-          }
-        }
-      },
-      "dependsOn": [
-        "[concat('binding-', parameters('app'))]"
-      ]
-    },
+
     {
       "apiVersion": "2017-05-10",
       "name": "[concat('KVAccess', parameters('app'), 'AzureAppService')]",
