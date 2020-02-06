@@ -41,7 +41,7 @@
         {
             "type": "Microsoft.Web/sites/hostnameBindings",
             "apiVersion": "2019-08-01",
-            "name": "[variables('bindingName')]",
+            "name": "[resourceId('Microsoft.Web/sites/hostnameBindings', variables('bindingName'))]",
             "location": "[resourceGroup().location]",
             "properties": {
                 "sslState": "SniEnabled",
