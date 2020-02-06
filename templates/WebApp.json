@@ -73,6 +73,13 @@
         "description": "Custom domain for the project."
       }
     },
+    "createDomains": {
+      "type": "bool",
+      "defaultValue": false,
+      "metadata": {
+        "decription": "Skip custom domains creation at first run, it needs the apps to exist."
+      }
+    },
     "keyVaultName": {
       "type": "string",
       "metadata": {
@@ -249,6 +256,7 @@
       "apiVersion": "2017-05-10",
       "name": "[concat('binding-', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
+      "condition": "[equals(parameters('createDomains'), 'true')]",
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
