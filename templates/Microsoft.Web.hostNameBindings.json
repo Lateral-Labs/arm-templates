@@ -82,7 +82,8 @@
                 }
             },
             "dependsOn": [
-                "[variables('bindingName')]"
+                "[variables('bindingName')]",
+                "[variables('certificateName')]"
             ]
         }
     ]
