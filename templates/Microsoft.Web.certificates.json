@@ -29,11 +29,7 @@
             "properties": {
                 "sslState": "SniEnabled",
                 "thumbprint": "[reference(resourceId('Microsoft.Web/certificates', variables('certificateName'))).Thumbprint]"
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Web/sites/', parameters('app'))]",
-                "[concat('Microsoft.Web/certificates/', variables('certificateName'))]"
-            ]
+            }
         }
     ]
 }
