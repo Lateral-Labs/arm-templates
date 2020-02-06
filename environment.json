@@ -69,6 +69,13 @@
             "metadata": {
                 "description": "Custom domain for the project."
             }
+        },
+        "createDomains": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "decription": "Skip custom domains creation at first run, it needs the apps to exist."
+            }
         }
     },
     "variables": {
@@ -312,6 +319,9 @@
                     "customDomain": {
                         "value": "[parameters('customDomain')]"
                     },
+                    "createDomains": {
+                        "value": "[parameters('createDomains')]"
+                    },
                     "keyVaultName": {
                         "value": "[variables('keyVaultName')]"
                     }
@@ -358,6 +368,9 @@
                     },
                     "customDomain": {
                         "value": "[parameters('customDomain')]"
+                    },
+                    "createDomains": {
+                        "value": "[parameters('createDomains')]"
                     },
                     "keyVaultName": {
                         "value": "[variables('keyVaultName')]"
