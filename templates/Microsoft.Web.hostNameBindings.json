@@ -80,7 +80,7 @@
             },
             "dependsOn": [
                 "[concat('Microsoft.Web/sites/',parameters('app'),'/hostnameBindings/', parameters('hostName'))]",
-                "[concat('Microsoft.Web/certificates/', variables('certificateName'))]"
+                "[variables('certificateName')]"
             ]
         }
     ]
