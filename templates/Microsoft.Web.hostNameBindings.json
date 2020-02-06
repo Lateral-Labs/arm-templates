@@ -45,10 +45,7 @@
             "name": "[variables('bindingName')]",
             "location": "[resourceGroup().location]",
             "properties": {
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Web/sites/', parameters('app'))]"
-            ]
+            }
         },
         {
             "type": "Microsoft.Web/certificates",
