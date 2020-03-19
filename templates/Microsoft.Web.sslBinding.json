@@ -14,10 +14,16 @@
             "metadata": {
                 "description": "Custom host name for the Website."
             }
+        },
+        "thumbprint": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Certificate thumbprint."
+            }
         }
     },
     "variables": {
-        "certificateName": "[concat(parameters('app'), '-certificate')]",
         "bindingName": "[concat(parameters('app'), '/', parameters('hostName'))]"
     },
     "resources": [
@@ -28,7 +34,7 @@
             "location": "[resourceGroup().location]",
             "properties": {
                 "sslState": "SniEnabled",
-                "thumbprint": "[reference(resourceId('Microsoft.Web/certificates', variables('certificateName'))).Thumbprint]"
+                "thumbprint": "[parameters('thumbprint')]"
             }
         }
     ]
