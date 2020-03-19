@@ -302,7 +302,7 @@
             "value": "[variables('hostName')]"
           },
           "thumbprint": {
-            "value": "[reference(concat('hostname-certificate-', parameters('app'))).outputs.thumprint]"
+            "value": "[reference(concat('hostname-certificate-', parameters('app'))).outputs.thumbprint]"
           }
         }
       },
