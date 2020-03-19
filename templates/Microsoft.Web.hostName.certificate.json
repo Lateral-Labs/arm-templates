@@ -59,29 +59,12 @@
                 "serverFarmId": "[resourceId('Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]",
                 "canonicalName": "[parameters('hostName')]"
             }
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "[concat(parameters('app'), '-certificate-deployment')]",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.certificates.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "app": {
-                        "value": "[parameters('app')]"
-                    },
-                    "hostName": {
-                        "value": "[parameters('hostName')]"
-                    }
-                }
-            },
-            "dependsOn": [
-                "[concat('Microsoft.Web/sites/',parameters('app'),'/hostnameBindings/', parameters('hostName'))]",
-                "[variables('certificateName')]"
-            ]
         }
-    ]
+    ],
+    "outputs": {
+        "thumbprint": {
+            "type": "string",
+            "value": "[reference(variables('certificateName'), '2019-08-01').thumbprint]"
+        }
+    }
 }

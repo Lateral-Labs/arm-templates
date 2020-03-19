@@ -254,13 +254,13 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('binding-', parameters('app'))]",
+      "name": "[concat('hostname-certificate-', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
       "condition": "[parameters('createDomains')]",
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.hostNameBindings.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.hostName.certificate.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "app": {
@@ -284,7 +284,32 @@
         "[parameters('app')]"
       ]
     },
-
+    {
+      "apiVersion": "2017-05-10",
+      "name": "[concat('ssl-binding-', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[parameters('createDomains')]",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.sslBinding.json', parameters('templateSasToken'))]"
+        },
+        "parameters": {
+          "app": {
+            "value": "[variables('appName')]"
+          },
+          "hostName": {
+            "value": "[variables('hostName')]"
+          },
+          "thumbprint": {
+            "value": "[reference(concat('hostname-certificate-', parameters('app'))).outputs.thumprint]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('hostname-certificate-', parameters('app'))]"
+      ]
+    },
     {
       "apiVersion": "2017-05-10",
       "name": "[concat('KVAccess', parameters('app'), 'AzureAppService')]",
