@@ -144,7 +144,10 @@
             "value": "[reference(concat(parameters('app'), 'environmentSize')).outputs.size.value.serverFarm.autoscale.capacity.maximum]"
           }
         }
-      }
+      },
+      "dependsOn": [
+        "[concat(parameters('app'), 'environmentSize')]"
+      ]
     },
     {
       "apiVersion": "2017-05-10",

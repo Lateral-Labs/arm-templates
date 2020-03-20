@@ -200,7 +200,10 @@
                         "value": true
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "environmentSize"
+            ]
         },
         {
             "apiVersion": "2017-05-10",
@@ -442,7 +445,10 @@
                         "value": "[reference('environmentSize').outputs.size.value.storage.kind]"
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "environmentSize"
+            ]
         },
         {
             "apiVersion": "2017-05-10",
@@ -495,7 +501,10 @@
                         "value": "[reference('environmentSize').outputs.size.value.storage.accountType]"
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "environmentSize"
+            ]
         },
         {
             "apiVersion": "2017-05-10",
@@ -555,7 +564,10 @@
                         "value": "[reference('environmentSize').outputs.size.value.redis.capacity]"
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "environmentSize"
+            ]
         },
         {
             "apiVersion": "2017-05-10",
@@ -618,7 +630,10 @@
                         "value": "[reference('environmentSize').outputs.size.value.serviceBus.zoneRedundant]"
                     }
                 }
-            }
+            },
+            "dependsOn": [
+                "environmentSize"
+            ]
         },
         {
             "apiVersion": "2017-05-10",

@@ -119,7 +119,8 @@
         }
       },
       "dependsOn": [
-        "[concat('sqlserver', parameters('sqlDbName'))]"
+        "[concat('sqlserver', parameters('sqlDbName'))]",
+        "environmentSizeSql"
       ]
     },
     {
