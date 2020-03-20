@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "alertName": {
@@ -111,7 +111,8 @@
             "type": "Microsoft.Insights/metricAlerts",
             "location": "Global",
             "apiVersion": "2018-03-01",
-            "tags": {},
+            "tags": {
+            },
             "properties": {
                 "description": "[parameters('alertDescription')]",
                 "severity": "[parameters('alertSeverity')]",
@@ -127,7 +128,8 @@
                         {
                             "name": "1st criterion",
                             "metricName": "[parameters('metricName')]",
-                            "dimensions": [],
+                            "dimensions": [
+                            ],
                             "operator": "[parameters('operator')]",
                             "threshold": "[parameters('threshold')]",
                             "timeAggregation": "[parameters('timeAggregation')]"
@@ -143,7 +145,7 @@
         }
     ],
     "outputs": {
-        "metricAlert":{
+        "metricAlert": {
             "type": "object",
             "value": "[reference(parameters('alertName'), '2018-03-01', 'Full')]"
         }

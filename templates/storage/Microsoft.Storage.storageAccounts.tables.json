@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
@@ -19,19 +19,13 @@
                 "description": "Storage Account type"
             }
         },
-        "sasTokenExpiry": {
+        "kind": {
             "type": "string",
-            "defaultValue": "2022-12-31T23:59:00Z"
-        },
-        "accountSasProperties": {
-            "type": "object",
-            "defaultValue": {
-                "signedServices": "b",
-                "signedPermission": "rl",
-                "signedResourceTypes": "sco",
-                "keyToSign": "key2",
-                "signedExpiry": "[parameters('sasTokenExpiry')]"
-            }
+            "defaultValue": "Storage",
+            "allowedValues": [
+                "Storage",
+                "StorageV2"
+            ]
         }
     },
     "variables": {
@@ -43,31 +37,25 @@
             "sku": {
                 "name": "[parameters('type')]"
             },
-            "kind": "BlobStorage",
+            "kind": "[parameters('kind')]",
             "name": "[parameters('name')]",
             "apiVersion": "2018-02-01",
             "location": "[resourceGroup().location]",
             "properties": {
                 "supportsHttpsTrafficOnly": true,
-                "accessTier": "Hot",
                 "encryption": {
                     "services": {
                         "blob": {
+                            "enabled": true
+                        },
+                        "file": {
                             "enabled": true
                         }
                     },
                     "keySource": "Microsoft.Storage"
                 }
             },
-            "resources": [
-                {
-                    "name": "default/devopstemplates",
-                    "type": "blobServices/containers",
-                    "apiVersion": "2018-02-01",
-                    "dependsOn": [
-                        "[parameters('name')]"
-                    ]
-                }
+            "dependsOn": [
             ]
         }
     ],
@@ -83,10 +71,6 @@
         "storageAccountConnectionString": {
             "type": "string",
             "value": "[concat('DefaultEndpointsProtocol=https;AccountName=', variables('storageAccountNameTidy'), ';AccountKey=', listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountNameTidy')), '2018-02-01').keys[0].value)]"
-        },
-        "accountSasToken": {
-            "type": "string",
-            "value": "[listAccountSas(variables('storageAccountNameTidy'), '2018-02-01', parameters('accountSasProperties')).accountSasToken]"
         }
     }
 }

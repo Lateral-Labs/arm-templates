@@ -73,7 +73,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Sql.server.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'sql/Microsoft.Sql.server.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "name": {
@@ -95,7 +95,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Sql.database.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'sql/Microsoft.Sql.database.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "serverName": {
@@ -165,7 +165,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "alertName": {
@@ -202,7 +202,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "alertName": {
