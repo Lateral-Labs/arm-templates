@@ -119,7 +119,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.serverfarms.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'web/Microsoft.Web.serverfarms.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "name": {
@@ -153,7 +153,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "name": {
@@ -169,7 +169,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.sites.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'web/Microsoft.Web.sites.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "name": {
@@ -260,7 +260,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.hostName.certificate.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'web/Microsoft.Web.hostName.certificate.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "app": {
@@ -292,7 +292,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Web.sslBinding.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'web/Microsoft.Web.sslBinding.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "app": {
@@ -317,7 +317,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.accessPolicies.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.accessPolicies.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "keyVaultName": {
@@ -347,7 +347,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.accessPolicies.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.accessPolicies.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "keyVaultName": {
@@ -376,7 +376,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "alertName": {
@@ -414,7 +414,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "alertName": {
@@ -451,7 +451,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "alertName": {
@@ -491,7 +491,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "alertName": {
@@ -528,7 +528,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Insights.webtest.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.webtest.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "name": {

@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "name": {
@@ -24,19 +24,28 @@
             "type": "Microsoft.Insights/actionGroups",
             "apiVersion": "2018-03-01",
             "location": "Global",
-            "tags": {},
+            "tags": {
+            },
             "properties": {
                 "groupShortName": "[parameters('shortName')]",
                 "enabled": true,
                 "emailReceivers": "[parameters('emailReceivers')]",
-                "smsReceivers": [],
-                "webhookReceivers": [],
-                "itsmReceivers": [],
-                "azureAppPushReceivers": [],
-                "automationRunbookReceivers": [],
-                "voiceReceivers": [],
-                "logicAppReceivers": [],
-                "azureFunctionReceivers": []
+                "smsReceivers": [
+                ],
+                "webhookReceivers": [
+                ],
+                "itsmReceivers": [
+                ],
+                "azureAppPushReceivers": [
+                ],
+                "automationRunbookReceivers": [
+                ],
+                "voiceReceivers": [
+                ],
+                "logicAppReceivers": [
+                ],
+                "azureFunctionReceivers": [
+                ]
             }
         }
     ],
