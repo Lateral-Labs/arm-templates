@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "projectName": {
-      "value": "impulse",
+      "value": "myproject",
       "metadata": {
         "description": "Use only lowercase letters or numbers"
       }
@@ -11,14 +11,14 @@
     "templateBaseUrl": {
       "value": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
       "metadata": {
-        "description": "Location for the individual deployment templates. Must be a blob storage account."
+        "description": "Location for the individual deployment templates."
       }
     },
     "emailReceivers": {
       "value": [
         {
-          "name": "Your Email Here",
-          "emailAddress": "youremail@mailinator.com"
+          "name": "John Doe",
+          "emailAddress": "john.doe@mailinator.com"
         }
       ],
       "metadata": {
@@ -35,17 +35,20 @@
     "size": {
       "value": "Small",
       "metadata": {
-        "description": "See [templateBaseUrl] + Environment.Size.json for reference."
+        "description": "See [templateBaseUrl] + utils/Environment.Size.json for reference."
       }
     },
     "consolidate": {
       "value": "Yes"
     },
-    "vault": {
-      "value": "yourvault"
+    "devopsPrincipal": {
+      "value": "00000000-0000-0000-0000-000000000000"
     },
     "customDomain": {
-      "value": "impulse-drive.com"
+      "value": "myproject.com"
+    },
+    "createDomains": {
+      "value": true
     }
   }
 }

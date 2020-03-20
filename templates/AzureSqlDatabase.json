@@ -57,7 +57,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'Environment.Size.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'utils/Environment.Size.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "size": {

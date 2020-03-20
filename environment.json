@@ -64,6 +64,13 @@
                 "description": "These addresses will receive monitoring alerts."
             }
         },
+        "devopsPrincipal": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "ObjectId of the Service Principal used for DevOps service connection."
+            }
+        },
         "customDomain": {
             "type": "string",
             "metadata": {
@@ -80,18 +87,19 @@
     },
     "variables": {
         "deploymentMode": "Incremental",
+        "randomSeed": "a82b2d74-d900-45e3-b4c9-02f0b4695f67",
         "resourceName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
-        "sqlConnectionStringName": "Data",
+        "sqlConnectionStringName": "[parameters('projectName')]",
         "sqlServerName": "[variables('resourceName')]",
         "sqlDbName": "[variables('resourceName')]",
-        "sqlAdminUser": "[concat(parameters('environmentName'), parameters('projectName'), uniqueString(resourceGroup().id, 'a82b2d74-d900-45e3-b4c9-02f0b4695f67'))]",
-        "sqlAdminPassword": "[concat(toUpper(first(parameters('environmentName'))), uniqueString(resourceGroup().id, '095339f8-e07a-4758-a5ce-d99fbdc01309'), toLower(last(parameters('environmentName'))), '!')]",
+        "sqlAdminUser": "[concat(parameters('environmentName'), parameters('projectName'), uniqueString(resourceGroup().id, variables('randomSeed')))]",
+        "sqlAdminPassword": "[concat(toUpper(first(parameters('environmentName'))), uniqueString(resourceGroup().id, variables('randomSeed')), toLower(last(parameters('environmentName'))), '!')]",
         "keyVaultName": "[variables('resourceName')]",
         "actionGroupName": "[variables('resourceName')]",
         "tableStorageName": "[concat(parameters('environmentName'), 'tables', parameters('projectName'))]",
         "blobStorageName": "[concat(parameters('environmentName'), 'blobs', parameters('projectName'))]",
         "serviceBusNamespace": "[variables('resourceName')]",
-        "redisCacheName": "[if(equals(parameters('consolidate'), 'Yes'), concat('prod-', parameters('projectName')), variables('resourceName'))]"
+        "redisCacheName": "[variables('resourceName')]"
     },
     "resources": [
         {
@@ -101,7 +109,7 @@
             "properties": {
                 "mode": "[variables('deploymentMode')]",
                 "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Environment.Size.json', parameters('templateSasToken'))]"
+                    "uri": "[concat(parameters('templateBaseUrl'), 'utils/Environment.Size.json', parameters('templateSasToken'))]"
                 },
                 "parameters": {
                     "size": {
@@ -128,53 +136,6 @@
                     },
                     "emailReceivers": {
                         "value": "[parameters('emailReceivers')]"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "redis",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Cache.Redis.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "name": {
-                        "value": "[variables('redisCacheName')]"
-                    },
-                    "cacheSKUName": {
-                        "value": "[reference('environmentSize').outputs.size.value.redis.sku]"
-                    },
-                    "cacheSKUCapacity": {
-                        "value": "[reference('environmentSize').outputs.size.value.redis.capacity]"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "servicebus",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.ServiceBus.namespaces.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "name": {
-                        "value": "[variables('serviceBusNamespace')]"
-                    },
-                    "sku": {
-                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.sku]"
-                    },
-                    "skuCapacity": {
-                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.capacity]"
-                    },
-                    "zoneRedundant": {
-                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.zoneRedundant]"
                     }
                 }
             }
@@ -221,47 +182,6 @@
         },
         {
             "apiVersion": "2017-05-10",
-            "name": "tablestorage",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Storage.storageAccounts.tables.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "name": {
-                        "value": "[variables('tableStorageName')]"
-                    },
-                    "type": {
-                        "value": "[reference('environmentSize').outputs.size.value.storage.accountType]"
-                    },
-                    "kind": {
-                        "value": "[reference('environmentSize').outputs.size.value.storage.kind]"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "2017-05-10",
-            "name": "blobstorage",
-            "type": "Microsoft.Resources/deployments",
-            "properties": {
-                "mode": "[variables('deploymentMode')]",
-                "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Storage.storageAccounts.blobs.json', parameters('templateSasToken'))]"
-                },
-                "parameters": {
-                    "name": {
-                        "value": "[variables('blobStorageName')]"
-                    },
-                    "type": {
-                        "value": "[reference('environmentSize').outputs.size.value.storage.accountType]"
-                    }
-                }
-            }
-        },
-        {
-            "apiVersion": "2017-05-10",
             "name": "keyVault",
             "type": "Microsoft.Resources/deployments",
             "properties": {
@@ -281,6 +201,35 @@
                     }
                 }
             }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "KVDevOpsAccess",
+            "condition": "[not(equals(parameters('devopsPrincipal'),''))]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.accessPolicies.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "objectId": {
+                        "value": "[parameters('devopsPrincipal')]"
+                    },
+                    "secretsPermissions": {
+                        "value": [
+                            "list",
+                            "get"
+                        ]
+                    }
+                }
+            },
+            "dependsOn": [
+                "keyVault"
+            ]
         },
         {
             "apiVersion": "2017-05-10",
@@ -346,7 +295,7 @@
                         "value": "[parameters('projectName')]"
                     },
                     "app": {
-                        "value": "admin"
+                        "value": "admin-api"
                     },
                     "environment": {
                         "value": "[parameters('environmentName')]"
@@ -461,44 +410,63 @@
                                     "secretValue": "[subscription().tenantId]"
                                 },
                                 {
-                                    "secretName": "[concat('ConnectionString--', variables('sqlConnectionStringName'))]",
+                                    "secretName": "[concat('ConnectionStrings--', variables('sqlConnectionStringName'))]",
                                     "secretValue": "[concat('Data Source=', variables('sqlServerName'), '.database.windows.net;Initial Catalog=', variables('sqlDbName'), ';persist security info=True;user id=', variables('sqlAdminUser'), ';password=', variables('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
-                                },
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "keyVault"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "tablestorage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Storage.storageAccounts.tables.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('tableStorageName')]"
+                    },
+                    "type": {
+                        "value": "[reference('environmentSize').outputs.size.value.storage.accountType]"
+                    },
+                    "kind": {
+                        "value": "[reference('environmentSize').outputs.size.value.storage.kind]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVaultSecrets-tablestorage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.secrets.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
                                 {
-                                    "secretName": "AzureStorageTablesEndpoint",
+                                    "secretName": "Azure--Storage--TablesConnectionString",
                                     "secretValue": "[reference('tablestorage').outputs.storageAccountConnectionString.value]"
                                 },
                                 {
-                                    "secretName": "AzureStorageBlobsEndpoint",
-                                    "secretValue": "[reference('blobstorage').outputs.storageAccountConnectionString.value]"
-                                },
-                                {
-                                    "secretName": "AzureStorageBlobsAccountSasToken",
-                                    "secretValue": "[reference('blobstorage').outputs.accountSasToken.value]"
-                                },
-                                {
-                                    "secretName": "AzureServiceBusListenOnlyConnectionString",
-                                    "secretValue": "[reference('servicebus').outputs.listenOnlyConnectionString.value]"
-                                },
-                                {
-                                    "secretName": "AzureServiceBusSendOnlyConnectionString",
-                                    "secretValue": "[reference('servicebus').outputs.sendOnlyConnectionString.value]"
-                                },
-                                {
-                                    "secretName": "AzureServiceBusRootConnectionString",
-                                    "secretValue": "[reference('servicebus').outputs.RootConnectionString.value]"
-                                },
-                                {
-                                    "secretName": "RedisEndpoint",
-                                    "secretValue": "[reference('redis').outputs.cache.value.properties.hostName]"
-                                },
-                                {
-                                    "secretName": "RedisPrimaryKey",
-                                    "secretValue": "[reference('redis').outputs.primaryKey.value]"
-                                },
-                                {
-                                    "secretName": "RedisConnectionTimeout",
-                                    "secretValue": "2000"
+                                    "secretName": "AzureStorageTablesEndpoint",
+                                    "secretValue": "[reference('tablestorage').outputs.storageEndPoints.value.table]"
                                 }
                             ]
                         }
@@ -507,9 +475,187 @@
             },
             "dependsOn": [
                 "tablestorage",
+                "keyVault"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "blobstorage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Storage.storageAccounts.blobs.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('blobStorageName')]"
+                    },
+                    "type": {
+                        "value": "[reference('environmentSize').outputs.size.value.storage.accountType]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVaultSecrets-blobstorage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.secrets.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "Azure--Storage--BlobsConnectionString",
+                                    "secretValue": "[reference('blobstorage').outputs.storageAccountConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "Azure--Storage--BlobsEndpoint",
+                                    "secretValue": "[reference('blobstorage').outputs.storageEndPoints.value.blob]"
+                                },
+                                {
+                                    "secretName": "Azure--Storage--BlobsAccountSasToken",
+                                    "secretValue": "[reference('blobstorage').outputs.accountSasToken.value]"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
                 "blobstorage",
-                "servicebus",
+                "keyVault"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "redis",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.Cache.Redis.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('redisCacheName')]"
+                    },
+                    "cacheSKUName": {
+                        "value": "[reference('environmentSize').outputs.size.value.redis.sku]"
+                    },
+                    "cacheSKUCapacity": {
+                        "value": "[reference('environmentSize').outputs.size.value.redis.capacity]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVaultSecrets-redis",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.secrets.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "Azure--Redis--EndpointsCSV",
+                                    "secretValue": "[reference('redis').outputs.cache.value.properties.hostName]"
+                                },
+                                {
+                                    "secretName": "Azure--Redis--PrimaryKey",
+                                    "secretValue": "[reference('redis').outputs.primaryKey.value]"
+                                },
+                                {
+                                    "secretName": "Azure--Redis--ConnectionTimeout",
+                                    "secretValue": "2000"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "keyVault",
                 "redis"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "servicebus",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.ServiceBus.namespaces.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('serviceBusNamespace')]"
+                    },
+                    "sku": {
+                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.sku]"
+                    },
+                    "skuCapacity": {
+                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.capacity]"
+                    },
+                    "zoneRedundant": {
+                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.zoneRedundant]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVaultSecrets-servicebus",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'Microsoft.KeyVault.secrets.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "Azure--ServiceBus--ListenOnlyConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.listenOnlyConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "Azure--ServiceBus--SendOnlyConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.sendOnlyConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "Azure--ServiceBus--RootConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.RootConnectionString.value]"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "servicebus",
+                "keyVault"
             ]
         }
     ],
