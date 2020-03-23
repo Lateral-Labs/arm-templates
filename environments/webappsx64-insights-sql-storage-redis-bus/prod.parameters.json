@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "projectName": {
-      "value": "myproject",
+      "value": "armtemplates",
       "metadata": {
         "description": "Use only lowercase letters or numbers"
       }
@@ -42,10 +42,13 @@
       "value": "Yes"
     },
     "devopsPrincipal": {
-      "value": "00000000-0000-0000-0000-000000000000"
+      "value": "",
+      "metadata": {
+        "description": "Format: 00000000-0000-0000-0000-000000000000"
+      }
     },
     "customDomain": {
-      "value": "myproject.com"
+      "value": "armtemplates.work"
     },
     "createDomains": {
       "value": true

@@ -1,0 +1,728 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "projectName": {
+            "type": "string"
+        },
+        "environmentName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the environment.",
+                "restrictions": "projectName+environmentName length should be max 20. Required by Azure storage naming conventions."
+            },
+            "allowedValues": [
+                "prod",
+                "dev",
+                "release",
+                "uat",
+                "staging",
+                "test",
+                "qa",
+                "local"
+            ]
+        },
+        "size": {
+            "type": "string",
+            "defaultValue": "Small",
+            "allowedValues": [
+                "ExtraSmall",
+                "Small",
+                "Medium",
+                "Large",
+                "ExtraLarge"
+            ]
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
+            "metadata": {
+                "description": "Location for the individual deployment templates. If it's a blob storage account, the templateSasToken must have a value."
+            }
+        },
+        "templateSasToken": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Sas Token for Azure storage account. Used when the individual templates are linked from blob storage"
+            }
+        },
+        "consolidate": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No",
+            "metadata": {
+                "description": "If Yes, multiple environments will have one single serverfarm and Redis cache. Cuts down costs."
+            }
+        },
+        "emailReceivers": {
+            "type": "array",
+            "metadata": {
+                "description": "These addresses will receive monitoring alerts."
+            }
+        },
+        "devopsPrincipal": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "ObjectId of the Service Principal used for DevOps service connection."
+            }
+        },
+        "customDomain": {
+            "type": "string",
+            "metadata": {
+                "description": "Custom domain for the project."
+            }
+        },
+        "createDomains": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "decription": "Skip custom domains creation at first run, it needs the apps to exist."
+            }
+        },
+        "randomSeed": {
+            "type": "string",
+            "defaultValue": "[utcNow()]",
+            "metadata": {
+                "description": "Provide a unique value for the password generator to use as base."
+            }
+        }
+    },
+    "variables": {
+        "deploymentMode": "Incremental",
+        "resourceName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
+        "sqlServerName": "[variables('resourceName')]",
+        "sqlDbName": "[variables('resourceName')]",
+        "keyVaultName": "[variables('resourceName')]",
+        "actionGroupName": "[variables('resourceName')]",
+        "serviceBusNamespace": "[variables('resourceName')]",
+        "redisCacheName": "[variables('resourceName')]",
+        "sqlAdminUser": "[concat(parameters('environmentName'), parameters('projectName'), uniqueString(resourceGroup().id, parameters('randomSeed')))]",
+        "sqlAdminPassword": "[concat(toUpper(first(parameters('environmentName'))), uniqueString(resourceGroup().id, parameters('randomSeed')), toLower(last(parameters('environmentName'))), '!')]",
+        "tableStorageName": "[concat(parameters('environmentName'), 'tables', parameters('projectName'))]",
+        "blobStorageName": "[concat(parameters('environmentName'), 'blobs', parameters('projectName'))]",
+        "app1Name": "test0001",
+        "app2Name": "test0002"
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-05-10",
+            "name": "environmentSize",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'utils/Environment.Size.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "size": {
+                        "value": "[parameters('size')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "actionGroup",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.ActionGroups.sendEmail.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('actionGroupName')]"
+                    },
+                    "shortName": {
+                        "value": "[parameters('environmentName')]"
+                    },
+                    "emailReceivers": {
+                        "value": "[parameters('emailReceivers')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat('sql-', parameters('projectName'))]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'sql/AzureSqlDatabase.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "sqlServerName": {
+                        "value": "[variables('sqlServerName')]"
+                    },
+                    "sqlDbName": {
+                        "value": "[variables('sqlDbName')]"
+                    },
+                    "sqlAdminUser": {
+                        "value": "[variables('sqlAdminUser')]"
+                    },
+                    "sqlAdminPassword": {
+                        "value": "[variables('sqlAdminPassword')]"
+                    },
+                    "size": {
+                        "value": "[parameters('size')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    },
+                    "templateSasToken": {
+                        "value": "[parameters('templateSasToken')]"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "actionGroup"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVault",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.vaults.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "sku": {
+                        "value": "[reference('environmentSize').outputs.size.value.keyVaultSku]"
+                    },
+                    "enabledForTemplateDeployment": {
+                        "value": true
+                    }
+                }
+            },
+            "dependsOn": [
+                "environmentSize"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "KVDevOpsAccess",
+            "condition": "[not(equals(parameters('devopsPrincipal'),''))]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.accessPolicies.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "objectId": {
+                        "value": "[parameters('devopsPrincipal')]"
+                    },
+                    "secretsPermissions": {
+                        "value": [
+                            "list",
+                            "get"
+                        ]
+                    }
+                }
+            },
+            "dependsOn": [
+                "keyVault"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat(variables('app1Name'),'-insights')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[concat(variables('resourceName'), '-', variables('app1Name'))]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat(variables('app1Name'),'-app')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'web/WebApp.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "project": {
+                        "value": "[parameters('projectName')]"
+                    },
+                    "app": {
+                        "value": "[variables('app1Name')]"
+                    },
+                    "environment": {
+                        "value": "[parameters('environmentName')]"
+                    },
+                    "size": {
+                        "value": "[parameters('size')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    },
+                    "templateSasToken": {
+                        "value": "[parameters('templateSasToken')]"
+                    },
+                    "consolidateServerFarms": {
+                        "value": "[parameters('consolidate')]"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    },
+                    "customDomain": {
+                        "value": "[parameters('customDomain')]"
+                    },
+                    "createDomains": {
+                        "value": "[parameters('createDomains')]"
+                    },
+                    "keyVaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "instrumentationKey": {
+                        "value": "[reference(concat(variables('app1Name'),'-insights')).outputs.InstrumentationKey.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "actionGroup",
+                "keyVault",
+                "[concat(variables('app1Name'),'-insights')]"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat(variables('app2Name'),'-insights')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[concat(variables('resourceName'), '-', variables('app2Name'))]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat(variables('app2Name'),'-app')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'web/WebApp.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "project": {
+                        "value": "[parameters('projectName')]"
+                    },
+                    "app": {
+                        "value": "[variables('app2Name')]"
+                    },
+                    "environment": {
+                        "value": "[parameters('environmentName')]"
+                    },
+                    "size": {
+                        "value": "[parameters('size')]"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    },
+                    "templateSasToken": {
+                        "value": "[parameters('templateSasToken')]"
+                    },
+                    "consolidateServerFarms": {
+                        "value": "[parameters('consolidate')]"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    },
+                    "customDomain": {
+                        "value": "[parameters('customDomain')]"
+                    },
+                    "createDomains": {
+                        "value": "[parameters('createDomains')]"
+                    },
+                    "keyVaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "instrumentationKey": {
+                        "value": "[reference(concat(variables('app2Name'),'-insights')).outputs.InstrumentationKey.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "actionGroup",
+                "keyVault",
+                "[concat(variables('app2Name'),'-insights')]",
+                "[concat(variables('app1Name'),'-app')]"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat('AzureServicesHealthAlert', parameters('environmentName'))]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.activityLogAlerts.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[concat('AzureServicesHealthAlert', parameters('environmentName'))]"
+                    },
+                    "description": {
+                        "value": "Alert when azure services used by the environment are down."
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    },
+                    "conditions": {
+                        "value": [
+                            {
+                                "field": "category",
+                                "equals": "ServiceHealth",
+                                "containsAny": null
+                            },
+                            {
+                                "field": "properties.impactedServices[*].ServiceName",
+                                "equals": null,
+                                "containsAny": [
+                                    "App Service",
+                                    "App Service \\ Web Apps",
+                                    "Application Insights",
+                                    "Key Vault",
+                                    "SQL Database",
+                                    "Storage"
+                                ]
+                            },
+                            {
+                                "field": "properties.impactedServices[*].ImpactedRegions[*].RegionName",
+                                "equals": null,
+                                "containsAny": [
+                                    "[resourceGroup().location]"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "dependsOn": [
+                "actionGroup"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVaultSecrets",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.secrets.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "Environment",
+                                    "secretValue": "[parameters('environmentName')]"
+                                },
+                                {
+                                    "secretName": "ActiveDirectoryTenantId",
+                                    "secretValue": "[subscription().tenantId]"
+                                },
+                                {
+                                    "secretName": "[concat('ConnectionStrings--', parameters('projectName'))]",
+                                    "secretValue": "[concat('Data Source=', variables('sqlServerName'), '.database.windows.net;Initial Catalog=', variables('sqlDbName'), ';persist security info=True;user id=', variables('sqlAdminUser'), ';password=', variables('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "keyVault"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "tablestorage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'storage/Microsoft.Storage.storageAccounts.tables.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('tableStorageName')]"
+                    },
+                    "type": {
+                        "value": "[reference('environmentSize').outputs.size.value.storage.accountType]"
+                    },
+                    "kind": {
+                        "value": "[reference('environmentSize').outputs.size.value.storage.kind]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "environmentSize"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVaultSecrets-tablestorage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.secrets.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "Azure--Storage--TablesConnectionString",
+                                    "secretValue": "[reference('tablestorage').outputs.storageAccountConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "AzureStorageTablesEndpoint",
+                                    "secretValue": "[reference('tablestorage').outputs.storageEndPoints.value.table]"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "tablestorage",
+                "keyVault"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "blobstorage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'storage/Microsoft.Storage.storageAccounts.blobs.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('blobStorageName')]"
+                    },
+                    "type": {
+                        "value": "[reference('environmentSize').outputs.size.value.storage.accountType]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "environmentSize"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVaultSecrets-blobstorage",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.secrets.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "Azure--Storage--BlobsConnectionString",
+                                    "secretValue": "[reference('blobstorage').outputs.storageAccountConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "Azure--Storage--BlobsEndpoint",
+                                    "secretValue": "[reference('blobstorage').outputs.storageEndPoints.value.blob]"
+                                },
+                                {
+                                    "secretName": "Azure--Storage--BlobsAccountSasToken",
+                                    "secretValue": "[reference('blobstorage').outputs.accountSasToken.value]"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "blobstorage",
+                "keyVault"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "redis",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'redis/Microsoft.Cache.Redis.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('redisCacheName')]"
+                    },
+                    "cacheSKUName": {
+                        "value": "[reference('environmentSize').outputs.size.value.redis.sku]"
+                    },
+                    "cacheSKUCapacity": {
+                        "value": "[reference('environmentSize').outputs.size.value.redis.capacity]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "environmentSize"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVaultSecrets-redis",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.secrets.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "Azure--Redis--EndpointsCSV",
+                                    "secretValue": "[reference('redis').outputs.cache.value.properties.hostName]"
+                                },
+                                {
+                                    "secretName": "Azure--Redis--PrimaryKey",
+                                    "secretValue": "[reference('redis').outputs.primaryKey.value]"
+                                },
+                                {
+                                    "secretName": "Azure--Redis--ConnectionTimeout",
+                                    "secretValue": "2000"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "keyVault",
+                "redis"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "servicebus",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'servicebus/Microsoft.ServiceBus.namespaces.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[variables('serviceBusNamespace')]"
+                    },
+                    "sku": {
+                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.sku]"
+                    },
+                    "skuCapacity": {
+                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.capacity]"
+                    },
+                    "zoneRedundant": {
+                        "value": "[reference('environmentSize').outputs.size.value.serviceBus.zoneRedundant]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "environmentSize"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "keyVaultSecrets-servicebus",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.secrets.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "Azure--ServiceBus--ListenOnlyConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.listenOnlyConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "Azure--ServiceBus--SendOnlyConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.sendOnlyConnectionString.value]"
+                                },
+                                {
+                                    "secretName": "Azure--ServiceBus--RootConnectionString",
+                                    "secretValue": "[reference('servicebus').outputs.RootConnectionString.value]"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "servicebus",
+                "keyVault"
+            ]
+        }
+    ],
+    "outputs": {
+    },
+    "functions": [
+    ]
+}
