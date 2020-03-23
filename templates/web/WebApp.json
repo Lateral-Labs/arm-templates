@@ -249,8 +249,7 @@
         }
       },
       "dependsOn": [
-        "[concat('serverFarm', parameters('app'))]",
-        "[concat('insights', parameters('app'))]"
+        "[concat('serverFarm', parameters('app'))]"
       ]
     },
     {
@@ -547,7 +546,6 @@
         }
       },
       "dependsOn": [
-        "[concat('insights', parameters('app'))]",
         "[parameters('app')]"
       ]
     }
