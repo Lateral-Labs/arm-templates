@@ -83,23 +83,30 @@
             "metadata": {
                 "decription": "Skip custom domains creation at first run, it needs the apps to exist."
             }
+        },
+        "randomSeed": {
+            "type": "string",
+            "defaultValue": "[utcNow()]",
+            "metadata": {
+                "description": "Provide a unique value for the password generator to use as base."
+            }
         }
     },
     "variables": {
         "deploymentMode": "Incremental",
-        "randomSeed": "a82b2d74-d900-45e3-b4c9-02f0b4695f67",
         "resourceName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
-        "sqlConnectionStringName": "[parameters('projectName')]",
         "sqlServerName": "[variables('resourceName')]",
         "sqlDbName": "[variables('resourceName')]",
-        "sqlAdminUser": "[concat(parameters('environmentName'), parameters('projectName'), uniqueString(resourceGroup().id, variables('randomSeed')))]",
-        "sqlAdminPassword": "[concat(toUpper(first(parameters('environmentName'))), uniqueString(resourceGroup().id, variables('randomSeed')), toLower(last(parameters('environmentName'))), '!')]",
         "keyVaultName": "[variables('resourceName')]",
         "actionGroupName": "[variables('resourceName')]",
+        "serviceBusNamespace": "[variables('resourceName')]",
+        "redisCacheName": "[variables('resourceName')]",
+        "sqlAdminUser": "[concat(parameters('environmentName'), parameters('projectName'), uniqueString(resourceGroup().id, parameters('randomSeed')))]",
+        "sqlAdminPassword": "[concat(toUpper(first(parameters('environmentName'))), uniqueString(resourceGroup().id, parameters('randomSeed')), toLower(last(parameters('environmentName'))), '!')]",
         "tableStorageName": "[concat(parameters('environmentName'), 'tables', parameters('projectName'))]",
         "blobStorageName": "[concat(parameters('environmentName'), 'blobs', parameters('projectName'))]",
-        "serviceBusNamespace": "[variables('resourceName')]",
-        "redisCacheName": "[variables('resourceName')]"
+        "app1Name": "test0001",
+        "app2Name": "test0002"
     },
     "resources": [
         {
@@ -142,7 +149,7 @@
         },
         {
             "apiVersion": "2017-05-10",
-            "name": "[concat('azuresql', variables('sqlConnectionStringName'))]",
+            "name": "[concat('sql-', parameters('projectName'))]",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "[variables('deploymentMode')]",
@@ -236,57 +243,23 @@
         },
         {
             "apiVersion": "2017-05-10",
-            "name": "api-app",
+            "name": "[concat(variables('app1Name'),'-insights')]",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "[variables('deploymentMode')]",
                 "templateLink": {
-                    "uri": "[concat(parameters('templateBaseUrl'), 'web/WebApp.json', parameters('templateSasToken'))]"
+                    "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
                 },
                 "parameters": {
-                    "project": {
-                        "value": "[parameters('projectName')]"
-                    },
-                    "app": {
-                        "value": "api"
-                    },
-                    "environment": {
-                        "value": "[parameters('environmentName')]"
-                    },
-                    "size": {
-                        "value": "[parameters('size')]"
-                    },
-                    "templateBaseUrl": {
-                        "value": "[parameters('templateBaseUrl')]"
-                    },
-                    "templateSasToken": {
-                        "value": "[parameters('templateSasToken')]"
-                    },
-                    "consolidateServerFarms": {
-                        "value": "[parameters('consolidate')]"
-                    },
-                    "actionGroupId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
-                    },
-                    "customDomain": {
-                        "value": "[parameters('customDomain')]"
-                    },
-                    "createDomains": {
-                        "value": "[parameters('createDomains')]"
-                    },
-                    "keyVaultName": {
-                        "value": "[variables('keyVaultName')]"
+                    "name": {
+                        "value": "[concat(variables('resourceName'), '-', variables('app1Name'))]"
                     }
                 }
-            },
-            "dependsOn": [
-                "actionGroup",
-                "keyVault"
-            ]
+            }
         },
         {
             "apiVersion": "2017-05-10",
-            "name": "admin-app",
+            "name": "[concat(variables('app1Name'),'-app')]",
             "type": "Microsoft.Resources/deployments",
             "properties": {
                 "mode": "[variables('deploymentMode')]",
@@ -298,13 +271,16 @@
                         "value": "[parameters('projectName')]"
                     },
                     "app": {
-                        "value": "admin-api"
+                        "value": "[variables('app1Name')]"
                     },
                     "environment": {
                         "value": "[parameters('environmentName')]"
                     },
                     "size": {
                         "value": "[parameters('size')]"
+                    },
+                    "target": {
+                        "value": "x86"
                     },
                     "templateBaseUrl": {
                         "value": "[parameters('templateBaseUrl')]"
@@ -326,13 +302,90 @@
                     },
                     "keyVaultName": {
                         "value": "[variables('keyVaultName')]"
+                    },
+                    "instrumentationKey": {
+                        "value": "[reference(concat(variables('app1Name'),'-insights')).outputs.InstrumentationKey.value]"
                     }
                 }
             },
             "dependsOn": [
                 "actionGroup",
                 "keyVault",
-                "api-app"
+                "[concat(variables('app1Name'),'-insights')]"
+            ]
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat(variables('app2Name'),'-insights')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[concat(variables('resourceName'), '-', variables('app2Name'))]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "[concat(variables('app2Name'),'-app')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'web/WebApp.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "project": {
+                        "value": "[parameters('projectName')]"
+                    },
+                    "app": {
+                        "value": "[variables('app2Name')]"
+                    },
+                    "environment": {
+                        "value": "[parameters('environmentName')]"
+                    },
+                    "size": {
+                        "value": "[parameters('size')]"
+                    },
+                    "target": {
+                        "value": "x86"
+                    },
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    },
+                    "templateSasToken": {
+                        "value": "[parameters('templateSasToken')]"
+                    },
+                    "consolidateServerFarms": {
+                        "value": "[parameters('consolidate')]"
+                    },
+                    "actionGroupId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('actionGroupName'))]"
+                    },
+                    "customDomain": {
+                        "value": "[parameters('customDomain')]"
+                    },
+                    "createDomains": {
+                        "value": "[parameters('createDomains')]"
+                    },
+                    "keyVaultName": {
+                        "value": "[variables('keyVaultName')]"
+                    },
+                    "instrumentationKey": {
+                        "value": "[reference(concat(variables('app2Name'),'-insights')).outputs.InstrumentationKey.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "actionGroup",
+                "keyVault",
+                "[concat(variables('app2Name'),'-insights')]",
+                "[concat(variables('app1Name'),'-app')]"
             ]
         },
         {
@@ -413,7 +466,7 @@
                                     "secretValue": "[subscription().tenantId]"
                                 },
                                 {
-                                    "secretName": "[concat('ConnectionStrings--', variables('sqlConnectionStringName'))]",
+                                    "secretName": "[concat('ConnectionStrings--', parameters('projectName'))]",
                                     "secretValue": "[concat('Data Source=', variables('sqlServerName'), '.database.windows.net;Initial Catalog=', variables('sqlDbName'), ';persist security info=True;user id=', variables('sqlAdminUser'), ';password=', variables('sqlAdminPassword'), ';MultipleActiveResultSets=True;ConnectRetryCount=3;ConnectRetryInterval=3;Connection Timeout=600')]"
                                 }
                             ]

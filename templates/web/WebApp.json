@@ -36,6 +36,14 @@
         "ExtraLarge"
       ]
     },
+    "target": {
+      "type": "string",
+      "defaultValue": "x64",
+      "allowedValues": [
+        "x86",
+        "x64"
+      ]
+    },
     "templateBaseUrl": {
       "type": "string",
       "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
@@ -84,6 +92,12 @@
       "type": "string",
       "metadata": {
         "description": "KeyVault to link this application to."
+      }
+    },
+    "instrumentationKey": {
+      "type": "string",
+      "metadata": {
+        "description": "App Insights instrumentation key."
       }
     }
   },
@@ -151,28 +165,12 @@
     },
     {
       "apiVersion": "2017-05-10",
-      "name": "[concat('insights', parameters('app'))]",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "[variables('deploymentMode')]",
-        "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.Components.json', parameters('templateSasToken'))]"
-        },
-        "parameters": {
-          "name": {
-            "value": "[variables('appName')]"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2017-05-10",
       "name": "[parameters('app')]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'web/Microsoft.Web.sites.json', parameters('templateSasToken'))]"
+          "uri": "[concat(parameters('templateBaseUrl'), 'web/Microsoft.Web.sites.', parameters('target'), '.json', parameters('templateSasToken'))]"
         },
         "parameters": {
           "name": {
@@ -193,7 +191,7 @@
               },
               {
                 "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                "value": "[reference(concat('insights', parameters('app'))).outputs.InstrumentationKey.value]",
+                "value": "[parameters('instrumentationKey')]",
                 "slotSetting": false
               },
               {
