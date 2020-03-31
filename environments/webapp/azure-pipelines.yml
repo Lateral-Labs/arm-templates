@@ -6,5 +6,12 @@ pool:
 #Your build pipeline references an undefined variable named ‘environment’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
 variables: 
   project: 'armtemplates'
-  serviceconnection: 'Attila Szasz - VS Enterprise'
+  serviceconnection: 'Attila Szasz - Visual Studio Enterprise'
   location: 'West Europe'
+
+steps:
+  - task: AzureKeyVault@1
+    displayName: "Get values from key vault"
+    inputs:
+      azureSubscription: "$(serviceconnection)"
+      KeyVaultName: "$(environment)-$(project)"
