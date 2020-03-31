@@ -11,15 +11,6 @@ variables:
 
 steps:
   - task: AzureResourceManagerTemplateDeployment@3
-    displayName: Delete pre-existing resource group
-    inputs:
-      deploymentScope: 'Resource Group'
-      azureResourceManagerConnection: "$(serviceconnection)"
-      action: 'DeleteRG'
-      location: "$(location)"
-      resourceGroupName: "$(environment)-$(project)"
-
-  - task: AzureResourceManagerTemplateDeployment@3
     displayName: Deploy template
     inputs:
       deploymentScope: 'Resource Group'
