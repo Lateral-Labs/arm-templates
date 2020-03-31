@@ -11,6 +11,15 @@ variables:
 
 steps:
   - task: AzureResourceManagerTemplateDeployment@3
+    displayName: Delete pre-existing resource group
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: "$(serviceconnection)"
+      action: 'DeleteRG'
+      resourceGroupName: "$(environment)-$(project)"
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: Deploy template
     inputs:
       deploymentScope: 'Resource Group'
       azureResourceManagerConnection: "$(serviceconnection)"
@@ -21,3 +30,11 @@ steps:
       csmFile: 'environments/webapp/environment.json'
       csmParametersFile: "environments/webapp/$(environment).parameters.json"
       deploymentMode: 'Incremental'
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: Delete resource group
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: "$(serviceconnection)"
+      action: 'DeleteRG'
+      resourceGroupName: "$(environment)-$(project)"
