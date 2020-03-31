@@ -16,6 +16,7 @@ steps:
       deploymentScope: 'Resource Group'
       azureResourceManagerConnection: "$(serviceconnection)"
       action: 'DeleteRG'
+      location: "$(location)"
       resourceGroupName: "$(environment)-$(project)"
 
   - task: AzureResourceManagerTemplateDeployment@3
@@ -37,4 +38,5 @@ steps:
       deploymentScope: 'Resource Group'
       azureResourceManagerConnection: "$(serviceconnection)"
       action: 'DeleteRG'
+      location: "$(location)"
       resourceGroupName: "$(environment)-$(project)"
