@@ -142,6 +142,15 @@
 		"Tags": {
 			"type": "object",
 			"value": "[variables('Tags')]"
-		}
+		},
+        "V": {
+            "type": "object",
+            "value": {
+                "Environment": "[variables('Environment')]",
+                "Size": "[reference('environmentSize').outputs.size.value]",
+                "Names": "[variables('Names')]",
+                "Tags": "[variables('Tags')]"
+            }
+        }
 	}
 }

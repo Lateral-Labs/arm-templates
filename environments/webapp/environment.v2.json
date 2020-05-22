@@ -48,15 +48,7 @@
             }
         },
         "consolidate": {
-            "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "defaultValue": "No",
-            "metadata": {
-                "description": "If Yes, multiple environments will have one single serverfarm and Redis cache. Cuts down costs."
-            }
+            "type": "bool"
         },
         "emailReceivers": {
             "type": "array",
@@ -303,7 +295,7 @@
                         "value": "[variables('appName')]"
                     },
                     "environment": {
-                        "value": "[reference('environment').outputs]"
+                        "value": "[reference('environment').outputs.V.value]"
                     },
                     "instrumentationKey": {
                         "value": "[reference(concat(variables('appName'),'-insights')).outputs.InstrumentationKey.value]"
