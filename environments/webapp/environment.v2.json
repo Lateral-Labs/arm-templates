@@ -122,7 +122,7 @@
             }
         },
         {
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "name": "actionGroup",
             "type": "Microsoft.Resources/deployments",
             "properties": {
@@ -132,7 +132,7 @@
                 },
                 "parameters": {
                     "name": {
-                        "value": "[reference('environment').outputs.Names.value.actionGroupName]"
+                        "value": "[reference('environment').outputs.Names.value.actionGroup]"
                     },
                     "shortName": {
                         "value": "[reference('environment').outputs.Names.value.actionGroupShortName]"
@@ -143,11 +143,145 @@
                     "tags": {
                         "value": "[reference('environment').outputs.Tags.value]"
                     }
+                }
+            },
+            "dependsOn": [
+                "environment"
+            ]
+        },
+        {
+            "apiVersion": "2019-10-01",
+            "name": "loganalytics",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.OperationalInsights.workspaces.json', parameters('templateSasToken'))]"
                 },
-                "dependsOn": [
-                    "environment"
-                ]
-            }
+                "parameters": {
+                    "name": {
+                        "value": "[reference('environment').outputs.Names.value.workspace]"
+                    },
+                    "sku": {
+                        "value": "[reference('environment').outputs.Size.value.logAnalyticsSku]"
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.Tags.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "environment"
+            ]
+        },
+        {
+            "apiVersion": "2019-10-01",
+            "name": "automation",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'automation/Microsoft.Automation.automationAccounts.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[reference('environment').outputs.Names.value.automation]"
+                    },
+                    "sku": {
+                        "value": "[reference('environment').outputs.Size.value.automationSku]"
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.Tags.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "environment"
+            ]
+        },        
+        {
+            "apiVersion": "2019-10-01",
+            "name": "keyVault",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.vaults.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[reference('environment').outputs.Names.value.keyVault]"
+                    },
+                    "sku": {
+                        "value": "[reference('environment').outputs.Size.value.keyVaultSku]"
+                    },
+                    "enabledForTemplateDeployment": {
+                        "value": true
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.Tags.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "environment"
+            ]
+        },
+        {
+            "apiVersion": "2019-10-01",
+            "name": "KVDevOpsAccess",
+            "condition": "[not(empty(parameters('devopsPrincipal')))]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.accessPolicies.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "keyVaultName": {
+                        "value": "[reference('environment').outputs.Names.value.keyVault]"
+                    },
+                    "objectId": {
+                        "value": "[parameters('devopsPrincipal')]"
+                    },
+                    "secretsPermissions": {
+                        "value": [
+                            "list",
+                            "get"
+                        ]
+                    }
+                }
+            },
+            "dependsOn": [
+                "environment",
+                "keyVault"
+            ]
+        },
+        {
+            "apiVersion": "2019-10-01",
+            "name": "[concat(variables('appName'),'-insights')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.Components.workspace.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[concat(reference('environment').outputs.Names.value.app, '-', variables('appName'))]"
+                    },
+                    "workspaceResourceId": {
+                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.OperationalInsights/workspaces/', reference('environment').outputs.Names.value.workspace)]"
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.Tags.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "environment",
+                "loganalytics"
+            ]
         }
     ],
     "outputs": {

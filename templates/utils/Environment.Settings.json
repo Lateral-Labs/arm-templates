@@ -62,17 +62,19 @@
     "variables":{
 		"resourceName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
 		"Names": {
-			"resourceName": "[variables('resourceName')]",
-			"appName": "[variables('resourceName')]",
-			"sqlServerName": "[variables('resourceName')]",
-			"sqlDbName": "[variables('resourceName')]",
-			"keyVaultName": "[variables('resourceName')]",
-			"actionGroupName": "[variables('resourceName')]",
+			"resource": "[variables('resourceName')]",
+			"app": "[variables('resourceName')]",
+			"sqlServer": "[variables('resourceName')]",
+			"sqlDb": "[variables('resourceName')]",
+			"keyVault": "[variables('resourceName')]",
+			"actionGroup": "[variables('resourceName')]",
 			"actionGroupShortName": "[toUpper(take(parameters('environmentName'),15))]",
 			"serviceBusNamespace": "[variables('resourceName')]",
-			"redisCacheName": "[variables('resourceName')]",
-			"tableStorageName": "[concat(parameters('environmentName'), parameters('projectName'), 'tables')]",
-			"blobStorageName": "[concat(parameters('environmentName'), parameters('projectName'), 'blobs')]"
+			"workspace": "[variables('resourceName')]",
+			"automation": "[variables('resourceName')]",
+			"redisCache": "[variables('resourceName')]",
+			"tableStorage": "[concat(parameters('environmentName'), parameters('projectName'), 'tbl')]",
+			"blobStorage": "[concat(parameters('environmentName'), parameters('projectName'), 'blb')]"
 		},
 		"Environment": {
 			"projectName": "[parameters('projectName')]",

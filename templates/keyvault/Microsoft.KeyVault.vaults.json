@@ -19,6 +19,10 @@
                 "description": "SKU for the vault"
             }
         },
+        "tags": {
+            "type": "object",
+            "defaultValue" : {}
+        },
         "enabledForDeployment": {
             "type": "bool",
             "defaultValue": false,
@@ -47,9 +51,7 @@
             "name": "[parameters('vaultName')]",
             "apiVersion": "2018-02-14",
             "location": "[resourceGroup().location]",
-            "tags": {
-                "displayName": "KeyVault"
-            },
+            "tags": "[parameters('tags')]",
             "properties": {
                 "enabledForDeployment": "[parameters('enabledForDeployment')]",
                 "enabledForTemplateDeployment": "[parameters('enabledForTemplateDeployment')]",

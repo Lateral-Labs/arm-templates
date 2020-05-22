@@ -2,7 +2,7 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "2.0.0.0",
   "parameters": {
-        "accountName": {
+        "name": {
             "type": "String"
         },
         "sku": {
@@ -22,7 +22,7 @@
         {
             "type": "Microsoft.Automation/automationAccounts",
             "apiVersion": "2015-10-31",
-            "name": "[parameters('accountName')]",
+            "name": "[parameters('name')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [],
             "tags": "[parameters('tags')]",
