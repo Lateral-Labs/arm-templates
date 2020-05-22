@@ -1,0 +1,118 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "projectName": {
+            "type": "string"
+        },
+        "environmentName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the environment.",
+                "restrictions": "projectName+environmentName length should be max 20. Required by Azure storage naming conventions."
+            },
+            "allowedValues": [
+                "prod",
+                "dev",
+                "release",
+                "uat",
+                "staging",
+                "test",
+                "qa",
+                "local"
+            ]
+        },
+        "size": {
+            "type": "string",
+            "defaultValue": "Small",
+            "allowedValues": [
+                "ExtraSmall",
+                "Small",
+                "Medium",
+                "Large",
+                "ExtraLarge"
+            ]
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
+            "metadata": {
+                "description": "Location for the individual deployment templates. If it's a blob storage account, the templateSasToken must have a value."
+            }
+        },
+        "templateSasToken": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Sas Token for Azure storage account. Used when the individual templates are linked from blob storage"
+            }
+        },
+        "consolidate": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No",
+            "metadata": {
+                "description": "If Yes, multiple environments will have one single serverfarm and Redis cache. Cuts down costs."
+            }
+        }
+    },
+    "variables":{
+		"resourceName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
+		"Names": {
+			"resourceName": "[variables('resourceName')]",
+			"appName": "[variables('resourceName')]",
+			"sqlServerName": "[variables('resourceName')]",
+			"sqlDbName": "[variables('resourceName')]",
+			"keyVaultName": "[variables('resourceName')]",
+			"actionGroupName": "[variables('resourceName')]",
+			"actionGroupShortName": "[toUpper(take(parameters('environmentName'),15))]",
+			"serviceBusNamespace": "[variables('resourceName')]",
+			"redisCacheName": "[variables('resourceName')]",
+			"tableStorageName": "[concat(parameters('environmentName'), parameters('projectName'), 'tables')]",
+			"blobStorageName": "[concat(parameters('environmentName'), parameters('projectName'), 'blobs')]"
+		},
+		"Environment": {
+			"projectName": "[parameters('projectName')]",
+			"environmentName": "[parameters('environmentName')]",
+			"size": "[parameters('size')]",
+			"templateBaseUrl": "[parameters('templateBaseUrl')]",
+			"templateSasToken": "[parameters('templateSasToken')]",
+			"consolidate": "[parameters('consolidate')]"
+		}
+	},
+    "resources": [
+ 		{
+            "apiVersion": "2017-05-10",
+            "name": "environmentSize",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'utils/Environment.Size.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "size": {
+                        "value": "[parameters('size')]"
+                    }
+                }
+            }
+        }     
+	],
+	"outputs": {
+		"Environment": {
+			"type": "object",
+			"value": "[variables('Environment')]"
+		},
+		"Size": {
+			"type": "object",
+			"value": "[reference('environmentSize').outputs.size.value]"
+		},
+		"Names": {
+			"type": "object",
+			"value": "[variables('Names')]"
+		}
+	}
+}
