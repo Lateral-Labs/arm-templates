@@ -47,7 +47,9 @@
                 "sku": "Basic",
                 "capacity": 1,
                 "zoneRedundant": false
-            }
+            },
+            "automationSku": "Free",
+            "logAnalyticsSku": "Free"
         },
         "sizeSmall": {
             "serverFarm": {
@@ -80,7 +82,9 @@
                 "sku": "Basic",
                 "capacity": 1,
                 "zoneRedundant": false
-            }
+            },
+            "automationSku": "Free",
+            "logAnalyticsSku": "Free"
         },
         "sizeMedium": {
             "serverFarm": {
@@ -113,7 +117,9 @@
                 "sku": "Standard",
                 "capacity": 1,
                 "zoneRedundant": false
-            }
+            },
+            "automationSku": "Basic",
+            "logAnalyticsSku": "PerGB2018"
         },
         "sizeLarge": {
             "serverFarm": {
@@ -146,7 +152,9 @@
                 "sku": "Standard",
                 "capacity": 1,
                 "zoneRedundant": false
-            }
+            },
+            "automationSku": "Basic",
+            "logAnalyticsSku": "Standard"
         },
         "sizeExtraLarge": {
             "serverFarm": {
@@ -179,7 +187,9 @@
                 "sku": "Premium",
                 "capacity": 1,
                 "zoneRedundant": true
-            }
+            },
+            "automationSku": "Basic",
+            "logAnalyticsSku": "Premium"
         }
     },
     "resources": [
