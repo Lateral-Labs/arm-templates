@@ -15,6 +15,10 @@
             "type": "string",
             "defaultValue": "[resourceGroup().name]"
         },
+        "tags": {
+            "type": "object",
+            "defaultValue" : {}
+        },
         "appSettings": {
             "type": "array",
             "defaultValue": [
@@ -34,9 +38,7 @@
             "name": "[parameters('name')]",
             "apiVersion": "2016-08-01",
             "location": "[resourceGroup().location]",
-            "tags": {
-                "[concat('hidden-related:', subscription().id, '/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
-            },
+            "tags": "[parameters('tags')]",
             "properties": {
                 "siteConfig": {
                     "copy": [

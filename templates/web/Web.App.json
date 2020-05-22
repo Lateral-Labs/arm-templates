@@ -29,6 +29,7 @@
     "isProd": "[equals(variables('env'),'prod')]",
     "consolidate": "[parameters('environment').Environment.consolidate]",
     "appName": "[concat(parameters('environment').Names.app, '-', parameters('app'))]",
+    "appResourceId": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Web/sites/', variables('appName'))]",
     "domain": "[parameters('environment').Environment.customDomain]",
     "hostName": "[if(variables('isProd'), concat(parameters('app'), '.', variables('domain')), concat(variables('env'), '-', parameters('app'), '.', variables('domain')))]"
   },
@@ -89,6 +90,9 @@
           },
           "serverFarmResourceGroup": {
             "value": "[parameters('environment').Names.serverFarmResourceGroupName]"
+          },
+          "tags": {
+            "value": "[parameters('environment').Tags]"
           },
           "appSettings": {
             "value": [
@@ -180,11 +184,8 @@
           "hostName": {
             "value": "[variables('hostName')]"
           },
-          "templateBaseUrl": {
-            "value": "[parameters('environment').Environment.templateBaseUrl]"
-          },
-          "templateSasToken": {
-            "value": "[parameters('environment').Environment.templateSasToken]"
+          "tags": {
+            "value": "[parameters('environment').Tags]"
           }
         }
       },
@@ -369,7 +370,7 @@
             "value": "More than 10 server errors in the last 5 minutes."
           },
           "resourceId": {
-            "value": "[parameters('environment').Names.serverFarmResourceId]"
+            "value": "[variables('appResourceId')]"
           },
           "metricName": {
             "value": "Http5xx"
@@ -409,7 +410,7 @@
             "value": "Average response time over 5 seconds in the last 5 minutes."
           },
           "resourceId": {
-            "value": "[parameters('environment').Names.serverFarmResourceId]"
+            "value": "[variables('appResourceId')]"
           },
           "metricName": {
             "value": "AverageResponseTime"
@@ -450,6 +451,9 @@
           },
           "testUrl": {
             "value": "[concat('https://', variables('hostName'))]"
+          },
+          "tags": {
+            "value": "[parameters('environment').Tags]"
           }
         }
       },

@@ -127,22 +127,6 @@
         }     
 	],
 	"outputs": {
-		"Environment": {
-			"type": "object",
-			"value": "[variables('Environment')]"
-		},
-		"Size": {
-			"type": "object",
-			"value": "[reference('environmentSize').outputs.size.value]"
-		},
-		"Names": {
-			"type": "object",
-			"value": "[variables('Names')]"
-		},
-		"Tags": {
-			"type": "object",
-			"value": "[variables('Tags')]"
-		},
         "V": {
             "type": "object",
             "value": {
