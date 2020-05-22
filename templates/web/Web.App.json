@@ -1,0 +1,469 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "app": {
+      "type": "string"
+    },
+    "environment": {
+      "type": "object"
+    },
+    "target": {
+      "type": "string",
+      "defaultValue": "x64",
+      "allowedValues": [
+        "x86",
+        "x64"
+      ]
+    },
+    "instrumentationKey": {
+      "type": "string",
+      "metadata": {
+        "description": "App Insights instrumentation key."
+      }
+    }
+  },
+  "variables": {
+    "deploymentMode": "Incremental",
+    "env": "[parameters('environment').Environment.environmentName]",
+    "isProd": "[equals(variables('env'),'prod')]",
+    "consolidate": "[parameters('environment').Environment.consolidate]",
+    "appName": "[concat(parameters('environment').Names.app, '-', parameters('app'))]",
+    "domain": "[parameters('environment').Environment.customDomain]",
+    "hostName": "[if(variables('isProd'), concat(parameters('app'), '.', variables('domain')), concat(variables('env'), '-', parameters('app'), '.', variables('domain')))]"
+  },
+  "resources": [
+    {
+      "condition": "[or(not(variables('consolidate')), variables('isProd'))]",
+      "apiVersion": "2019-10-01",
+      "name": "[concat('serverFarm', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'web/Microsoft.Web.serverfarms.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "name": {
+            "value": "[parameters('environment').Names.serverFarmName]"
+          },
+          "sku": {
+            "value": "[parameters('environment').Size.serverFarm.sku]"
+          },
+          "skuCode": {
+            "value": "[parameters('environment').Size.serverFarm.skuCode]"
+          },
+          "autoscaleEnabled": {
+            "value": "[parameters('environment').Size.serverFarm.autoscale.enabled]"
+          },
+          "defaultCapacity": {
+            "value": "[parameters('environment').Size.serverFarm.autoscale.capacity.default]"
+          },
+          "minimumCapacity": {
+            "value": "[parameters('environment').Size.serverFarm.autoscale.capacity.minimum]"
+          },
+          "maximumCapacity": {
+            "value": "[parameters('environment').Size.serverFarm.autoscale.capacity.maximum]"
+          },
+          "tags": {
+            "value": "[parameters('environment').Tags]"
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2019-10-01",
+      "name": "[parameters('app')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'web/Microsoft.Web.sites.', parameters('target'), '.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "name": {
+            "value": "[variables('appName')]"
+          },
+          "hostingPlanName": {
+            "value": "[parameters('environment').Names.serverFarmName]"
+          },
+          "serverFarmResourceGroup": {
+            "value": "[parameters('environment').Names.serverFarmResourceGroupName]"
+          },
+          "appSettings": {
+            "value": [
+              {
+                "name": "ASPNETCORE_ENVIRONMENT",
+                "value": "[variables('env')]",
+                "slotSetting": false
+              },
+              {
+                "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+                "value": "[parameters('instrumentationKey')]",
+                "slotSetting": false
+              },
+              {
+                "name": "LOG_EVENTLEVEL",
+                "value": "Information",
+                "slotSetting": false
+              },
+              {
+                "name": "KeyVault--BaseUrl",
+                "value": "[parameters('environment').Names.keyVaultBaseUrl]",
+                "slotSetting": false
+              },
+              {
+                "name": "APPINSIGHTS_PROFILERFEATURE_VERSION",
+                "value": "1.0.0",
+                "slotSetting": false
+              },
+              {
+                "name": "APPINSIGHTS_SNAPSHOTFEATURE_VERSION",
+                "value": "1.0.0",
+                "slotSetting": false
+              },
+              {
+                "name": "ApplicationInsightsAgent_EXTENSION_VERSION",
+                "value": "~2",
+                "slotSetting": false
+              },
+              {
+                "name": "DiagnosticServices_EXTENSION_VERSION",
+                "value": "~3",
+                "slotSetting": false
+              },
+              {
+                "name": "InstrumentationEngine_EXTENSION_VERSION",
+                "value": "disabled",
+                "slotSetting": false
+              },
+              {
+                "name": "SnapshotDebugger_EXTENSION_VERSION",
+                "value": "disabled",
+                "slotSetting": false
+              },
+              {
+                "name": "XDT_MicrosoftApplicationInsights_BaseExtensions",
+                "value": "disabled",
+                "slotSetting": false
+              },
+              {
+                "name": "XDT_MicrosoftApplicationInsights_Mode",
+                "value": "recommended",
+                "slotSetting": false
+              }
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('serverFarm', parameters('app'))]"
+      ]
+    },
+    {
+      "apiVersion": "2019-10-01",
+      "name": "[concat('hostname-certificate-', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[parameters('environment').Environment.createDomains]",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'web/Microsoft.Web.hostName.certificate.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "app": {
+            "value": "[variables('appName')]"
+          },
+          "hostingPlanName": {
+            "value": "[parameters('environment').Names.serverFarmName]"
+          },
+          "hostName": {
+            "value": "[variables('hostName')]"
+          },
+          "templateBaseUrl": {
+            "value": "[parameters('environment').Environment.templateBaseUrl]"
+          },
+          "templateSasToken": {
+            "value": "[parameters('environment').Environment.templateSasToken]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[parameters('app')]"
+      ]
+    },
+    {
+      "apiVersion": "2019-10-01",
+      "name": "[concat('ssl-binding-', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "condition": "[parameters('environment').Environment.createDomains]",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'web/Microsoft.Web.sslBinding.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "app": {
+            "value": "[variables('appName')]"
+          },
+          "hostName": {
+            "value": "[variables('hostName')]"
+          },
+          "thumbprint": {
+            "value": "[reference(concat('hostname-certificate-', parameters('app'))).outputs.thumbprint.value]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('hostname-certificate-', parameters('app'))]"
+      ]
+    },
+    {
+      "apiVersion": "2019-10-01",
+      "name": "[concat('KVAccess', parameters('app'), 'AzureAppService')]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'keyvault/Microsoft.KeyVault.accessPolicies.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('environment').Names.keyVault]"
+          },
+          "objectId": {
+            "value": "abfa0a7c-a6b6-4736-8310-5855508787cd"
+          },
+          "secretsPermissions": {
+            "value": [
+              "Get",
+              "List",
+              "Set",
+              "Delete",
+              "Recover",
+              "Backup",
+              "Restore"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2019-10-01",
+      "name": "[concat('KVAccess', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'keyvault/Microsoft.KeyVault.accessPolicies.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "keyVaultName": {
+            "value": "[parameters('environment').Names.keyVault]"
+          },
+          "objectId": {
+            "value": "[reference(parameters('app')).outputs.site.value.identity.principalId]"
+          },
+          "secretsPermissions": {
+            "value": [
+              "list",
+              "get"
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[parameters('app')]"
+      ]
+    },
+    {
+      "condition": "[or(not(variables('consolidate')), variables('isProd'))]",
+      "apiVersion": "2019-10-01",
+      "name": "[concat('WebServerHighCPUAlert', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'insights/Microsoft.Insights.metricAlerts.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "alertName": {
+            "value": "HighCPU"
+          },
+          "alertDescription": {
+            "value": "Web Server CPU usage over 80% for the last 5 minutes."
+          },
+          "resourceId": {
+            "value": "[parameters('environment').Names.serverFarmResourceId]"
+          },
+          "metricName": {
+            "value": "CpuPercentage"
+          },
+          "threshold": {
+            "value": "80"
+          },
+          "windowSize": {
+            "value": "PT5M"
+          },
+          "actionGroupId": {
+            "value": "[parameters('environment').Names.actionGroupId]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('serverFarm', parameters('app'))]"
+      ]
+    },
+    {
+      "condition": "[or(not(variables('consolidate')), variables('isProd'))]",
+      "apiVersion": "2019-10-01",
+      "name": "[concat('WebServerMemoryPercentageAlert', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'insights/Microsoft.Insights.metricAlerts.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "alertName": {
+            "value": "MemoryPercentage"
+          },
+          "alertDescription": {
+            "value": "Web Server memory percentage over 80% for the last 5 minutes."
+          },
+          "resourceId": {
+            "value": "[parameters('environment').Names.serverFarmResourceId]"
+          },
+          "metricName": {
+            "value": "MemoryPercentage"
+          },
+          "threshold": {
+            "value": "80"
+          },
+          "windowSize": {
+            "value": "PT5M"
+          },
+          "actionGroupId": {
+            "value": "[parameters('environment').Names.actionGroupId]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('serverFarm', parameters('app'))]"
+      ]
+    },
+    {
+      "apiVersion": "2019-10-01",
+      "name": "[concat('HttpServerErrorsAlert', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'insights/Microsoft.Insights.metricAlerts.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "alertName": {
+            "value": "[concat('HttpServerErrors', parameters('app'))]"
+          },
+          "alertDescription": {
+            "value": "More than 10 server errors in the last 5 minutes."
+          },
+          "resourceId": {
+            "value": "[parameters('environment').Names.serverFarmResourceId]"
+          },
+          "metricName": {
+            "value": "Http5xx"
+          },
+          "threshold": {
+            "value": "10"
+          },
+          "timeAggregation": {
+            "value": "Total"
+          },
+          "windowSize": {
+            "value": "PT5M"
+          },
+          "actionGroupId": {
+            "value": "[parameters('environment').Names.actionGroupId]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[parameters('app')]"
+      ]
+    },
+    {
+      "apiVersion": "2019-10-01",
+      "name": "[concat('ResponseTimeAlert', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'insights/Microsoft.Insights.metricAlerts.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "alertName": {
+            "value": "[concat('AverageResponseTime', parameters('app'))]"
+          },
+          "alertDescription": {
+            "value": "Average response time over 5 seconds in the last 5 minutes."
+          },
+          "resourceId": {
+            "value": "[parameters('environment').Names.serverFarmResourceId]"
+          },
+          "metricName": {
+            "value": "AverageResponseTime"
+          },
+          "threshold": {
+            "value": "5"
+          },
+          "windowSize": {
+            "value": "PT5M"
+          },
+          "actionGroupId": {
+            "value": "[parameters('environment').Names.actionGroupId]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[parameters('app')]"
+      ]
+    },
+    {
+      "apiVersion": "2019-10-01",
+      "name": "[concat('Ping', parameters('app'))]",
+      "type": "Microsoft.Resources/deployments",
+      "properties": {
+        "mode": "[variables('deploymentMode')]",
+        "templateLink": {
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'insights/Microsoft.Insights.webtest.json', parameters('environment').Environment.templateSasToken)]"
+        },
+        "parameters": {
+          "name": {
+            "value": "[concat(variables('appName'), '-ping')]"
+          },
+          "description": {
+            "value": "Ping app to ensure it's alive."
+          },
+          "insightsName": {
+            "value": "[variables('appName')]"
+          },
+          "testUrl": {
+            "value": "[concat('https://', variables('hostName'))]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[parameters('app')]"
+      ]
+    }
+  ],
+  "outputs": {
+    "site": {
+      "type": "object",
+      "value": "[reference(parameters('app')).outputs.site.value]"
+    }
+  },
+  "functions": [
+  ]
+}

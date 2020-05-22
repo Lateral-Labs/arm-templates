@@ -91,7 +91,7 @@
     },
     "resources": [
         {
-            "apiVersion": "2017-05-10",
+            "apiVersion": "2019-10-01",
             "name": "environment",
             "type": "Microsoft.Resources/deployments",
             "properties": {
@@ -117,6 +117,12 @@
                     },                    
                     "consolidate": {
                         "value": "[parameters('consolidate')]"
+                    },                    
+                    "customDomain": {
+                        "value": "[parameters('customDomain')]"
+                    },                    
+                    "createDomains": {
+                        "value": "[parameters('createDomains')]"
                     }
                 }
             }
@@ -271,7 +277,7 @@
                         "value": "[concat(reference('environment').outputs.Names.value.app, '-', variables('appName'))]"
                     },
                     "workspaceResourceId": {
-                        "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.OperationalInsights/workspaces/', reference('environment').outputs.Names.value.workspace)]"
+                        "value": "[reference('environment').outputs.Names.value.workspaceId]"
                     },
                     "tags": {
                         "value": "[reference('environment').outputs.Tags.value]"
@@ -281,6 +287,33 @@
             "dependsOn": [
                 "environment",
                 "loganalytics"
+            ]
+        },
+        {
+            "apiVersion": "2019-10-01",
+            "name": "[concat(variables('appName'),'-app')]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'web/Web.App.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "app": {
+                        "value": "[variables('appName')]"
+                    },
+                    "environment": {
+                        "value": "[reference('environment').outputs]"
+                    },
+                    "instrumentationKey": {
+                        "value": "[reference(concat(variables('appName'),'-insights')).outputs.InstrumentationKey.value]"
+                    }
+                }
+            },
+            "dependsOn": [
+                "actionGroup",
+                "keyVault",
+                "[concat(variables('appName'),'-insights')]"
             ]
         }
     ],
