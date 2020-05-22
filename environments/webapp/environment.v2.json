@@ -139,6 +139,9 @@
                     },
                     "emailReceivers": {
                         "value": "[parameters('emailReceivers')]"
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.Tags.value]"
                     }
                 },
                 "dependsOn": [

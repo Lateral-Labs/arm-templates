@@ -81,6 +81,10 @@
 			"templateBaseUrl": "[parameters('templateBaseUrl')]",
 			"templateSasToken": "[parameters('templateSasToken')]",
 			"consolidate": "[parameters('consolidate')]"
+		},
+		"Tags": {
+			"project": "[parameters('projectName')]",
+            "environment": "[parameters('environmentName')]"
 		}
 	},
     "resources": [
@@ -113,6 +117,10 @@
 		"Names": {
 			"type": "object",
 			"value": "[variables('Names')]"
+		},
+		"Tags": {
+			"type": "object",
+			"value": "[variables('Tags')]"
 		}
 	}
 }
