@@ -130,16 +130,16 @@
                 },
                 "parameters": {
                     "name": {
-                        "value": "[reference('environment').outputs.Names.value.actionGroup]"
+                        "value": "[reference('environment').outputs.V.value.Names.actionGroup]"
                     },
                     "shortName": {
-                        "value": "[reference('environment').outputs.Names.value.actionGroupShortName]"
+                        "value": "[reference('environment').outputs.V.value.Names.actionGroupShortName]"
                     },
                     "emailReceivers": {
                         "value": "[parameters('emailReceivers')]"
                     },
                     "tags": {
-                        "value": "[reference('environment').outputs.Tags.value]"
+                        "value": "[reference('environment').outputs.V.value.Tags]"
                     }
                 }
             },
@@ -158,13 +158,13 @@
                 },
                 "parameters": {
                     "name": {
-                        "value": "[reference('environment').outputs.Names.value.workspace]"
+                        "value": "[reference('environment').outputs.V.value.Names.workspace]"
                     },
                     "sku": {
-                        "value": "[reference('environment').outputs.Size.value.logAnalyticsSku]"
+                        "value": "[reference('environment').outputs.V.value.Size.logAnalyticsSku]"
                     },
                     "tags": {
-                        "value": "[reference('environment').outputs.Tags.value]"
+                        "value": "[reference('environment').outputs.V.value.Tags]"
                     }
                 }
             },
@@ -183,13 +183,13 @@
                 },
                 "parameters": {
                     "name": {
-                        "value": "[reference('environment').outputs.Names.value.automation]"
+                        "value": "[reference('environment').outputs.V.value.Names.automation]"
                     },
                     "sku": {
-                        "value": "[reference('environment').outputs.Size.value.automationSku]"
+                        "value": "[reference('environment').outputs.V.value.Size.automationSku]"
                     },
                     "tags": {
-                        "value": "[reference('environment').outputs.Tags.value]"
+                        "value": "[reference('environment').outputs.V.value.Tags]"
                     }
                 }
             },
@@ -208,16 +208,16 @@
                 },
                 "parameters": {
                     "vaultName": {
-                        "value": "[reference('environment').outputs.Names.value.keyVault]"
+                        "value": "[reference('environment').outputs.V.value.Names.keyVault]"
                     },
                     "sku": {
-                        "value": "[reference('environment').outputs.Size.value.keyVaultSku]"
+                        "value": "[reference('environment').outputs.V.value.Size.keyVaultSku]"
                     },
                     "enabledForTemplateDeployment": {
                         "value": true
                     },
                     "tags": {
-                        "value": "[reference('environment').outputs.Tags.value]"
+                        "value": "[reference('environment').outputs.V.value.Tags]"
                     }
                 }
             },
@@ -237,7 +237,7 @@
                 },
                 "parameters": {
                     "keyVaultName": {
-                        "value": "[reference('environment').outputs.Names.value.keyVault]"
+                        "value": "[reference('environment').outputs.V.value.Names.keyVault]"
                     },
                     "objectId": {
                         "value": "[parameters('devopsPrincipal')]"
@@ -266,13 +266,13 @@
                 },
                 "parameters": {
                     "name": {
-                        "value": "[concat(reference('environment').outputs.Names.value.app, '-', variables('appName'))]"
+                        "value": "[concat(reference('environment').outputs.V.value.Names.app, '-', variables('appName'))]"
                     },
                     "workspaceResourceId": {
-                        "value": "[reference('environment').outputs.Names.value.workspaceId]"
+                        "value": "[reference('environment').outputs.V.value.Names.workspaceId]"
                     },
                     "tags": {
-                        "value": "[reference('environment').outputs.Tags.value]"
+                        "value": "[reference('environment').outputs.V.value.Tags]"
                     }
                 }
             },

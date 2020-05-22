@@ -18,23 +18,12 @@
                 "description": "Custom host name for the Website."
             }
         },
-        "templateBaseUrl": {
-            "type": "string",
-            "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
-            "metadata": {
-                "description": "Location for the individual deployment templates. If it's a blob storage account, the templateSasToken must have a value."
-            }
-        },
-        "templateSasToken": {
-            "type": "string",
-            "defaultValue": " ",
-            "metadata": {
-                "description": "Sas Token for Azure storage account. Used when the individual templates are linked from blob storage"
-            }
+        "tags": {
+            "type": "object",
+            "defaultValue" : {}
         }
     },
     "variables": {
-        "deploymentMode": "Incremental",
         "bindingName": "[concat(parameters('app'), '/', parameters('hostName'))]",
         "certificateName": "[concat(parameters('app'), '-certificate')]"
     },
@@ -52,6 +41,7 @@
             "apiVersion": "2019-08-01",
             "name": "[variables('certificateName')]",
             "location": "[resourceGroup().location]",
+            "tags": "[parameters('tags')]",
             "dependsOn": [
                 "[concat('Microsoft.Web/sites/',parameters('app'),'/hostnameBindings/',parameters('hostName'))]"
             ],
