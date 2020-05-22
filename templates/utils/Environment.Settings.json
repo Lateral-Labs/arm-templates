@@ -48,33 +48,50 @@
             }
         },
         "consolidate": {
-            "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "defaultValue": "No",
+            "type": "bool",
+            "defaultValue": false,
             "metadata": {
-                "description": "If Yes, multiple environments will have one single serverfarm and Redis cache. Cuts down costs."
+                "description": "If true, multiple environments will have one single serverfarm and Redis cache. Cuts down costs."
+            }
+        },        
+		"customDomain": {
+            "type": "string",
+            "metadata": {
+                "description": "Custom domain for the project."
+            }
+        },
+        "createDomains": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "decription": "Skip custom domains creation at first run, it needs the apps to exist."
             }
         }
     },
     "variables":{
 		"resourceName": "[concat(parameters('environmentName'), '-', parameters('projectName'))]",
+        "serverFarmName": "[if(parameters('consolidate'), concat('prod-', parameters('projectName')), variables('resourceName'))]",
+        "serverFarmResourceGroupName": "[if(parameters('consolidate'), concat('prod-', parameters('projectName')), variables('resourceName'))]",
 		"Names": {
 			"resource": "[variables('resourceName')]",
 			"app": "[variables('resourceName')]",
 			"sqlServer": "[variables('resourceName')]",
 			"sqlDb": "[variables('resourceName')]",
 			"keyVault": "[variables('resourceName')]",
+			"keyVaultBaseUrl": "[concat('https://', variables('resourceName'), '.vault.azure.net/')]",
 			"actionGroup": "[variables('resourceName')]",
+			"actionGroupId": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/microsoft.insights/actionGroups/', variables('resourceName'))]",
 			"actionGroupShortName": "[toUpper(take(parameters('environmentName'),15))]",
 			"serviceBusNamespace": "[variables('resourceName')]",
 			"workspace": "[variables('resourceName')]",
+			"workspaceId": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.OperationalInsights/workspaces/', variables('resourceName'))]",
 			"automation": "[variables('resourceName')]",
 			"redisCache": "[variables('resourceName')]",
 			"tableStorage": "[concat(parameters('environmentName'), parameters('projectName'), 'tbl')]",
-			"blobStorage": "[concat(parameters('environmentName'), parameters('projectName'), 'blb')]"
+			"blobStorage": "[concat(parameters('environmentName'), parameters('projectName'), 'blb')]",
+			"serverFarmName": "[variables('serverFarmName')]",
+            "serverFarmResourceGroupName": "[variables('serverFarmResourceGroupName')]",
+            "serverFarmResourceId": "[concat(subscription().id,'/resourcegroups/', variables('serverFarmResourceGroupName'), '/providers/Microsoft.Web/serverfarms/', variables('serverFarmName'))]"
 		},
 		"Environment": {
 			"projectName": "[parameters('projectName')]",
@@ -82,7 +99,9 @@
 			"size": "[parameters('size')]",
 			"templateBaseUrl": "[parameters('templateBaseUrl')]",
 			"templateSasToken": "[parameters('templateSasToken')]",
-			"consolidate": "[parameters('consolidate')]"
+			"consolidate": "[parameters('consolidate')]",
+			"customDomain": "[parameters('customDomain')]",
+			"createDomains": "[parameters('createDomains')]"
 		},
 		"Tags": {
 			"project": "[parameters('projectName')]",
