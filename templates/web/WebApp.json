@@ -156,6 +156,13 @@
           },
           "maximumCapacity": {
             "value": "[reference(concat(parameters('app'), 'environmentSize')).outputs.size.value.serverFarm.autoscale.capacity.maximum]"
+          },
+          "tags": {
+            "value": {
+              "category": "webapps",
+              "project": "[parameters('project')]",
+              "environment": "[parameters('environment')]"
+            }
           }
         }
       },

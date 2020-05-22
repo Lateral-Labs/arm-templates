@@ -16,16 +16,19 @@
             "metadata": {
                 "description": "Array of objects with properties: name, emailAddress"
             }
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue" : {}
         }
     },
     "resources": [
         {
             "name": "[parameters('name')]",
             "type": "Microsoft.Insights/actionGroups",
-            "apiVersion": "2018-03-01",
+            "apiVersion": "2019-06-01",
             "location": "Global",
-            "tags": {
-            },
+            "tags": "[parameters('tags')]",
             "properties": {
                 "groupShortName": "[parameters('shortName')]",
                 "enabled": true,

@@ -252,7 +252,7 @@
                 },
                 "parameters": {
                     "name": {
-                        "value": "[concat(variables('resourceName'), '-', variables('app1Name'))]"
+                        "value": "[concat(parameters('environmentName'), '-', variables('app1Name'), '-', parameters('projectName'))]"
                     }
                 }
             }
@@ -325,7 +325,7 @@
                 },
                 "parameters": {
                     "name": {
-                        "value": "[concat(variables('resourceName'), '-', variables('app2Name'))]"
+                        "value": "[concat(parameters('environmentName'), '-', variables('app2Name'), '-', parameters('projectName'))]"
                     }
                 }
             }

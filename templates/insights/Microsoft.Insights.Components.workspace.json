@@ -5,6 +5,10 @@
         "name": {
             "type": "string"
         },
+        "workspaceResourceId": {
+            "type": "string",
+            "defaultValue": ""
+        },
         "tags": {
             "type": "object",
             "defaultValue" : {}
@@ -14,7 +18,7 @@
         {
             "type": "Microsoft.Insights/components",
             "name": "[parameters('name')]",
-            "apiVersion": "2015-05-01",
+            "apiVersion": "2020-02-02-preview",
             "location": "[resourceGroup().location]",
             "kind": "web",
             "tags": "[parameters('tags')]",
@@ -22,7 +26,8 @@
                 "ApplicationId": "[parameters('name')]",
                 "Application_Type": "web",
                 "Flow_Type": "Bluefield",
-                "Request_Source": "rest"
+                "Request_Source": "rest",
+                "WorkspaceResourceId": "[parameters('workspaceResourceId')]"
             }
         }
     ],

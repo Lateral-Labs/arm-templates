@@ -1,0 +1,157 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "projectName": {
+            "type": "string"
+        },
+        "environmentName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the environment.",
+                "restrictions": "projectName+environmentName length should be max 20. Required by Azure storage naming conventions."
+            },
+            "allowedValues": [
+                "prod",
+                "dev",
+                "release",
+                "uat",
+                "staging",
+                "test",
+                "qa",
+                "local"
+            ]
+        },
+        "size": {
+            "type": "string",
+            "defaultValue": "Small",
+            "allowedValues": [
+                "ExtraSmall",
+                "Small",
+                "Medium",
+                "Large",
+                "ExtraLarge"
+            ]
+        },
+        "templateBaseUrl": {
+            "type": "string",
+            "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
+            "metadata": {
+                "description": "Location for the individual deployment templates. If it's a blob storage account, the templateSasToken must have a value."
+            }
+        },
+        "templateSasToken": {
+            "type": "string",
+            "defaultValue": " ",
+            "metadata": {
+                "description": "Sas Token for Azure storage account. Used when the individual templates are linked from blob storage"
+            }
+        },
+        "consolidate": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "No",
+            "metadata": {
+                "description": "If Yes, multiple environments will have one single serverfarm and Redis cache. Cuts down costs."
+            }
+        },
+        "emailReceivers": {
+            "type": "array",
+            "metadata": {
+                "description": "These addresses will receive monitoring alerts."
+            }
+        },
+        "devopsPrincipal": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "ObjectId of the Service Principal used for DevOps service connection."
+            }
+        },
+        "customDomain": {
+            "type": "string",
+            "metadata": {
+                "description": "Custom domain for the project."
+            }
+        },
+        "createDomains": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "decription": "Skip custom domains creation at first run, it needs the apps to exist."
+            }
+        }
+    },
+    "variables": {
+        "deploymentMode": "Incremental",
+        "appName": "webapp"
+    },
+    "resources": [
+        {
+            "apiVersion": "2017-05-10",
+            "name": "environment",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'utils/Environment.Settings.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "projectName": {
+                        "value": "[parameters('projectName')]"
+                    },       
+                    "environmentName": {
+                        "value": "[parameters('environmentName')]"
+                    },             
+                    "size": {
+                        "value": "[parameters('size')]"
+                    },                    
+                    "templateBaseUrl": {
+                        "value": "[parameters('templateBaseUrl')]"
+                    },                    
+                    "templateSasToken": {
+                        "value": "[parameters('templateSasToken')]"
+                    },                    
+                    "consolidate": {
+                        "value": "[parameters('consolidate')]"
+                    }
+                }
+            }
+        },
+        {
+            "apiVersion": "2017-05-10",
+            "name": "actionGroup",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.ActionGroups.sendEmail.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[reference('environment').outputs.Names.value.actionGroupName]"
+                    },
+                    "shortName": {
+                        "value": "[reference('environment').outputs.Names.value.actionGroupShortName]"
+                    },
+                    "emailReceivers": {
+                        "value": "[parameters('emailReceivers')]"
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.Tags.value]"
+                    }
+                },
+                "dependsOn": [
+                    "environment"
+                ]
+            }
+        }
+    ],
+    "outputs": {
+    },
+    "functions": [
+    ]
+}
