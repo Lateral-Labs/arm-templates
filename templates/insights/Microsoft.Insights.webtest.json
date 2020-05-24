@@ -58,13 +58,17 @@
             "defaultValue" : {}
         }
     },
+    "variables": {
+        "hiddenLink" : { "[concat('hidden-link:', resourceId('Microsoft.Insights/components', parameters('insightsName')))]": "Resource"},
+        "t" : "[union(parameters('tags'), variables('hiddenLink'))]"
+    },
     "resources": [
         {
             "name": "[parameters('name')]",
             "type": "microsoft.insights/webtests",
             "apiVersion": "2015-05-01",
             "location": "[resourceGroup().location]",
-            "tags": "[parameters('tags')]",
+            "tags": "[variables('t')]",
             "properties": {
                 "SyntheticMonitorId": "[parameters('name')]",
                 "Name": "[parameters('name')]",
