@@ -32,13 +32,19 @@
             }
         }
     },
+    "variables": {
+        "hiddenLink": {
+            "[concat('hidden-related:', subscription().id, '/resourcegroups/', parameters('serverFarmResourceGroup'), '/providers/Microsoft.Web/serverfarms/', parameters('hostingPlanName'))]": "empty"
+        },
+        "t" : "[union(parameters('tags'), variables('hiddenLink'))]"
+    },
     "resources": [
         {
             "type": "Microsoft.Web/sites",
             "name": "[parameters('name')]",
             "apiVersion": "2016-08-01",
             "location": "[resourceGroup().location]",
-            "tags": "[parameters('tags')]",
+            "tags": "[variables('t')]",
             "properties": {
                 "siteConfig": {
                     "copy": [
