@@ -23,7 +23,7 @@ steps:
       templateLocation: 'Linked artifact'
       csmFile: 'environments/webapp/environment.json'
       csmParametersFile: "environments/webapp/$(environment).parameters.json"
-      overrideParameters: '-environmentName $(Build.BuildNumber)'
+      overrideParameters: '-environmentName $(Build.BuildNumber) -consolidate false -createDomains false'
       deploymentMode: 'Incremental'
 
   - task: AzureResourceManagerTemplateDeployment@3
