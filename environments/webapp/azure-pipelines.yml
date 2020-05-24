@@ -9,7 +9,7 @@ variables:
   serviceconnection: 'Azure Subscription'
   location: 'East US'
 
-name: $(Date:yyyyMMdd)$(Rev:.r)
+name: $(Date:MMdd)$(Rev:r)
 
 steps:
   - task: AzureResourceManagerTemplateDeployment@3
