@@ -8,19 +8,9 @@
         "environmentName": {
             "type": "string",
             "metadata": {
-                "description": "Name of the environment.",
+                "description": "Name of the environment. 'prod' is reserved for production environment.",
                 "restrictions": "projectName+environmentName length should be max 20. Required by Azure storage naming conventions."
-            },
-            "allowedValues": [
-                "prod",
-                "dev",
-                "release",
-                "uat",
-                "staging",
-                "test",
-                "qa",
-                "local"
-            ]
+            }
         },
         "size": {
             "type": "string",
@@ -306,6 +296,92 @@
                 "actionGroup",
                 "keyVault",
                 "[concat(variables('appName'),'-insights')]"
+            ]
+        },
+        {
+            "apiVersion": "2019-10-01",
+            "name": "[concat('AzureServicesHealthAlert', parameters('environmentName'))]",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.activityLogAlerts.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "name": {
+                        "value": "[concat('AzureServicesHealthAlert', parameters('environmentName'))]"
+                    },
+                    "description": {
+                        "value": "Alert when azure services used by the environment are down."
+                    },
+                    "actionGroupId": {
+                        "value": "[reference('environment').outputs.V.value.Names.actionGroupId]"
+                    },
+                    "conditions": {
+                        "value": [
+                            {
+                                "field": "category",
+                                "equals": "ServiceHealth",
+                                "containsAny": null
+                            },
+                            {
+                                "field": "properties.impactedServices[*].ServiceName",
+                                "equals": null,
+                                "containsAny": [
+                                    "App Service",
+                                    "App Service \\ Web Apps",
+                                    "Application Insights",
+                                    "Key Vault"
+                                ]
+                            },
+                            {
+                                "field": "properties.impactedServices[*].ImpactedRegions[*].RegionName",
+                                "equals": null,
+                                "containsAny": [
+                                    "[resourceGroup().location]"
+                                ]
+                            }
+                        ]
+                    }
+                }
+            },
+            "dependsOn": [
+                "environment",
+                "actionGroup"
+            ]
+        },
+        {
+            "apiVersion": "2019-10-01",
+            "name": "keyVaultSecrets",
+            "type": "Microsoft.Resources/deployments",
+            "properties": {
+                "mode": "[variables('deploymentMode')]",
+                "templateLink": {
+                    "uri": "[concat(parameters('templateBaseUrl'), 'keyvault/Microsoft.KeyVault.secrets.json', parameters('templateSasToken'))]"
+                },
+                "parameters": {
+                    "vaultName": {
+                        "value": "[reference('environment').outputs.V.value.Names.keyVault]"
+                    },
+                    "secrets": {
+                        "value": {
+                            "secrets": [
+                                {
+                                    "secretName": "Environment",
+                                    "secretValue": "[parameters('environmentName')]"
+                                },
+                                {
+                                    "secretName": "ActiveDirectoryTenantId",
+                                    "secretValue": "[subscription().tenantId]"
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            "dependsOn": [
+                "environment",
+                "keyVault"
             ]
         }
     ],
