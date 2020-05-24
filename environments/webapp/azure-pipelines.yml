@@ -7,7 +7,7 @@ pool:
 variables: 
   project: 'armtemplates'
   serviceconnection: 'Azure Subscription'
-  location: 'West Europe'
+  location: 'East US'
 
 steps:
   - task: AzureResourceManagerTemplateDeployment@3
