@@ -8,19 +8,9 @@
         "environmentName": {
             "type": "string",
             "metadata": {
-                "description": "Name of the environment.",
+                "description": "Name of the environment. 'prod' is reserved for production environment.",
                 "restrictions": "projectName+environmentName length should be max 20. Required by Azure storage naming conventions."
-            },
-            "allowedValues": [
-                "prod",
-                "dev",
-                "release",
-                "uat",
-                "staging",
-                "test",
-                "qa",
-                "local"
-            ]
+            }
         },
         "size": {
             "type": "string",
