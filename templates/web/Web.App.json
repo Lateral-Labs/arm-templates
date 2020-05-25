@@ -42,7 +42,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'web/Microsoft.Web.serverfarms.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[uri.templateLink(parameters('environment'), 'web/Microsoft.Web.serverfarms.json')]"
         },
         "parameters": {
           "name": {
@@ -79,7 +79,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'web/Microsoft.Web.sites.', parameters('target'), '.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[uri.templateLink(parameters('environment'), concat('web/Microsoft.Web.sites.', parameters('target'), '.json'))]"
         },
         "parameters": {
           "name": {
@@ -172,7 +172,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'web/Web.App.certificate.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[uri.templateLink(parameters('environment'), 'web/Web.App.certificate.json')]"
         },
         "parameters": {
           "app": {
@@ -194,7 +194,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'keyvault/Microsoft.KeyVault.accessPolicies.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[uri.templateLink(parameters('environment'), 'keyvault/Microsoft.KeyVault.accessPolicies.json')]"
         },
         "parameters": {
           "keyVaultName": {
@@ -224,7 +224,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'keyvault/Microsoft.KeyVault.accessPolicies.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[uri.templateLink(parameters('environment'), 'keyvault/Microsoft.KeyVault.accessPolicies.json')]"
         },
         "parameters": {
           "keyVaultName": {
@@ -253,7 +253,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'insights/Microsoft.Insights.metricAlerts.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[uri.templateLink(parameters('environment'), 'insights/Microsoft.Insights.metricAlerts.json')]"
         },
         "parameters": {
           "alertName": {
@@ -291,7 +291,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'insights/Microsoft.Insights.metricAlerts.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[uri.templateLink(parameters('environment'), 'insights/Microsoft.Insights.metricAlerts.json')]"
         },
         "parameters": {
           "alertName": {
@@ -328,7 +328,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'insights/Microsoft.Insights.metricAlerts.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[uri.templateLink(parameters('environment'), 'insights/Microsoft.Insights.metricAlerts.json')]"
         },
         "parameters": {
           "alertName": {
@@ -368,7 +368,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'insights/Microsoft.Insights.metricAlerts.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[uri.templateLink(parameters('environment'), 'insights/Microsoft.Insights.metricAlerts.json')]"
         },
         "parameters": {
           "alertName": {
@@ -405,7 +405,7 @@
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'insights/Microsoft.Insights.webtest.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[uri.templateLink(parameters('environment'), 'insights/Microsoft.Insights.webtest.json')]"
         },
         "parameters": {
           "name": {
@@ -437,5 +437,26 @@
     }
   },
   "functions": [
+    {
+      "namespace": "uri",
+      "members": {
+        "templateLink": {
+          "parameters": [
+            {
+              "name": "env",
+              "type": "object"
+            },
+            {
+              "name": "file",
+              "type": "string"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[concat(parameters('env').Environment.templateBaseUrl, parameters('file'), parameters('env').Environment.templateSasToken)]"
+          }
+        }
+      }
+    }
   ]
 }

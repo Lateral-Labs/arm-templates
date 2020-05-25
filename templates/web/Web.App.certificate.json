@@ -25,7 +25,7 @@
             "properties": {
                 "mode": "[variables('deploymentMode')]",
                 "templateLink": {
-                    "uri": "[uri.templateLink(parameters('environment'))]"
+                    "uri": "[uri.templateLink(parameters('environment'), 'web/Microsoft.Web.hostName.certificate.json')]"
                 },
                 "parameters": {
                     "app": {
@@ -53,7 +53,7 @@
             "properties": {
                 "mode": "[variables('deploymentMode')]",
                 "templateLink": {
-                    "uri": "[uri.templateLink(parameters('environment'))]"
+                    "uri": "[uri.templateLink(parameters('environment'), 'web/Microsoft.Web.sslBinding.json')]"
                 },
                 "parameters": {
                     "app": {
@@ -81,11 +81,15 @@
                         {
                             "name": "env",
                             "type": "object"
+                        },
+                        {
+                            "name": "file",
+                            "type": "string"
                         }
                     ],
                     "output": {
                         "type": "string",
-                        "value": "[concat(parameters('env').Environment.templateBaseUrl, 'web/Microsoft.Web.sslBinding.json', parameters('env').Environment.templateSasToken)]"
+                        "value": "[concat(parameters('env').Environment.templateBaseUrl, parameters('file'), parameters('env').Environment.templateSasToken)]"
                     }
                 }
             }
