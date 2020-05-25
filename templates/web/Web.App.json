@@ -166,57 +166,25 @@
     },
     {
       "apiVersion": "2019-10-01",
-      "name": "[concat('hostname-certificate-', parameters('app'))]",
+      "name": "[concat('app-certificate-', parameters('app'))]",
       "type": "Microsoft.Resources/deployments",
-      "condition": "[equals(parameters('environment').Environment.createDomains, 'true')]",
+      "condition": "[parameters('environment').Environment.createDomains]",
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'web/Microsoft.Web.hostName.certificate.json', parameters('environment').Environment.templateSasToken)]"
+          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'web/Web.App.certificate.json', parameters('environment').Environment.templateSasToken)]"
         },
         "parameters": {
           "app": {
             "value": "[variables('appName')]"
           },
-          "hostingPlanName": {
-            "value": "[parameters('environment').Names.serverFarmName]"
-          },
-          "hostName": {
-            "value": "[variables('hostName')]"
-          },
-          "tags": {
-            "value": "[parameters('environment').Tags]"
+          "environment": {
+            "value": "[parameters('environment')]"
           }
         }
       },
       "dependsOn": [
         "[parameters('app')]"
-      ]
-    },
-    {
-      "apiVersion": "2019-10-01",
-      "name": "[concat('ssl-binding-', parameters('app'))]",
-      "type": "Microsoft.Resources/deployments",
-      "condition": "[equals(parameters('environment').Environment.createDomains, 'true')]",
-      "properties": {
-        "mode": "[variables('deploymentMode')]",
-        "templateLink": {
-          "uri": "[concat(parameters('environment').Environment.templateBaseUrl, 'web/Microsoft.Web.sslBinding.json', parameters('environment').Environment.templateSasToken)]"
-        },
-        "parameters": {
-          "app": {
-            "value": "[variables('appName')]"
-          },
-          "hostName": {
-            "value": "[variables('hostName')]"
-          },
-          "thumbprint": {
-            "value": "[reference(concat('hostname-certificate-', parameters('app'))).outputs.thumbprint.value]"
-          }
-        }
-      },
-      "dependsOn": [
-        "[concat('hostname-certificate-', parameters('app'))]"
       ]
     },
     {
