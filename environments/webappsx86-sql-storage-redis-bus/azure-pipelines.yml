@@ -1,0 +1,36 @@
+pool:
+  name: Azure Pipelines
+  vmImage: windows-2019
+  demands: azureps
+
+#Your build pipeline references an undefined variable named ‘environment’. Create or edit the build pipeline for this YAML file, define the variable on the Variables tab. See https://go.microsoft.com/fwlink/?linkid=865972
+variables: 
+  project: 'armtemplates'
+  serviceconnection: 'Azure Subscription'
+  location: 'East US'
+
+name: env$(Date:MMdd)$(Rev:r)
+
+steps:
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: Deploy template
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: "$(serviceconnection)"
+      action: 'Create Or Update Resource Group'
+      resourceGroupName: "$(Build.BuildNumber)-$(project)"
+      location: "$(location)"
+      templateLocation: 'Linked artifact'
+      csmFile: 'environments/webappsx86-sql-storage-redis-bus/environment.json'
+      csmParametersFile: "environments/webappsx86-sql-storage-redis-bus/$(environment).parameters.json"
+      overrideParameters: '-environmentName $(Build.BuildNumber) -consolidate false -createDomains false'
+      deploymentMode: 'Incremental'
+
+  - task: AzureResourceManagerTemplateDeployment@3
+    displayName: Delete resource group
+    inputs:
+      deploymentScope: 'Resource Group'
+      azureResourceManagerConnection: "$(serviceconnection)"
+      action: 'DeleteRG'
+      location: "$(location)"
+      resourceGroupName: "$(Build.BuildNumber)-$(project)"
