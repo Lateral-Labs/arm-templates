@@ -67,6 +67,7 @@
 			"app": "[variables('resourceName')]",
 			"sqlServer": "[variables('resourceName')]",
 			"sqlDb": "[variables('resourceName')]",
+            "sqlDbResourceId": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Sql/servers/', variables('resourceName'), '/databases/', variables('resourceName'))]",
 			"keyVault": "[variables('resourceName')]",
 			"keyVaultBaseUrl": "[concat('https://', variables('resourceName'), '.vault.azure.net/')]",
 			"actionGroup": "[variables('resourceName')]",
