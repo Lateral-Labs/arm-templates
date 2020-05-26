@@ -328,6 +328,11 @@
                                 "field": "properties.impactedServices[*].ServiceName",
                                 "equals": null,
                                 "containsAny": [
+                                    "Action Groups",
+                                    "Activity Logs & Alerts",
+                                    "Alerts & Metrics",
+                                    "Alerts",
+                                    "Azure Active Directory",
                                     "App Service",
                                     "App Service \\ Web Apps",
                                     "Application Insights",

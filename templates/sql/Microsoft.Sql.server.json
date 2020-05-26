@@ -19,6 +19,11 @@
             "metadata": {
                 "description": "The password of the admin user of the SQL Server"
             }
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+            }
         }
     },
     "variables": {
@@ -27,10 +32,9 @@
         {
             "name": "[parameters('name')]",
             "type": "Microsoft.Sql/servers",
-            "apiVersion": "2015-05-01-preview",
+            "apiVersion": "2019-06-01-preview",
             "location": "[resourceGroup().location]",
-            "tags": {
-            },
+            "tags": "[parameters('tags')]",
             "identity": {
                 "type": "SystemAssigned"
             },
@@ -58,7 +62,8 @@
     "outputs": {
         "server": {
             "type": "object",
-            "value": "[reference(parameters('name'), '2015-05-01-preview', 'Full')]"
+            "value": "[reference(parameters('name'), '2019-06-01-preview
+            ', 'Full')]"
         }
     }
 }

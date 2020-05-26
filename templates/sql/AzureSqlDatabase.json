@@ -2,48 +2,14 @@
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "sqlServerName": {
-      "type": "string"
-    },
-    "sqlDbName": {
-      "type": "string"
+    "environment": {
+      "type": "object"
     },
     "sqlAdminUser": {
       "type": "securestring"
     },
     "sqlAdminPassword": {
       "type": "securestring"
-    },
-    "size": {
-      "type": "string",
-      "defaultValue": "Small",
-      "allowedValues": [
-        "ExtraSmall",
-        "Small",
-        "Medium",
-        "Large",
-        "ExtraLarge"
-      ]
-    },
-    "templateBaseUrl": {
-      "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/Lateral-Pathfinder/arm-templates/master/templates/",
-      "metadata": {
-        "description": "Location for the individual deployment templates. If it's a blob storage account, the templateSasToken must have a value."
-      }
-    },
-    "templateSasToken": {
-      "type": "string",
-      "defaultValue": " ",
-      "metadata": {
-        "description": "Sas Token for Azure storage account. Used when the individual templates are linked from blob storage"
-      }
-    },
-    "actionGroupId": {
-      "type": "string",
-      "metadata": {
-        "description": "Actiongroup Id to set up alerts."
-      }
     }
   },
   "variables": {
@@ -51,33 +17,17 @@
   },
   "resources": [
     {
-      "apiVersion": "2017-05-10",
-      "name": "environmentSizeSql",
+      "apiVersion": "2019-10-01",
+      "name": "[concat('sqlserver', parameters('environment').Names.sqlDb)]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'utils/Environment.Size.json', parameters('templateSasToken'))]"
-        },
-        "parameters": {
-          "size": {
-            "value": "[parameters('size')]"
-          }
-        }
-      }
-    },
-    {
-      "apiVersion": "2017-05-10",
-      "name": "[concat('sqlserver', parameters('sqlDbName'))]",
-      "type": "Microsoft.Resources/deployments",
-      "properties": {
-        "mode": "[variables('deploymentMode')]",
-        "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'sql/Microsoft.Sql.server.json', parameters('templateSasToken'))]"
+          "uri": "[uri.templateLink(parameters('environment'), 'sql/Microsoft.Sql.server.json')]"
         },
         "parameters": {
           "name": {
-            "value": "[parameters('sqlServerName')]"
+            "value": "[parameters('environment').Names.sqlServer]"
           },
           "administratorLogin": {
             "value": "[parameters('sqlAdminUser')]"
@@ -89,29 +39,29 @@
       }
     },
     {
-      "apiVersion": "2017-05-10",
-      "name": "[concat('sqldatabase', parameters('sqlDbName'))]",
+      "apiVersion": "2019-10-01",
+      "name": "[concat('sqldatabase', parameters('environment').Names.sqlDb)]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'sql/Microsoft.Sql.database.json', parameters('templateSasToken'))]"
+          "uri": "[uri.templateLink(parameters('environment'), 'sql/Microsoft.Sql.database.json')]"
         },
         "parameters": {
           "serverName": {
-            "value": "[parameters('sqlServerName')]"
+            "value": "[parameters('environment').Names.sqlServer]"
           },
           "databaseName": {
-            "value": "[parameters('sqlDbName')]"
+            "value": "[parameters('environment').Names.sqlDb]"
           },
           "tier": {
-            "value": "[reference('environmentSizeSql').outputs.size.value.sqlDatabase.tier]"
+            "value": "[parameters('environment').Size.sqlDatabase.tier]"
           },
           "sku": {
-            "value": "[reference('environmentSizeSql').outputs.size.value.sqlDatabase.sku]"
+            "value": "[parameters('environment').Size.sqlDatabase.sku]"
           },
           "maxSizeBytes": {
-            "value": "[reference('environmentSizeSql').outputs.size.value.sqlDatabase.maxSizeBytes]"
+            "value": "[parameters('environment').Size.sqlDatabase.maxSizeBytes]"
           },
           "collation": {
             "value": "SQL_Latin1_General_CP1_CI_AS"
@@ -119,64 +69,63 @@
         }
       },
       "dependsOn": [
-        "[concat('sqlserver', parameters('sqlDbName'))]",
-        "environmentSizeSql"
+        "[concat('sqlserver', parameters('environment').Names.sqlDb)]"
       ]
     },
     {
       "type": "Microsoft.Sql/servers/databases/advisors",
-      "name": "[concat(parameters('sqlServerName'), '/', parameters('sqlDbName'), '/', 'ForceLastGoodPlan')]",
+      "name": "[concat(parameters('environment').Names.sqlServer, '/', parameters('environment').Names.sqlDb, '/', 'ForceLastGoodPlan')]",
       "apiVersion": "2014-04-01",
       "scale": null,
       "properties": {
         "autoExecuteValue": "Enabled"
       },
       "dependsOn": [
-        "[concat('sqldatabase', parameters('sqlDbName'))]"
+        "[concat('sqldatabase', parameters('environment').Names.sqlDb)]"
       ]
     },
     {
       "type": "Microsoft.Sql/servers/databases/advisors",
-      "name": "[concat(parameters('sqlServerName'), '/', parameters('sqlDbName'), '/', 'CreateIndex')]",
+      "name": "[concat(parameters('environment').Names.sqlServer, '/', parameters('environment').Names.sqlDb, '/', 'CreateIndex')]",
       "apiVersion": "2014-04-01",
       "scale": null,
       "properties": {
         "autoExecuteValue": "Enabled"
       },
       "dependsOn": [
-        "[concat('sqldatabase', parameters('sqlDbName'))]"
+        "[concat('sqldatabase', parameters('environment').Names.sqlDb)]"
       ]
     },
     {
       "type": "Microsoft.Sql/servers/databases/advisors",
-      "name": "[concat(parameters('sqlServerName'), '/', parameters('sqlDbName'), '/', 'DropIndex')]",
+      "name": "[concat(parameters('environment').Names.sqlServer, '/', parameters('environment').Names.sqlDb, '/', 'DropIndex')]",
       "apiVersion": "2014-04-01",
       "scale": null,
       "properties": {
         "autoExecuteValue": "Enabled"
       },
       "dependsOn": [
-        "[concat('sqldatabase', parameters('sqlDbName'))]"
+        "[concat('sqldatabase', parameters('environment').Names.sqlDb)]"
       ]
     },
     {
-      "apiVersion": "2017-05-10",
-      "name": "[concat('DTUConsumptionAlert', parameters('sqlDbName'))]",
+      "apiVersion": "2019-10-01",
+      "name": "[concat('DTUConsumptionAlert', parameters('environment').Names.sqlDb)]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+          "uri": "[uri.templateLink(parameters('environment'), 'insights/Microsoft.Insights.metricAlerts.json')]"
         },
         "parameters": {
           "alertName": {
-            "value": "[concat(parameters('sqlDbName'), '-DTUConsumptionAlert')]"
+            "value": "[concat(parameters('environment').Names.sqlDb, '-DTUConsumptionAlert')]"
           },
           "alertDescription": {
             "value": "Sql Database consumes more than 80% of allocated DTU's in the last 5 minutes."
           },
           "resourceId": {
-            "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Sql/servers/', parameters('sqlServerName'), '/databases/', parameters('sqlDbName'))]"
+            "value": "[parameters('environment').Names.sqlDbResourceId]"
           },
           "metricName": {
             "value": "dtu_consumption_percent"
@@ -188,32 +137,32 @@
             "value": "PT5M"
           },
           "actionGroupId": {
-            "value": "[parameters('actionGroupId')]"
+            "value": "[parameters('environment').Names.actionGroupId]"
           }
         }
       },
       "dependsOn": [
-        "[concat('sqldatabase', parameters('sqlDbName'))]"
+        "[concat('sqldatabase', parameters('environment').Names.sqlDb)]"
       ]
     },
     {
-      "apiVersion": "2017-05-10",
-      "name": "[concat('FailedConnectionsAlert', parameters('sqlDbName'))]",
+      "apiVersion": "2019-10-01",
+      "name": "[concat('FailedConnectionsAlert', parameters('environment').Names.sqlDb)]",
       "type": "Microsoft.Resources/deployments",
       "properties": {
         "mode": "[variables('deploymentMode')]",
         "templateLink": {
-          "uri": "[concat(parameters('templateBaseUrl'), 'insights/Microsoft.Insights.metricAlerts.json', parameters('templateSasToken'))]"
+          "uri": "[uri.templateLink(parameters('environment'), 'insights/Microsoft.Insights.metricAlerts.json')]"
         },
         "parameters": {
           "alertName": {
-            "value": "[concat(parameters('sqlDbName'), '-FailedConnectionsAlert')]"
+            "value": "[concat(parameters('environment').Names.sqlDb, '-FailedConnectionsAlert')]"
           },
           "alertDescription": {
             "value": "Sql Database failed connections more than 10 in the last minute."
           },
           "resourceId": {
-            "value": "[concat(subscription().id,'/resourcegroups/', resourceGroup().name, '/providers/Microsoft.Sql/servers/', parameters('sqlServerName'), '/databases/', parameters('sqlDbName'))]"
+            "value": "[parameters('environment').Names.sqlDbResourceId]"
           },
           "metricName": {
             "value": "connection_failed"
@@ -228,17 +177,38 @@
             "value": "PT1M"
           },
           "actionGroupId": {
-            "value": "[parameters('actionGroupId')]"
+            "value": "[parameters('environment').Names.actionGroupId]"
           }
         }
       },
       "dependsOn": [
-        "[concat('sqldatabase', parameters('sqlDbName'))]"
+        "[concat('sqldatabase', parameters('environment').Names.sqlDb)]"
       ]
     }
   ],
   "outputs": {
   },
   "functions": [
+    {
+      "namespace": "uri",
+      "members": {
+        "templateLink": {
+          "parameters": [
+            {
+              "name": "env",
+              "type": "object"
+            },
+            {
+              "name": "file",
+              "type": "string"
+            }
+          ],
+          "output": {
+            "type": "string",
+            "value": "[concat(parameters('env').Environment.templateBaseUrl, parameters('file'), parameters('env').Environment.templateSasToken)]"
+          }
+        }
+      }
+    }
   ]
 }
