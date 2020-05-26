@@ -32,7 +32,7 @@
         {
             "name": "[parameters('name')]",
             "type": "Microsoft.Sql/servers",
-            "apiVersion": "2019-06-01-preview",
+            "apiVersion": "2015-05-01-preview",
             "location": "[resourceGroup().location]",
             "tags": "[parameters('tags')]",
             "identity": {
@@ -62,8 +62,7 @@
     "outputs": {
         "server": {
             "type": "object",
-            "value": "[reference(parameters('name'), '2019-06-01-preview
-            ', 'Full')]"
+            "value": "[reference(parameters('name'), '2015-05-01-preview', 'Full')]"
         }
     }
 }
