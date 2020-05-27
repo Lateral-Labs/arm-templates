@@ -62,8 +62,7 @@
     "outputs": {
         "server": {
             "type": "object",
-            "value": "[reference(parameters('name'), '2019-06-01-preview
-            ', 'Full')]"
+            "value": "[reference(parameters('name'), '2019-06-01-preview', 'Full')]"
         }
     }
 }
