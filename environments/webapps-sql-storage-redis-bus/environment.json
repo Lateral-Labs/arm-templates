@@ -372,7 +372,8 @@
             },
             "dependsOn": [
                 "environment",
-                "loganalytics"
+                "loganalytics",
+                "[concat(variables('app1Name'),'-insights')]"
             ]
         },
         {
@@ -403,7 +404,8 @@
                 "environment",
                 "actionGroup",
                 "keyVault",
-                "[concat(variables('app2Name'),'-insights')]"
+                "[concat(variables('app2Name'),'-insights')]",
+                "[concat(variables('app1Name'),'-app')]"
             ]
         },
         {
