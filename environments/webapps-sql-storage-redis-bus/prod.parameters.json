@@ -39,7 +39,7 @@
       }
     },
     "consolidate": {
-      "value": "Yes"
+      "value": true
     },
     "devopsPrincipal": {
       "value": "",
@@ -52,6 +52,9 @@
     },
     "createDomains": {
       "value": true
+    },
+    "target": {
+      "value": "x64"
     }
   }
 }
