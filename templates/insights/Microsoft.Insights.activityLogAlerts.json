@@ -26,6 +26,10 @@
             "metadata": {
                 "description": "The ID of the action group that is triggered when the alert is activated."
             }
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue" : {}
         }
     },
     "resources": [
@@ -34,8 +38,7 @@
             "type": "Microsoft.Insights/activityLogAlerts",
             "apiVersion": "2017-04-01",
             "location": "Global",
-            "tags": {
-            },
+            "tags": "[parameters('tags')]",
             "properties": {
                 "scopes": [
                     "[subscription().id]"

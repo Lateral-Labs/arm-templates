@@ -448,6 +448,9 @@
                                 ]
                             }
                         ]
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.V.value.Tags]"
                     }
                 }
             },
@@ -512,6 +515,9 @@
                     },
                     "kind": {
                         "value": "[reference('environment').outputs.V.value.Size.storage.kind]"
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.V.value.Tags]"
                     }
                 }
             },
@@ -569,6 +575,9 @@
                     },
                     "type": {
                         "value": "[reference('environment').outputs.V.value.Size.storage.accountType]"
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.V.value.Tags]"
                     }
                 }
             },
@@ -633,6 +642,9 @@
                     },
                     "cacheSKUCapacity": {
                         "value": "[reference('environment').outputs.V.value.Size.redis.capacity]"
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.V.value.Tags]"
                     }
                 }
             },
@@ -700,6 +712,9 @@
                     },
                     "zoneRedundant": {
                         "value": "[reference('environment').outputs.V.value.Size.serviceBus.zoneRedundant]"
+                    },
+                    "tags": {
+                        "value": "[reference('environment').outputs.V.value.Tags]"
                     }
                 }
             },

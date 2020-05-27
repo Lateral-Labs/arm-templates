@@ -276,6 +276,9 @@
           },
           "actionGroupId": {
             "value": "[parameters('environment').Names.actionGroupId]"
+          },
+          "tags": {
+            "value": "[parameters('environment').Tags]"
           }
         }
       },
@@ -314,6 +317,9 @@
           },
           "actionGroupId": {
             "value": "[parameters('environment').Names.actionGroupId]"
+          },
+          "tags": {
+            "value": "[parameters('environment').Tags]"
           }
         }
       },
@@ -354,6 +360,9 @@
           },
           "actionGroupId": {
             "value": "[parameters('environment').Names.actionGroupId]"
+          },
+          "tags": {
+            "value": "[parameters('environment').Tags]"
           }
         }
       },
@@ -391,6 +400,9 @@
           },
           "actionGroupId": {
             "value": "[parameters('environment').Names.actionGroupId]"
+          },
+          "tags": {
+            "value": "[parameters('environment').Tags]"
           }
         }
       },
