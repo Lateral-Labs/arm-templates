@@ -103,6 +103,10 @@
             "metadata": {
                 "description": "The ID of the action group that is triggered when the alert is activated or deactivated"
             }
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue" : {}
         }
     },
     "resources": [
@@ -111,8 +115,7 @@
             "type": "Microsoft.Insights/metricAlerts",
             "location": "Global",
             "apiVersion": "2018-03-01",
-            "tags": {
-            },
+            "tags": "[parameters('tags')]",
             "properties": {
                 "description": "[parameters('alertDescription')]",
                 "severity": "[parameters('alertSeverity')]",

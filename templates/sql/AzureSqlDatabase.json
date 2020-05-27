@@ -65,6 +65,9 @@
           },
           "collation": {
             "value": "SQL_Latin1_General_CP1_CI_AS"
+          },
+          "tags": {
+            "value": "[parameters('environment').Tags]"
           }
         }
       },
@@ -76,6 +79,9 @@
       "type": "Microsoft.Sql/servers/databases/advisors",
       "name": "[concat(parameters('environment').Names.sqlServer, '/', parameters('environment').Names.sqlDb, '/', 'ForceLastGoodPlan')]",
       "apiVersion": "2014-04-01",
+      "tags": {
+        "value": "[parameters('environment').Tags]"
+      },
       "scale": null,
       "properties": {
         "autoExecuteValue": "Enabled"
@@ -88,6 +94,9 @@
       "type": "Microsoft.Sql/servers/databases/advisors",
       "name": "[concat(parameters('environment').Names.sqlServer, '/', parameters('environment').Names.sqlDb, '/', 'CreateIndex')]",
       "apiVersion": "2014-04-01",
+      "tags": {
+        "value": "[parameters('environment').Tags]"
+      },
       "scale": null,
       "properties": {
         "autoExecuteValue": "Enabled"
@@ -100,6 +109,9 @@
       "type": "Microsoft.Sql/servers/databases/advisors",
       "name": "[concat(parameters('environment').Names.sqlServer, '/', parameters('environment').Names.sqlDb, '/', 'DropIndex')]",
       "apiVersion": "2014-04-01",
+      "tags": {
+        "value": "[parameters('environment').Tags]"
+      },
       "scale": null,
       "properties": {
         "autoExecuteValue": "Enabled"
@@ -138,6 +150,9 @@
           },
           "actionGroupId": {
             "value": "[parameters('environment').Names.actionGroupId]"
+          },
+          "tags": {
+            "value": "[parameters('environment').Tags]"
           }
         }
       },
@@ -178,6 +193,9 @@
           },
           "actionGroupId": {
             "value": "[parameters('environment').Names.actionGroupId]"
+          },
+          "tags": {
+            "value": "[parameters('environment').Tags]"
           }
         }
       },

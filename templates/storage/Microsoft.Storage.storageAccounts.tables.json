@@ -26,6 +26,10 @@
                 "Storage",
                 "StorageV2"
             ]
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue" : {}
         }
     },
     "variables": {
@@ -40,6 +44,7 @@
             "kind": "[parameters('kind')]",
             "name": "[parameters('name')]",
             "apiVersion": "2018-02-01",
+            "tags": "[parameters('tags')]",
             "location": "[resourceGroup().location]",
             "properties": {
                 "supportsHttpsTrafficOnly": true,

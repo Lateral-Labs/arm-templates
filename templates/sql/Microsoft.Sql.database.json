@@ -64,6 +64,10 @@
             "metadata": {
                 "description": "The database collation for governing the proper use of characters."
             }
+        },
+        "tags": {
+          "type": "object",
+          "defaultValue" : {}
         }
     },
     "variables": {
@@ -78,6 +82,7 @@
             "name": "[concat(parameters('serverName'), '/', parameters('databaseName'))]",
             "apiVersion": "2017-03-01-preview",
             "location": "[resourceGroup().location]",
+            "tags": "[parameters('tags')]",
             "properties": {
                 "collation": "[parameters('collation')]",
                 "maxSizeBytes": "[parameters('maxSizeBytes')]",

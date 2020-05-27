@@ -34,6 +34,11 @@
             "metadata": {
                 "description": "Applies only for Premium. Leave default otherwise."
             }
+        },
+        "tags": {
+            "type": "object",
+            "defaultValue": {
+            }
         }
     },
     "variables": {
@@ -43,6 +48,7 @@
             "apiVersion": "2017-04-01",
             "name": "[parameters('name')]",
             "type": "Microsoft.ServiceBus/namespaces",
+            "tags": "[parameters('tags')]",
             "location": "[resourceGroup().location]",
             "sku": {
                 "name": "[parameters('sku')]",
