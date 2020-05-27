@@ -79,9 +79,7 @@
       "type": "Microsoft.Sql/servers/databases/advisors",
       "name": "[concat(parameters('environment').Names.sqlServer, '/', parameters('environment').Names.sqlDb, '/', 'ForceLastGoodPlan')]",
       "apiVersion": "2014-04-01",
-      "tags": {
-        "value": "[parameters('environment').Tags]"
-      },
+      "tags": "[parameters('environment').Tags]",
       "scale": null,
       "properties": {
         "autoExecuteValue": "Enabled"
@@ -94,9 +92,7 @@
       "type": "Microsoft.Sql/servers/databases/advisors",
       "name": "[concat(parameters('environment').Names.sqlServer, '/', parameters('environment').Names.sqlDb, '/', 'CreateIndex')]",
       "apiVersion": "2014-04-01",
-      "tags": {
-        "value": "[parameters('environment').Tags]"
-      },
+      "tags": "[parameters('environment').Tags]",
       "scale": null,
       "properties": {
         "autoExecuteValue": "Enabled"
@@ -109,9 +105,7 @@
       "type": "Microsoft.Sql/servers/databases/advisors",
       "name": "[concat(parameters('environment').Names.sqlServer, '/', parameters('environment').Names.sqlDb, '/', 'DropIndex')]",
       "apiVersion": "2014-04-01",
-      "tags": {
-        "value": "[parameters('environment').Tags]"
-      },
+      "tags": "[parameters('environment').Tags]",
       "scale": null,
       "properties": {
         "autoExecuteValue": "Enabled"
